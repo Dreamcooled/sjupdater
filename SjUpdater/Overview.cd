@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="SjUpdater.Model.SeasonData">
+    <Position X="12.75" Y="8.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAEAAAAAAAAAAAAAEAAAACAgAAAAAAAA=</HashCode>
+      <FileName>Model\SeasonData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.ShowData">
+    <Position X="9.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Model\ShowData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SjUpdater.Model.UploadData">
+    <Position X="15.5" Y="8.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACQAAgAAACAAAAAAAAAgAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Model\UploadData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Season" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.DownloadData">
+    <Position X="18.25" Y="8.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAgAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Model\DownloadData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Upload" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.FavShowData">
+    <Position X="10.25" Y="4.5" Width="2.5" />
+    <Members>
+      <Field Name="_allDownloads" Hidden="true" />
+      <Field Name="_cover" Hidden="true" />
+      <Field Name="_filterFormat" Hidden="true" />
+      <Field Name="_filterHoster" Hidden="true" />
+      <Field Name="_filterLanguage" Hidden="true" />
+      <Field Name="_filterRuntime" Hidden="true" />
+      <Field Name="_filterShowNonEpisode" Hidden="true" />
+      <Field Name="_filterShowNonSeason" Hidden="true" />
+      <Field Name="_filterSize" Hidden="true" />
+      <Field Name="_filterUploader" Hidden="true" />
+      <Field Name="_infoUrl" Hidden="true" />
+      <Field Name="_name" Hidden="true" />
+      <Field Name="_seasons" Hidden="true" />
+      <Field Name="_show" Hidden="true" />
+      <Method Name="FavShowData" Hidden="true" />
+      <Method Name="Fetch" Hidden="true" />
+    </Members>
+    <AssociationLine Name="Seasons" Type="SjUpdater.Model.FavSeasonData" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="5.938" />
+        <Point X="14.5" Y="5.938" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>kAAAJAoACAgCAAAAAkEAQAxAIAAWAAAgAAAACSgYIAU=</HashCode>
+      <FileName>Model\FavShowData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Seasons" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.FavSeasonData">
+    <Position X="14.5" Y="5" Width="1.5" />
+    <Members>
+      <Field Name="_episodes" Hidden="true" />
+      <Field Name="_number" Hidden="true" />
+      <Field Name="_show" Hidden="true" />
+      <Method Name="FavSeasonData" Hidden="true" />
+    </Members>
+    <AssociationLine Name="Show" Type="SjUpdater.Model.FavShowData" FixedFromPoint="true">
+      <Path>
+        <Point X="14.5" Y="5.438" />
+        <Point X="12.75" Y="5.438" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Episodes" Type="SjUpdater.Model.FavEpisodeData">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.025" Y="0.109" Height="0.182" Width="0.998" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAACAAAAAAIEAAAAAAAAAEAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Model\FavSeasonData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Episodes" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.FavEpisodeData">
+    <Position X="17.5" Y="5" Width="2.5" />
+    <Members>
+      <Field Name="_downloads" Hidden="true" />
+      <Field Name="_name" Hidden="true" />
+      <Field Name="_number" Hidden="true" />
+      <Field Name="_reviewInfoReview" Hidden="true" />
+      <Field Name="_season" Hidden="true" />
+      <Method Name="FavEpisodeData" Hidden="true" />
+    </Members>
+    <AssociationLine Name="Season" Type="SjUpdater.Model.FavSeasonData">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.142" Y="0.178" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Downloads" Type="SjUpdater.Model.DownloadData">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-2.311" Y="0.691" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="ReviewInfoReview" Type="SjUpdater.Model.SjDeReview">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.537" Y="0.395" Height="0.182" Width="1.726" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QAAAIAAAgQAAAAAAAEAAAAQCAAAAAAAAAAEEAABAAAA=</HashCode>
+      <FileName>Model\FavEpisodeData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Season" />
+      <Property Name="ReviewInfoReview" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Downloads" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.MainWindowViewModel">
+    <Position X="0.5" Y="1.75" Width="2" />
+    <Members>
+      <Field Name="_list" Hidden="true" />
+      <Field Name="_vm" Hidden="true" />
+      <Method Name="MainWindowViewModel" Hidden="true" />
+    </Members>
+    <AssociationLine Name="PanoramaItems" Type="SjUpdater.ViewModel.OverviewPanormaViewModel">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.528" Y="0.055" Height="0.182" Width="1.247" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\MainWindowViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="PanoramaItems" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.ShowTileViewModel">
+    <Position X="9" Y="1.25" Width="2.25" />
+    <Members>
+      <Field Name="_bitmap" Hidden="true" />
+      <Field Name="_dispatcher" Hidden="true" />
+      <Field Name="_show" Hidden="true" />
+      <Method Name="_show_PropertyChanged" Hidden="true" />
+      <Field Name="_showViewModel" Hidden="true" />
+      <Field Name="_title" Hidden="true" />
+      <Method Name="ShowTileViewModel" Hidden="true" />
+    </Members>
+    <AssociationLine Name="Show" Type="SjUpdater.Model.FavShowData" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="10.889" Y="2.675" />
+        <Point X="10.889" Y="3.05" />
+        <Point X="11.657" Y="3.05" />
+        <Point X="11.657" Y="4.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.815" Y="1.047" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="ShowViewModel" Type="SjUpdater.ViewModel.ShowViewModel">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.386" Y="0.749" Height="0.182" Width="1.245" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAA4AAAcAAAAAAAAAAAAAkAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>ViewModel\ShowTileViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+      <Property Name="ShowViewModel" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.OverviewPanormaViewModel">
+    <Position X="5" Y="1.5" Width="2.25" />
+    <Members>
+      <Field Name="_lisTiles" Hidden="true" />
+      <Method Name="OverviewPanormaViewModel" Hidden="true" />
+      <Method Name="update_source" Hidden="true" />
+    </Members>
+    <AssociationLine Name="_shows" Type="SjUpdater.Model.FavShowData">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="3.008" Y="2.727" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>ViewModel\OverviewPanormaViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_shows" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.ShowViewModel">
+    <Position X="13.25" Y="1.25" Width="2" />
+    <Members>
+      <Field Name="_dispatcher" Hidden="true" />
+      <Field Name="_lisSeasons" Hidden="true" />
+      <Field Name="_show" Hidden="true" />
+      <Field Name="SeasonComparer" Hidden="true" />
+      <Method Name="ShowViewModel" Hidden="true" />
+      <Method Name="update_source" Hidden="true" />
+    </Members>
+    <AssociationLine Name="PanoramaItems" Type="SjUpdater.ViewModel.SeasonPanoramaViewModel">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.873" Y="-0.386" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Show" Type="SjUpdater.Model.FavShowData" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.875" Y="4.021" />
+        <Point X="13.875" Y="4.25" />
+        <Point X="12.073" Y="4.25" />
+        <Point X="12.073" Y="4.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.937" Y="0.405" Height="0.182" Width="0.723" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABABAgACACCAUAAAAEEAAAAAAAGCAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>ViewModel\ShowViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="PanoramaItems" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.SeasonPanoramaViewModel">
+    <Position X="15.75" Y="1.5" Width="2.25" />
+    <Members>
+      <Field Name="_dispatcher" Hidden="true" />
+      <Field Name="_lisTiles" Hidden="true" />
+      <Field Name="_season" Hidden="true" />
+      <Field Name="EpisodeComparer" Hidden="true" />
+      <Method Name="SeasonPanoramaViewModel" Hidden="true" />
+      <Method Name="update_source" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAQAIAAAAAAAAAAAEAAAAAAAEAAgAAAA=</HashCode>
+      <FileName>ViewModel\SeasonPanoramaViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Season" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.EpisodeTileViewModel">
+    <Position X="18.25" Y="1.25" Width="2.25" />
+    <Members>
+      <Field Name="_dispatcher" Hidden="true" />
+      <Field Name="_favEpisodeData" Hidden="true" />
+      <Field Name="_thumbnail" Hidden="true" />
+      <Field Name="_vm" Hidden="true" />
+      <Method Name="EpisodeTileViewModel" Hidden="true" />
+      <Method Name="favEpisodeData_PropertyChanged" Hidden="true" />
+    </Members>
+    <AssociationLine Name="EpisodeViewModel" Type="SjUpdater.ViewModel.EpisodeViewModel">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.575" Y="1.194" Height="0.182" Width="1.56" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAARCAAAAUBAAAAACQAAAAAAAAAAgAAgAAgYAAA=</HashCode>
+      <FileName>ViewModel\EpisodeTileViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Episode" />
+      <Property Name="EpisodeViewModel" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.ViewModel.EpisodeViewModel">
+    <Position X="21.25" Y="1.5" Width="2.25" />
+    <Members>
+      <Field Name="_episode" Hidden="true" />
+      <Method Name="EpisodeViewModel" Hidden="true" />
+    </Members>
+    <AssociationLine Name="Episode" Type="SjUpdater.Model.FavEpisodeData">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.518" Y="0.285" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Downloads" Type="SjUpdater.Model.DownloadData" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="23.312" Y="2.988" />
+        <Point X="23.312" Y="9.124" />
+        <Point X="20.75" Y="9.124" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAEAAIAAACAAAAAAAAAAAAAEgAAAAAAA=</HashCode>
+      <FileName>ViewModel\EpisodeViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Episode" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Downloads" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.SjDeReview">
+    <Position X="21.25" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAAAAACAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\SjDeReview.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

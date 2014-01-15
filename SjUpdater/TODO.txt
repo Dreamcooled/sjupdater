@@ -1,0 +1,13 @@
+DONE-- suche async machen --DONE
+DONE-- cached bitmap, check ob neues bild. --DONE
+DONE-- Während cachedbitmap noch kein bild hat, ein schönes Loading Icon als Bitmap setzen. --DONE
+DONE -- EpisodeDescriptor aufteilen: -- DONE
+	Anstatt für jede Episode ALLE infos zur Staffel (Descripton,Permalink,Cover,Title,Showname) 
+	und ALLE infos zum upload (size,runtime,uploader,format) zu speichern, diese Informationen auslagern (2 neue klassen) und darauf verweisen.
+DONE --Serie löschen button? -- DONE
+
+
+-Im Tile der Serie anzeigen wieviele Episoden es in wievielen staffeln gibt
+
+-Reload button (wenn man die tiles der episoden anschaut)
+
