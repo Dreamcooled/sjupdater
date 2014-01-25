@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -18,6 +19,11 @@ namespace SjUpdater.Model
         private string _cover;
         private ObservableCollection<FavSeasonData> _seasons;
         private ShowData _show;
+        private int _nrSeasons ;
+        private int _nrEpisodes;
+        private int _cachedNrEpisodes;
+        private bool _newEpisodes;
+        private bool _isLoading;
 
         private UploadLanguage _filterLanguage;
         private string _filterHoster;
@@ -57,7 +63,6 @@ namespace SjUpdater.Model
             _filterShowNonSeason = true;
             _filterShowNonEpisode = true;
 
-
         }
 
 
@@ -76,7 +81,7 @@ namespace SjUpdater.Model
             {
                 InfoUrl = SjInfo.SearchSjDe(Name);
             }
-
+            IsLoading = true;
             String cover;
             var episodes = SjInfo.ParseSjOrgSite(_show, out cover);
             AllDownloads = episodes;
@@ -86,7 +91,15 @@ namespace SjUpdater.Model
             }
             _mutexFetch.ReleaseMutex();
             ApplyFilter(false);
+            RecheckUpdate();
+            IsLoading = false;
+        }
 
+        private void RecheckUpdate()
+        {
+            if (NumberOfEpisodes > CachedNumberOfEpisodes)
+                NewEpisodes = true;
+            CachedNumberOfEpisodes = NumberOfEpisodes;
         }
 
 
@@ -277,7 +290,7 @@ namespace SjUpdater.Model
               
 
             }
-
+            RecalcNumbers();
             _mutexFilter.ReleaseMutex();
 
         }
@@ -331,6 +344,82 @@ namespace SjUpdater.Model
                 
             }
         }
+
+        [XmlIgnore]
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            internal set
+            {
+                _isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public int NumberOfEpisodes
+        {
+            get { return _nrEpisodes; }
+            internal set
+            {
+                if (value == _nrEpisodes) return;
+                _nrEpisodes = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public int CachedNumberOfEpisodes
+        {
+            get { return _cachedNrEpisodes; }
+            internal set
+            {
+                if (value == _cachedNrEpisodes) return;
+                _cachedNrEpisodes = value;
+                OnPropertyChanged();
+            }
+        }
+        [XmlIgnore]
+        public bool NewEpisodes
+        {
+            get { return _newEpisodes; }
+            internal set
+            {
+                if (value == _newEpisodes) return;
+                _newEpisodes = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public int NumberOfSeasons
+        {
+            get { return _nrSeasons; }
+            internal set
+            {
+                if (value == _nrSeasons) return;
+                _nrSeasons = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private void RecalcNumbers()
+        {
+            int episodes = 0;
+            int seasons = 0;
+            foreach (FavSeasonData season in _seasons)
+            {
+                if (season.Number != -1)
+                {
+                    seasons++;
+                    episodes += season.NumberOfEpisodes;
+                }
+            }
+            NumberOfEpisodes = episodes;
+            NumberOfSeasons = seasons;
+        }
+
 
         [XmlIgnore]
         public List<DownloadData> AllDownloads
@@ -438,6 +527,7 @@ namespace SjUpdater.Model
             internal set
             {
                 _seasons = value;
+                RecalcNumbers();
                 OnPropertyChanged();
             }
         }

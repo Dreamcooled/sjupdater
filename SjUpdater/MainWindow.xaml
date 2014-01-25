@@ -107,26 +107,37 @@
                         <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel }">
                         <controls:Tile  Width="240" Height="120" x:Name="tile" Title="{Binding Title}" Command="{Binding ElementName=Window, Path=ShowClickedCommand }" CommandParameter="{Binding ShowViewModel}" Background="#00000000" >
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
+                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.5"/>
+                                <controls:MetroProgressBar IsIndeterminate="True" Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
-                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill"/>
-                                <!--<controls:MetroProgressBar IsIndeterminate="True" Margin="25,0,25,0" Opacity="{Binding Path=IsLoading, TargetNullValue=0}" Foreground="#FF1E25BD" />
--->
-                                <Grid Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                <StackPanel  Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                     <Label
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center"
-                                       Foreground="White" Content="{Binding Title}" >
+                                       Foreground="White" FontWeight="Bold" Content="{Binding Title}" >
                                         <Label.Effect>
                                             <DropShadowEffect RenderingBias="Quality" ShadowDepth="0" BlurRadius="10"/>
                                         </Label.Effect>
                                     </Label>
-                                </Grid>
+                                    <Grid HorizontalAlignment="Stretch">
+                                    <Label
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       Foreground="White" Content="{Binding NumberText}" >
+                                        <Label.Effect>
+                                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="0" BlurRadius="10"/>
+                                        </Label.Effect>
+                                    </Label>
+                                    <Label
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Foreground="Lime" FontWeight="Bold"  Content="+New!" Visibility="{Binding NewEpisodesVisible}" >
+                                        <Label.Effect>
+                                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="0" BlurRadius="10"/>
+                                        </Label.Effect>
+                                    </Label>
+                                    </Grid>
+                                </StackPanel>
                             </Grid>
 
                         </controls:Tile>

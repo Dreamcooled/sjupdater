@@ -38,7 +38,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="SjUpdater.Model.FavShowData">
-    <Position X="10.25" Y="4.5" Width="2.5" />
+    <Position X="9.25" Y="3.75" Width="2.5" />
     <Members>
       <Field Name="_allDownloads" Hidden="true" />
       <Field Name="_cover" Hidden="true" />
@@ -51,20 +51,27 @@
       <Field Name="_filterSize" Hidden="true" />
       <Field Name="_filterUploader" Hidden="true" />
       <Field Name="_infoUrl" Hidden="true" />
+      <Field Name="_mutexFetch" Hidden="true" />
+      <Field Name="_mutexFilter" Hidden="true" />
       <Field Name="_name" Hidden="true" />
+      <Field Name="_nrEpisodes" Hidden="true" />
+      <Field Name="_nrSeasons" Hidden="true" />
       <Field Name="_seasons" Hidden="true" />
+      <Method Name="_seasons_CollectionChanged" Hidden="true" />
       <Field Name="_show" Hidden="true" />
+      <Method Name="ApplyFilter" Hidden="true" />
       <Method Name="FavShowData" Hidden="true" />
       <Method Name="Fetch" Hidden="true" />
+      <Method Name="RecalcNumbers" Hidden="true" />
     </Members>
     <AssociationLine Name="Seasons" Type="SjUpdater.Model.FavSeasonData" FixedToPoint="true">
       <Path>
-        <Point X="12.75" Y="5.938" />
-        <Point X="14.5" Y="5.938" />
+        <Point X="11.75" Y="6.084" />
+        <Point X="14.5" Y="6.084" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>kAAAJAoACAgCAAAAAkEAQAxAIAAWAAAgAAAACSgYIAU=</HashCode>
+      <HashCode>kEgBJAoQCAgCAAAAA0EAQAxAIAAWAAAhAAAACSgYIAU=</HashCode>
       <FileName>Model\FavShowData.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -78,14 +85,17 @@
     <Position X="14.5" Y="5" Width="1.5" />
     <Members>
       <Field Name="_episodes" Hidden="true" />
+      <Method Name="_episodes_CollectionChanged" Hidden="true" />
+      <Field Name="_nrEpisodes" Hidden="true" />
       <Field Name="_number" Hidden="true" />
       <Field Name="_show" Hidden="true" />
       <Method Name="FavSeasonData" Hidden="true" />
+      <Method Name="RecountEpisodes" Hidden="true" />
     </Members>
     <AssociationLine Name="Show" Type="SjUpdater.Model.FavShowData" FixedFromPoint="true">
       <Path>
-        <Point X="14.5" Y="5.438" />
-        <Point X="12.75" Y="5.438" />
+        <Point X="14.5" Y="5.506" />
+        <Point X="11.75" Y="5.506" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Episodes" Type="SjUpdater.Model.FavEpisodeData">
@@ -94,7 +104,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAABAAAACAAAAAAIEAAAAAAAAAEAAAAAAAAAABAAAA=</HashCode>
+      <HashCode>AABABAAQACAAAAAAIUAAAAAAAAAEAAAAAAAAAAJAAAA=</HashCode>
       <FileName>Model\FavSeasonData.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -114,6 +124,11 @@
       <Field Name="_season" Hidden="true" />
       <Method Name="FavEpisodeData" Hidden="true" />
     </Members>
+    <AssociationLine Name="ReviewInfoReview" Type="SjUpdater.Model.SjDeReview">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.537" Y="0.395" Height="0.182" Width="1.726" />
+      </MemberNameLabel>
+    </AssociationLine>
     <AssociationLine Name="Season" Type="SjUpdater.Model.FavSeasonData">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.142" Y="0.178" />
@@ -124,18 +139,13 @@
         <Position X="-2.311" Y="0.691" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="ReviewInfoReview" Type="SjUpdater.Model.SjDeReview">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.537" Y="0.395" Height="0.182" Width="1.726" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>QAAAIAAAgQAAAAAAAEAAAAQCAAAAAAAAAAEEAABAAAA=</HashCode>
       <FileName>Model\FavEpisodeData.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Season" />
       <Property Name="ReviewInfoReview" />
+      <Property Name="Season" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Downloads" />
@@ -176,11 +186,11 @@
       <Path>
         <Point X="10.889" Y="2.675" />
         <Point X="10.889" Y="3.05" />
-        <Point X="11.657" Y="3.05" />
-        <Point X="11.657" Y="4.5" />
+        <Point X="10.657" Y="3.05" />
+        <Point X="10.657" Y="3.75" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.815" Y="1.047" />
+        <Position X="-1.306" Y="0.936" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="ShowViewModel" Type="SjUpdater.ViewModel.ShowViewModel">
@@ -235,9 +245,11 @@
     <AssociationLine Name="Show" Type="SjUpdater.Model.FavShowData" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="13.875" Y="4.021" />
-        <Point X="13.875" Y="4.25" />
-        <Point X="12.073" Y="4.25" />
-        <Point X="12.073" Y="4.5" />
+        <Point X="13.875" Y="4.396" />
+        <Point X="12.125" Y="4.396" />
+        <Point X="12.125" Y="3.375" />
+        <Point X="11.073" Y="3.375" />
+        <Point X="11.073" Y="3.75" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
         <Position X="-0.937" Y="0.405" Height="0.182" Width="0.723" />

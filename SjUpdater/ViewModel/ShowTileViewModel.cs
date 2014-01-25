@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Threading;
 using SjUpdater.Model;
 using SjUpdater.Utils;
@@ -15,6 +16,9 @@ namespace SjUpdater.ViewModel
         private readonly FavShowData _show;
         private  CachedBitmap _bitmap;
         private String _title;
+        private String _numberText;
+        private Visibility _newEpisodesVisible = Visibility.Collapsed;
+        private  Visibility _isLoadingVisible = Visibility.Collapsed;
         private readonly ShowViewModel _showViewModel;
         private readonly Dispatcher _dispatcher;
 
@@ -34,6 +38,8 @@ namespace SjUpdater.ViewModel
             });*/
 
             Title= _show.Name;
+            IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
+            RecalcText();
             if (!String.IsNullOrWhiteSpace(_show.Cover))
                 Background = new CachedBitmap(_show.Cover);
             else
@@ -55,10 +61,27 @@ namespace SjUpdater.ViewModel
                     Background = new CachedBitmap(_show.Cover);
                 });
 
+            } else if (e.PropertyName == "NumberOfEpisodes" || e.PropertyName == "NumberOfShows")
+            {
+                RecalcText();
+            } else if (e.PropertyName == "NewEpisodes")
+            {
+                NewEpisodesVisible = (_show.NewEpisodes) ? Visibility.Visible : Visibility.Collapsed;
+            } else if (e.PropertyName == "IsLoading")
+            {
+                IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
-   
+        private void RecalcText()
+        {
+            String n = _show.NumberOfEpisodes + " ";
+            n += _show.NumberOfEpisodes > 1 ? "Episodes" : "Episode";
+            n += " in " + _show.NumberOfSeasons + " ";
+            n += _show.NumberOfSeasons > 1 ? "Seasons" : "Season";
+            NumberText = n;
+        }
+
 
         public FavShowData Show
         {
@@ -74,7 +97,40 @@ namespace SjUpdater.ViewModel
             get { return _clickedCommand; }
         }*/
 
-    
+
+        public string NumberText
+        {
+            get { return _numberText; }
+
+            private set
+            {
+                _numberText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility NewEpisodesVisible
+        {
+            get { return _newEpisodesVisible; }
+
+            private set
+            {
+                _newEpisodesVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility IsLoadingVisible
+        {
+            get { return _isLoadingVisible; }
+
+            private set
+            {
+                _isLoadingVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string Title
         {
             get { return _title; }

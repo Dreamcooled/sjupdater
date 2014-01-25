@@ -186,6 +186,7 @@ namespace SjUpdater
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
             SwitchPage(0);
+            ((ShowViewModel) ShowGrid.DataContext).Show.NewEpisodes = false;
         }
 
         private void ListViewAutoCompl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
