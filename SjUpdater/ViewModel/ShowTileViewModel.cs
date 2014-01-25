@@ -61,7 +61,7 @@ namespace SjUpdater.ViewModel
                     Background = new CachedBitmap(_show.Cover);
                 });
 
-            } else if (e.PropertyName == "NumberOfEpisodes" || e.PropertyName == "NumberOfShows")
+            } else if (e.PropertyName == "NumberOfEpisodes" || e.PropertyName == "NumberOfSeasons")
             {
                 RecalcText();
             } else if (e.PropertyName == "NewEpisodes")
