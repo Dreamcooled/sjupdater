@@ -19,6 +19,11 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+    <controls:MetroWindow.WindowCommands>
+        <controls:WindowCommands>
+            <Button Content="Settings" Command="{Binding ElementName=Window, Path=SettingsCommand}"/>
+        </controls:WindowCommands>
+    </controls:MetroWindow.WindowCommands>
 
     <controls:MetroWindow.Flyouts>
             <controls:Flyout Header="Add TV Show" Position="Right" Background="#FF232323" x:Name="AddShowFlyout">
@@ -38,8 +43,18 @@
                     <StackPanel Orientation="Vertical">
                         <CheckBox Content="Show Non-Season Stuff" IsChecked="{Binding FilterNonSeason}" />
                         <CheckBox Content="Show Non-Episodes" IsChecked="{Binding FilterNonEpisode}" />
-                        <Label>Regex Format:</Label>
-                        <TextBox controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)" controls:TextboxHelper.ClearTextButton="True">
+                    <Label>Regex Name:</Label>
+                    <TextBox controls:TextboxHelper.Watermark="e.g. .*-TVS$" controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox.Text>
+                            <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <Label>Regex Format:</Label>
+                    <TextBox controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)" controls:TextboxHelper.ClearTextButton="True">
                             <TextBox.Text>
                                 <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
@@ -362,7 +377,65 @@
             </ListView>
 
         </Grid>
-    </Grid>
+        <Grid x:Name="SettingsGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="10,10,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" >
+                <Button Width="40" VerticalAlignment="Center" Command="{Binding ElementName=Window, Path=SettingsCommand}"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                    <Rectangle Width="20"
+                           Height="15">
+                        <Rectangle.Fill>
+                            <VisualBrush Stretch="Fill">
+                                <VisualBrush.Visual>
+                                    <Canvas Width="48"
+                                        Height="48"
+                                        Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
+                                        UseLayoutRounding="False">
+                                        <Path Width="25"
+                                          Height="18"
+                                          Canvas.Left="12"
+                                          Canvas.Top="15"
+                                          Stretch="Fill"
+                                          Fill="White"
+                                          Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
+                                    </Canvas>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Rectangle.Fill>
+                        <Rectangle.LayoutTransform>
+                            <ScaleTransform ScaleX="-1" />
+                        </Rectangle.LayoutTransform>
+                    </Rectangle>
+                </Button>
+                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="White" Content="Settings" VerticalAlignment="Center" />
+            </StackPanel>
+   
+                <GroupBox Header="General"  Grid.Row="1" Margin="10,10,10,10">
+                    <StackPanel>
+                    <CheckBox Content="Sort Seasons Descending" IsChecked="{Binding Source={x:Static local:Settings.Instance},Path=SortSeasonsDesc}"/>
+                    <CheckBox Content="Sort Episodes Descending" IsChecked="{Binding Source={x:Static local:Settings.Instance},Path=SortEpisodesDesc}"/>
+                    <Grid Width="500" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Label>Number of Fetching Threads: </Label>
+                        <Slider Minimum="1" Maximum="8"  x:Name="threadSlider" Grid.Column="1" SmallChange="1" IsSnapToTickEnabled="True" Value="{Binding Source={x:Static local:Settings.Instance},Path=NumFetchThreads}"/>
+                        <Label Content="{Binding ElementName=threadSlider,Path=Value}" Grid.Column="2"/>
+                    </Grid>
+                    <Label>You need to restart the Programm after changeing values in this section.</Label>
+                   
+                </StackPanel>
+            </GroupBox>
+
+        </Grid>
+        </Grid>
 
 
 </controls:MetroWindow>

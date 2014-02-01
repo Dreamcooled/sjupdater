@@ -260,8 +260,15 @@ namespace SjUpdater
 
                                             key = keyOrg + "(" + ++num + ")";
                                         }
-                                          
-                                        downloads.Add(key, m2.Groups[1].Value);
+                                        String val = m2.Groups[1].Value;
+                                        if (val != null && !String.IsNullOrWhiteSpace(val) && val.StartsWith("http://"))
+                                        {
+                                            downloads.Add(key, val);
+                                        }
+                                        else
+                                        {
+                                            //ignoring invalid download
+                                        }
                                     }
                                     if (line.Contains("</p>"))
                                         break;

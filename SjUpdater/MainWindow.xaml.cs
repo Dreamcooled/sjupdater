@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,45 +31,61 @@ namespace SjUpdater
         private readonly MainWindowViewModel _viewModel;
         public MainWindow()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AddShowCommand = new SimpleCommand<object, object>(AddShowClicked);
             DownloadCommand = new SimpleCommand<object, String>(DownloadCommandExecute);
             EpisodeClickedCommand = new SimpleCommand<object, EpisodeViewModel>(OnEpisodeViewClicked);
             ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
+            SettingsCommand = new SimpleCommand<object, object>(SettingsClicked);
             InitializeComponent();
             ThemeManager.ChangeTheme(this, currentAccent, Theme.Dark);
-
-
             // Flyouts.First().IsOpen = false;
 
-            if (File.Exists("config.xml"))
-            {
-                setti = Settings.Load("config.xml");
-            }
-            else
-            {
-                setti = new Settings();
-                setti.Save("config.xml");
-            }
+            setti = Settings.Instance;
 
 
-            Task.Run(() =>
+            SmartThreadPool stp = new SmartThreadPool();
+            stp.MaxThreads = (int)setti.NumFetchThreads;
+            foreach (FavShowData t in setti.TvShows)
             {
-                for (int i = 0; i < setti.TvShows.Count; i++)
+                stp.QueueWorkItem(new Action<FavShowData>(delegate(FavShowData data)
                 {
-                    FavShowData show = setti.TvShows[i];
-                    show.Fetch();
-                }
-            });
-
+                    data.Fetch();
+                }), t);
+            }
 
             _viewModel = new MainWindowViewModel(setti.TvShows);
             ShowsPanorama.ItemsSource = _viewModel.PanoramaItems;
             SwitchPage(0);
         }
 
+
+
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            System.Windows.MessageBox.Show("Unhandled Exception. Please report the following details:\n" +
+                                           ((Exception) e.ExceptionObject).ToString());
+
+        }
+
         void AddShowClicked(object o)
         {
             AddShowFlyout.IsOpen = !AddShowFlyout.IsOpen;
+        }
+
+        private int lastpage = 0;
+        private void SettingsClicked(object o)
+        {
+            if (CurrentPage() == 3)
+            {
+                SwitchPage(lastpage);
+                return;
+            }
+
+            AddShowFlyout.IsOpen = false;
+            FilterFlyout.IsOpen = false;
+            lastpage = CurrentPage();
+            SwitchPage(3);
         }
 
 
@@ -77,12 +95,23 @@ namespace SjUpdater
 
         private void DownloadCommandExecute(string s)
         {
-            Clipboard.SetText(s);
-            Clipboard.Flush();
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    Clipboard.SetText(s);
+                    Clipboard.Flush();
+                    return;
+                }
+                catch { }
+                System.Threading.Thread.Sleep(10);
+            }
+            MessageBox.Show("Couldn't Copy link to clipboard.\n" + s);
         }
         
 
         public ICommand AddShowCommand { get; private set; }
+        public ICommand SettingsCommand { get; private set; }
         public ICommand EpisodeClickedCommand
         {
             get;
@@ -98,7 +127,21 @@ namespace SjUpdater
             get;
             private set;
         }
-        
+
+        int CurrentPage()
+        {
+            int i = 0;
+            foreach (object child in MainGrid.Children)
+            {
+                Grid g = child as Grid;
+                if (g.Visibility == Visibility.Visible)
+                {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
+        }
 
         void SwitchPage(int page)
         {
@@ -218,7 +261,7 @@ namespace SjUpdater
             fadeAnimation.Completed += (Sender, Args) =>
                                        {
                                            Visibility = Visibility.Collapsed;
-                                           setti.Save("config.xml");
+                                           Settings.Save();
                                            Environment.Exit(0);
                                        };
             e.Cancel = true;

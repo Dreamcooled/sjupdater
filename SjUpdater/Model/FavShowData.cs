@@ -28,6 +28,7 @@ namespace SjUpdater.Model
         private UploadLanguage _filterLanguage;
         private string _filterHoster;
         private bool _filterShowNonSeason;
+        private string _filterName;
         private string _filterFormat;
         private string _filterUploader;
         private string _filterSize;
@@ -54,6 +55,7 @@ namespace SjUpdater.Model
             _seasons = new ObservableCollection<FavSeasonData>();
             _allDownloads = new List<DownloadData>();
 
+            _filterName = "";
             _filterHoster = "";
             _filterLanguage = UploadLanguage.Both;
             _filterFormat = "";
@@ -192,6 +194,11 @@ namespace SjUpdater.Model
 
 
                 //episode stuff ---------------------
+
+                if (!String.IsNullOrWhiteSpace(FilterName) && //Filter: Name
+                    !(new Regex(FilterName).Match(episode.Title).Success))
+                    continue;
+
                 if (!String.IsNullOrWhiteSpace(FilterHoster))
                 {
                     var r = new Regex(FilterHoster);
@@ -207,6 +214,8 @@ namespace SjUpdater.Model
                         }
                     }
                 }
+
+       
 
 
                 int episodeNr = -1;
@@ -440,6 +449,17 @@ namespace SjUpdater.Model
                 if (value == _filterLanguage)
                     return;
                 _filterLanguage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public String FilterName
+        {
+            get { return _filterName; }
+            set
+            {
+                if (value == _filterName) return;
+                _filterName = value;
                 OnPropertyChanged();
             }
         }

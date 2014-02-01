@@ -28,8 +28,18 @@ namespace SjUpdater.ViewModel
                if (m1.Episode.Number == m2.Episode.Number) return 0;
                if (m1.Episode.Number == -1) return 1;
                if (m2.Episode.Number == -1) return -1;
-               if (m1.Episode.Number > m2.Episode.Number) return 1;
-               return -1;
+
+               if (Settings.Instance.SortEpisodesDesc)
+               {
+                   if (m1.Episode.Number > m2.Episode.Number) return -1;
+                   return 1;
+               }
+               else
+               {
+                   if (m1.Episode.Number > m2.Episode.Number) return 1;
+                   return -1;
+               }
+
            });
         public SeasonPanoramaViewModel(FavSeasonData season) :base((season.Number==-1)?"Others":("Season "+season.Number))
         {

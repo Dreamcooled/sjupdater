@@ -21,8 +21,16 @@ namespace SjUpdater.ViewModel
                 if (m1.Season.Number == m2.Season.Number) return 0;
                 if (m1.Season.Number == -1) return 1;
                 if (m2.Season.Number == -1) return -1;
-                if (m1.Season.Number > m2.Season.Number) return 1;
-                return -1;
+                if (Settings.Instance.SortSeasonsDesc)
+                {
+                    if (m1.Season.Number > m2.Season.Number) return -1;
+                    return 1;
+                }
+                else
+                {
+                    if (m1.Season.Number > m2.Season.Number) return 1;
+                    return -1;
+                }
             });
 
         public ShowViewModel(FavShowData show)
@@ -96,6 +104,16 @@ namespace SjUpdater.ViewModel
             get
             {
                 return _show.Name;
+            }
+        }
+
+        public String FilterName
+        {
+            get { return _show.FilterName; }
+            set
+            {
+                _show.FilterName = value;
+                OnPropertyChanged();
             }
         }
 
