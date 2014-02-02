@@ -27,21 +27,24 @@ namespace SjUpdater
     {
 
         private Settings setti;
-        private Accent currentAccent = ThemeManager.DefaultAccents.First(x => x.Name == "Green");
         private readonly MainWindowViewModel _viewModel;
         public MainWindow()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             AddShowCommand = new SimpleCommand<object, object>(AddShowClicked);
             DownloadCommand = new SimpleCommand<object, String>(DownloadCommandExecute);
             EpisodeClickedCommand = new SimpleCommand<object, EpisodeViewModel>(OnEpisodeViewClicked);
             ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
             SettingsCommand = new SimpleCommand<object, object>(SettingsClicked);
-            InitializeComponent();
-            ThemeManager.ChangeTheme(this, currentAccent, Theme.Dark);
-            // Flyouts.First().IsOpen = false;
 
             setti = Settings.Instance;
+            currentAccent = ThemeManager.DefaultAccents.First(x => x.Name ==  setti.ThemeAccent);
+
+
+            InitializeComponent();
+
+            CurrentAccent = setti.ThemeAccent;
 
 
             SmartThreadPool stp = new SmartThreadPool();
@@ -63,9 +66,7 @@ namespace SjUpdater
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            System.Windows.MessageBox.Show("Unhandled Exception. Please report the following details:\n" +
-                                           ((Exception) e.ExceptionObject).ToString());
-
+            MessageBox.Show("Unhandled Exception. Please report the following details:\n" + e.ExceptionObject);
         }
 
         void AddShowClicked(object o)
@@ -108,7 +109,18 @@ namespace SjUpdater
             }
             MessageBox.Show("Couldn't Copy link to clipboard.\n" + s);
         }
-        
+
+        private Accent currentAccent;
+        public String CurrentAccent
+        {
+            get { return currentAccent.Name; }
+            set
+            {
+                currentAccent = ThemeManager.DefaultAccents.First(x => x.Name == value);
+                ThemeManager.ChangeTheme(this, currentAccent, Theme.Dark);
+                setti.ThemeAccent = currentAccent.Name;
+            }
+        }
 
         public ICommand AddShowCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }

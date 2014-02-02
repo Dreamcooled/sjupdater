@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using SjUpdater.Model;
 using SjUpdater.Utils;
@@ -62,13 +63,16 @@ namespace SjUpdater
         /// </summary>
         public uint NumFetchThreads { get; set; }
 
-        
+        public String ThemeAccent { get; set; }
+
+
         public Settings()
         {
             TvShows = new ObservableCollection<FavShowData>();
             SortSeasonsDesc = false;
             SortEpisodesDesc = false;
             NumFetchThreads = 3;
+            ThemeAccent = "Green";
         }
         
         public static Settings Load(string filename)

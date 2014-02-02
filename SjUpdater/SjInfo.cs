@@ -224,10 +224,20 @@ namespace SjUpdater
                     {
                         if (inPostContent)
                         {
-                            Debug.Assert(seasonData!=null);
-                            if ((m =new Regex("<p>\\s*<strong>\\s*(.+?)\\s*</strong>\\s*<br\\s?/>").Match(line)).Success)
+                            //Debug.Assert(seasonData!=null);
+                            if (seasonData == null) 
                             {
-                                Debug.Assert(uploadData != null);
+                                Console.WriteLine("Warning: Invalid Html received while parsing "+showData.Name+". Trying to continue");
+                                continue;
+                            }
+                            if ((m = new Regex("<p>\\s*<strong>\\s*(.+?)\\s*</strong>\\s*[^/]*\\s*<br\\s?/>").Match(line)).Success)
+                            {
+                                //Debug.Assert(uploadData != null);
+                                if (uploadData == null) 
+                                {
+                                    Console.WriteLine("Warning: Invalid Html received while parsing " + showData.Name + ". Trying to continue");
+                                    continue;
+                                } 
                                 string title = WebUtility.HtmlDecode(m.Groups[1].Value);
                                 /*int episode = -1;
                                 if (season != -1)

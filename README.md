@@ -2,7 +2,8 @@
 
 An Updater and Linkaggregator for Serienjunkies.org written in C#/WPF.
 
-Binaries of current version (needs .NET 4.5): http://www.multiupload.nl/RCBNO4LNGD
+
+Binaries of current version v0.12 (needs .NET 4.5):  http://www.share-online.biz/dl/5EOVOD0NP4H
 
 Any contribution would be highly appreciated.
 
