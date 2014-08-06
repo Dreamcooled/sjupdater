@@ -63,6 +63,11 @@ namespace SjUpdater
         /// </summary>
         public uint NumFetchThreads { get; set; }
 
+        /// <summary>
+        /// Whether to minimize only to tray when pressing the close button
+        /// </summary>
+        public bool MinimizeToTray { get; set; }
+
         public String ThemeAccent { get; set; }
 
 
