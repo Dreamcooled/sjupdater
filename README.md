@@ -1,6 +1,7 @@
 =========
 
 An Updater and Linkaggregator for Serienjunkies.org written in C#/WPF.
+Any contribution would be highly appreciated.
 
 
 
@@ -8,7 +9,6 @@ An Updater and Linkaggregator for Serienjunkies.org written in C#/WPF.
 Binaries of current version v0.13 (needs .NET 4.5): 
 #####http://www.share-online.biz/dl/MO1DIW9NCW 
 
-Any contribution would be highly appreciated.
 
 
 #### Screenshots
