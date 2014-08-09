@@ -59,6 +59,11 @@ namespace SjUpdater
         public bool SortEpisodesDesc { get; set; }
 
         /// <summary>
+        /// Wheather to sort the Shows alphabetically or by new/old
+        /// </summary>
+        public bool SortShowsAlphabetically { get; set; }
+
+        /// <summary>
         /// The Numer of Threads used to fetch updates on programm start
         /// </summary>
         public uint NumFetchThreads { get; set; }
@@ -68,8 +73,28 @@ namespace SjUpdater
         /// </summary>
         public bool MinimizeToTray { get; set; }
 
+        /// <summary>
+        /// How often to update the TV Shows (in miliseconds)
+        /// </summary>
+        public int UpdateTime { get; set; }
+
+        /// <summary>
+        /// Theme Color
+        /// </summary>
         public String ThemeAccent { get; set; }
 
+
+        //Default Filters: See FavShowData.cs
+
+        public UploadLanguage FilterLanguage { get; set; }
+        public String FilterName{ get; set; }
+        public String FilterHoster { get; set; }
+        public bool FilterShowNonSeason { get; set; }
+        public bool FilterShowNonEpisode { get; set; }
+        public String FilterFormat { get; set; }
+        public String FilterUploader { get; set; }
+        public String FilterSize { get; set; }
+        public String FilterRuntime { get; set; }
 
         public Settings()
         {
@@ -78,6 +103,10 @@ namespace SjUpdater
             SortEpisodesDesc = false;
             NumFetchThreads = 3;
             ThemeAccent = "Green";
+            UpdateTime = 1000*60*15; //15min
+            FilterLanguage = UploadLanguage.Any;
+            FilterShowNonEpisode = true;
+            FilterShowNonSeason = true;
         }
         
         public static Settings Load(string filename)

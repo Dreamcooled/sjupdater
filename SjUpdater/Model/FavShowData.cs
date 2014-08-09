@@ -23,17 +23,18 @@ namespace SjUpdater.Model
         private int _nrEpisodes;
         private int _cachedNrEpisodes;
         private bool _newEpisodes;
+        private bool _notified;
         private bool _isLoading;
 
-        private UploadLanguage _filterLanguage;
+        private UploadLanguage? _filterLanguage;
         private string _filterHoster;
-        private bool _filterShowNonSeason;
+        private bool? _filterShowNonSeason;
         private string _filterName;
         private string _filterFormat;
         private string _filterUploader;
         private string _filterSize;
         private string _filterRuntime;
-        private bool _filterShowNonEpisode;
+        private bool? _filterShowNonEpisode;
         private string _infoUrl;
         private List<DownloadData> _allDownloads;
 
@@ -55,15 +56,16 @@ namespace SjUpdater.Model
             _seasons = new ObservableCollection<FavSeasonData>();
             _allDownloads = new List<DownloadData>();
 
-            _filterName = "";
-            _filterHoster = "";
-            _filterLanguage = UploadLanguage.Both;
-            _filterFormat = "";
-            _filterUploader = "";
-            _filterSize = "";
-            _filterRuntime = "";
-            _filterShowNonSeason = true;
-            _filterShowNonEpisode = true;
+            //the getters will return the default filter if the value is a null string
+            _filterName = null;
+            _filterHoster = null;
+            _filterLanguage = null;
+            _filterFormat = null;
+            _filterUploader = null;
+            _filterSize = null;
+            _filterRuntime = null;
+            _filterShowNonSeason = null;
+            _filterShowNonEpisode = null;
 
         }
 
@@ -139,18 +141,15 @@ namespace SjUpdater.Model
                     }
                 }
 
-                if (seasonNr == -1 && !FilterShowNonSeason) //Filter: NonSeason Stuff
+                if (seasonNr == -1 && !FilterShowNonSeason.GetValueOrDefault()) //Filter: NonSeason Stuff
                 {
                     continue;
                 }
 
                 if (currentFavSeason == null || currentFavSeason.Number != seasonNr)
                 {
-                    currentFavSeason = Seasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr);
-                    if (currentFavSeason == null)
-                    {
-                        currentFavSeason = new FavSeasonData() {Number = seasonNr,Show=this};
-                    }
+                    currentFavSeason = Seasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
+                                       new FavSeasonData() {Number = seasonNr,Show=this};
                 }
 
 
@@ -227,7 +226,7 @@ namespace SjUpdater.Model
                         int.TryParse(m1.Groups[1].Value, out episodeNr);
                     }
 
-                    if (episodeNr == -1 && !FilterShowNonEpisode) //Filter: NonEpisode Stuff
+                    if (episodeNr == -1 && !FilterShowNonEpisode.GetValueOrDefault()) //Filter: NonEpisode Stuff
                     {
                         continue;
                     }
@@ -388,6 +387,11 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
+
+
+        /// <summary>
+        /// Is set to true when we have new episodes (count > cached number). Reset this to false, yourself
+        /// </summary>
         [XmlIgnore]
         public bool NewEpisodes
         {
@@ -396,6 +400,21 @@ namespace SjUpdater.Model
             {
                 if (value == _newEpisodes) return;
                 _newEpisodes = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Not touched by class at all. It's intended to be set to true when you have notified the user about updates.
+        /// </summary>
+        [XmlIgnore]
+        public bool Notified
+        {
+            get { return _notified; }
+            internal set
+            {
+                if (value == _notified) return;
+                _notified = value;
                 OnPropertyChanged();
             }
         }
@@ -441,9 +460,14 @@ namespace SjUpdater.Model
             }
         }
 
-        public UploadLanguage FilterLanguage
+        public UploadLanguage? FilterLanguage
         {
-            get { return _filterLanguage; }
+            get
+            {
+                if (!_filterLanguage.HasValue)
+                    return Settings.Instance.FilterLanguage;
+                return _filterLanguage;
+            }
             set
             {
                 if (value == _filterLanguage)
@@ -455,7 +479,12 @@ namespace SjUpdater.Model
 
         public String FilterName
         {
-            get { return _filterName; }
+            get
+            {
+                if(_filterName==null)
+                    return Settings.Instance.FilterName;
+                return _filterName;
+            }
             set
             {
                 if (value == _filterName) return;
@@ -466,7 +495,12 @@ namespace SjUpdater.Model
 
         public String FilterHoster
         {
-            get { return _filterHoster; }
+            get
+            {
+                if (_filterHoster == null)
+                    return Settings.Instance.FilterHoster;
+                return _filterHoster;
+            }
             set
             {
                 if (value == _filterHoster) return;
@@ -475,9 +509,14 @@ namespace SjUpdater.Model
             }
         }
 
-        public bool FilterShowNonSeason
+        public bool? FilterShowNonSeason
         {
-            get { return _filterShowNonSeason; }
+            get
+            {
+                if (!_filterShowNonSeason.HasValue)
+                    return Settings.Instance.FilterShowNonSeason;
+                return _filterShowNonSeason;
+            }
             set
             {
                 if (value == _filterShowNonSeason) return;
@@ -486,9 +525,14 @@ namespace SjUpdater.Model
             }
         }
 
-        public bool FilterShowNonEpisode
+        public bool? FilterShowNonEpisode
         {
-            get { return _filterShowNonEpisode; }
+            get
+            {
+                if (!_filterShowNonEpisode.HasValue)
+                    return Settings.Instance.FilterShowNonEpisode;
+                return _filterShowNonEpisode;
+            }
             set
             {
                 if (value == _filterShowNonEpisode) return;
@@ -499,7 +543,12 @@ namespace SjUpdater.Model
 
         public String FilterFormat
         {
-            get { return _filterFormat; }
+            get
+            {
+                if (_filterFormat == null)
+                    return Settings.Instance.FilterFormat; 
+                return _filterFormat;
+            }
             set
             {
                 if (value == _filterFormat) return;
@@ -510,7 +559,12 @@ namespace SjUpdater.Model
 
         public String FilterUploader
         {
-            get { return _filterUploader; }
+            get
+            {
+                if (_filterUploader == null)
+                    return Settings.Instance.FilterUploader; 
+                return _filterUploader;
+            }
             set
             {
                 if (value == _filterUploader) return;
@@ -521,7 +575,12 @@ namespace SjUpdater.Model
 
         public String FilterSize
         {
-            get { return _filterSize; }
+            get
+            {
+                if (_filterSize == null)
+                    return Settings.Instance.FilterSize; 
+                return _filterSize;
+            }
             set
             {
                 if (value == _filterSize) return;
@@ -532,7 +591,12 @@ namespace SjUpdater.Model
 
         public String FilterRuntime
         {
-            get { return _filterRuntime; }
+            get
+            {
+                if (_filterRuntime == null)
+                    return Settings.Instance.FilterRuntime; 
+                return _filterRuntime;
+            }
             set
             {
                 if (value == _filterRuntime) return;

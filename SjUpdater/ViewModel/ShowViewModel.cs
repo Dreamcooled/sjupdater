@@ -139,7 +139,7 @@ namespace SjUpdater.ViewModel
 
         public bool FilterNonSeason
         {
-            get { return _show.FilterShowNonSeason; }
+            get { return _show.FilterShowNonSeason.GetValueOrDefault(); }
             set
             {
                 _show.FilterShowNonSeason = value;
@@ -149,7 +149,7 @@ namespace SjUpdater.ViewModel
 
         public bool FilterNonEpisode
         {
-            get { return _show.FilterShowNonEpisode; }
+            get { return _show.FilterShowNonEpisode.GetValueOrDefault(); }
             set
             {
                 _show.FilterShowNonEpisode = value;
@@ -177,12 +177,12 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public int FilterLanguage
+        public UploadLanguage FilterLanguage
         {
-            get { return (int)_show.FilterLanguage-1; }
+            get { return _show.FilterLanguage.GetValueOrDefault(); }
             set
             {
-                _show.FilterLanguage = (UploadLanguage) (value + 1);
+                _show.FilterLanguage = value;
                 OnPropertyChanged();
             }
         }

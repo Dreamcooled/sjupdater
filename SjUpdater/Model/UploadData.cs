@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SjUpdater.Model
 {
@@ -7,7 +9,7 @@ namespace SjUpdater.Model
     {
         German = 1,
         English = 2,
-        Both = German + English
+        Any = German + English
     }
     public class UploadData
     {
@@ -27,6 +29,14 @@ namespace SjUpdater.Model
         public String Runtime { get; set; }
         public UploadLanguage Language { get; set; }
         public SeasonData Season { get; set; }
+        public static IEnumerable<UploadLanguage> LanguagesValues
+        {
+            get
+            {
+                return Enum.GetValues(typeof(UploadLanguage))
+                    .Cast<UploadLanguage>();
+            }
+        }
 
     }
 }

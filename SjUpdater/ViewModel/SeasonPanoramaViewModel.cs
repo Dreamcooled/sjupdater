@@ -58,24 +58,26 @@ namespace SjUpdater.ViewModel
 
 
 
-            var t = new Tile();
-            t.Content = new TextBlock()
-            {
-                Text = "*",
-                FontSize = 180,
-                Foreground = Brushes.White,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Padding = new Thickness(0),
-                Margin = new Thickness(0, -40, 0, 0)
-            };
-            t.Width = 120;
-            t.Height = 120;
-           /* Binding b = new Binding("AddShowCommand");
-            b.ElementName = "Window";
-            t.SetBinding(ButtonBase.CommandProperty, b);*/
+            /* var t = new Tile();
+             t.Content = new TextBlock()
+             {
+                 Text = "*",
+                 FontSize = 180,
+                 Foreground = Brushes.White,
+                 HorizontalAlignment = HorizontalAlignment.Center,
+                 VerticalAlignment = VerticalAlignment.Center,
+                 Padding = new Thickness(0),
+                 Margin = new Thickness(0, -40, 0, 0)
+             };
+             t.Width = 120;
+             t.Height = 120;
+             * _lisTiles.Add(t);
+              */
+            /* Binding b = new Binding("AddShowCommand");
+             b.ElementName = "Window";
+             t.SetBinding(ButtonBase.CommandProperty, b);*/
 
-            _lisTiles.Add(t);
+            
             _lisTiles.Sort(EpisodeComparer);
 
 

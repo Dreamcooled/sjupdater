@@ -104,7 +104,7 @@ namespace SjUpdater.ViewModel
                         return "English";
                     case UploadLanguage.German:
                         return "German";
-                    case UploadLanguage.Both:
+                    case UploadLanguage.Any:
                         return "German,English";
                 }
                 return "";

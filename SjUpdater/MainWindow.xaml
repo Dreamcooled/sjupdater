@@ -1,4 +1,4 @@
-﻿<controls:MetroWindow x:Class="SjUpdater.MainWindow"
+﻿<controls:MetroWindow
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:local="clr-namespace:SjUpdater"
@@ -7,9 +7,11 @@
                       xmlns:utils="clr-namespace:SjUpdater.Utils"
                       xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
                       xmlns:tb="http://www.hardcodet.net/taskbar"
+                      xmlns:model="clr-namespace:SjUpdater.Model"
+                      x:Class="SjUpdater.MainWindow"
                       Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window"
                       Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" >
-    <Window.Resources>
+    <controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
@@ -18,10 +20,10 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </Window.Resources>
+    </controls:MetroWindow.Resources>
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
-            <Button Content="Settings" Command="{Binding ElementName=Window, Path=SettingsCommand}" />
+            <Button Content="Settings" Command="{Binding SettingsCommand, ElementName=Window}" />
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
 
@@ -48,93 +50,78 @@
                 <StackPanel Orientation="Vertical">
                     <CheckBox Content="Show Non-Season Stuff" IsChecked="{Binding FilterNonSeason}" />
                     <CheckBox Content="Show Non-Episodes" IsChecked="{Binding FilterNonEpisode}" />
-                    <Label>Regex Name:</Label>
+                    <Label Content="Regex Name:"/>
                     <TextBox controls:TextboxHelper.Watermark="e.g. .*-TVS$"
                              controls:TextboxHelper.ClearTextButton="True">
-                        <TextBox.Text>
-                            <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <utils:RegexValidationRule />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
+                        <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <utils:RegexValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
                     </TextBox>
-                    <Label>Regex Format:</Label>
+                    <Label Content="Regex Format:"/>
                     <TextBox controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
                              controls:TextboxHelper.ClearTextButton="True">
-                        <TextBox.Text>
-                            <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <utils:RegexValidationRule />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
+                        <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <utils:RegexValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
                     </TextBox>
-                    <Label>Regex Uploader:</Label>
+                    <Label Content="Regex Uploader:"/>
                     <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
                              controls:TextboxHelper.ClearTextButton="True">
-                        <TextBox.Text>
-                            <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <utils:RegexValidationRule />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
+                        <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <utils:RegexValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
                     </TextBox>
-                    <Label>Regex Size:</Label>
+                    <Label Content="Regex Size:"/>
                     <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
                              controls:TextboxHelper.ClearTextButton="True">
-                        <TextBox.Text>
-                            <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <utils:RegexValidationRule />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
+                        <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <utils:RegexValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
                     </TextBox>
-                    <Label>Regex Runtime:</Label>
+                    <Label Content="Regex Runtime:"/>
                     <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
                              controls:TextboxHelper.ClearTextButton="True">
-                        <TextBox.Text>
-                            <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <utils:RegexValidationRule />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
+                        <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <utils:RegexValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
                     </TextBox>
-                    <Label>Regex Hoster:</Label>
+                    <Label Content="Regex Hoster:"/>
                     <TextBox controls:TextboxHelper.Watermark="e.g. share-online|uploaded"
                              controls:TextboxHelper.ClearTextButton="True">
-                        <TextBox.Text>
-                            <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <utils:RegexValidationRule />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
+                        <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <utils:RegexValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
                     </TextBox>
-                    <Label>Language:</Label>
-                    <ComboBox SelectedIndex="{Binding FilterLanguage}">
-                        <ComboBoxItem>German</ComboBoxItem>
-                        <ComboBoxItem>English</ComboBoxItem>
-                        <ComboBoxItem>Any</ComboBoxItem>
-                    </ComboBox>
+                    <Label Content="Language:"/>
+                    <ComboBox ItemsSource="{Binding Source={x:Static model:UploadData.LanguagesValues}}" 
+                              SelectedItem="{Binding FilterLanguage}" />
                 </StackPanel>
             </Grid>
         </controls:Flyout>
-
     </controls:MetroWindow.Flyouts>
     <controls:MetroWindow.CommandBindings>
-        <CommandBinding Command="BrowseBack" Executed="NavBack"></CommandBinding>
+        <CommandBinding Command="BrowseBack" Executed="NavBack"/>
     </controls:MetroWindow.CommandBindings>
     <Grid x:Name="MainGrid" Background="#FF1D1D1D">
         <Grid x:Name="OverviewGrid">
 
-            <tb:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" IconSource="icon3.ico" ToolTipText="SjUpdater" DoubleClickCommand="{Binding ElementName=Window, Path=IconClickedCommand}" > 
+            <tb:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" IconSource="icon3.ico" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" >
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Exit" Command="{Binding Path=TerminateCommand }"/>
+                        <MenuItem Header="Open" Command="{Binding IconClickedCommand}" FontWeight="Bold"/>
+                        <MenuItem Header="Exit" Command="{Binding TerminateCommand}"/>
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>
@@ -142,9 +129,9 @@
                                VerticalAlignment="Stretch" ItemBox="200">
 
                 <controls:Panorama.Resources>
-                    <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel }">
+                    <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
                         <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
-                                       Command="{Binding ElementName=Window, Path=ShowClickedCommand }"
+                                       Command="{Binding ShowClickedCommand, ElementName=Window}"
                                        CommandParameter="{Binding ShowViewModel}" Background="#00000000">
                             <Grid>
                                 <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.5" />
@@ -187,7 +174,7 @@
 
                         </controls:Tile>
                     </DataTemplate>
-                    <Style TargetType="controls:Tile">
+                    <Style TargetType="{x:Type controls:Tile}">
                         <Setter Property="Foreground" Value="White" />
                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
                         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -195,12 +182,12 @@
                         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
                         <Setter Property="Template">
                             <Setter.Value>
-                                <ControlTemplate TargetType="controls:Tile">
+                                <ControlTemplate TargetType="{x:Type controls:Tile}">
                                     <Grid Background="{TemplateBinding Background}">
                                         <ContentPresenter RecognizesAccessKey="True" />
                                     </Grid>
                                     <ControlTemplate.Triggers>
-                                        <Trigger Property="Button.IsPressed" Value="True">
+                                        <Trigger Property="IsPressed" Value="True">
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <ScaleTransform ScaleX="0.98"
@@ -217,6 +204,22 @@
                     </Style>
                 </controls:Panorama.Resources>
             </controls:Panorama>
+            <Button Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Height="40" Margin="0,10,90,0"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                <Label Foreground="White" FontSize="20" Margin="0,-5,0,0" Content="+"/>
+            </Button>
+            <Button Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Height="40" Margin="0,10,50,0"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                <Label Foreground="White" FontSize="20" Content="H"/>
+            </Button>
+            <Button Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Height="40" Margin="0,10,10,0"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                <Label Foreground="White" FontSize="20" Content="R"/>
+            </Button>
+
         </Grid>
         <Grid x:Name="ShowGrid">
             <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -251,15 +254,20 @@
                 </Button>
                 <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="White" Content="{Binding Title}"
                        VerticalAlignment="Center" x:Name="SeasonLabel" />
-                <Button Width="40" VerticalAlignment="Center" Click="ShowFilter"
+                <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="White" FontSize="20">F</Label>
+                    <Label Foreground="White" FontSize="20" Content="F"/>
                 </Button>
-                <Button Width="40" VerticalAlignment="Center" Click="ShowDelete"
+                <Button Width="40" VerticalAlignment="Center" Click="ShowGotoPage" ToolTip="Open on serienjunkies.org"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="White" FontSize="20">X</Label>
+                    <Label Foreground="White" FontSize="20" Content="H"/>
+                </Button>
+                <Button Width="40" VerticalAlignment="Center" Click="ShowDelete" ToolTip="Remove this Show"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                    <Label Foreground="White" FontSize="20" Content="X"/>
                 </Button>
             </StackPanel>
             <controls:Panorama x:Name="Panorama" UseSnapBackScrolling="False" Margin="10,55,10,10"
@@ -268,7 +276,7 @@
                     <DataTemplate DataType="{x:Type viewModel:EpisodeTileViewModel}">
                         <controls:Tile Padding="0" Width="120" Height="120" x:Name="tile"
                                        Background="{Binding Background}"
-                                       Command="{Binding ElementName=Window,Path=EpisodeClickedCommand}"
+                                       Command="{Binding EpisodeClickedCommand, ElementName=Window}"
                                        CommandParameter="{Binding EpisodeViewModel}">
 
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -303,7 +311,7 @@
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
-                    <Style TargetType="controls:Tile">
+                    <Style TargetType="{x:Type controls:Tile}">
                         <Setter Property="Width" Value="140" />
                         <Setter Property="Height" Value="140" />
                         <Setter Property="Margin" Value="3" />
@@ -314,12 +322,12 @@
                         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
                         <Setter Property="Template">
                             <Setter.Value>
-                                <ControlTemplate TargetType="controls:Tile">
+                                <ControlTemplate TargetType="{x:Type controls:Tile}">
                                     <Grid Background="{TemplateBinding Background}">
                                         <ContentPresenter RecognizesAccessKey="True" Margin="5" />
                                     </Grid>
                                     <ControlTemplate.Triggers>
-                                        <Trigger Property="Button.IsPressed" Value="True">
+                                        <Trigger Property="IsPressed" Value="True">
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <ScaleTransform ScaleX="0.98"
@@ -406,7 +414,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Button Margin="4" Content="{Binding Key}"
-                                                        Command="{Binding ElementName=Window, Path=DownloadCommand}"
+                                                        Command="{Binding DownloadCommand, ElementName=Window}"
                                                         CommandParameter="{Binding Value}" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -424,11 +432,12 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Button Width="40" VerticalAlignment="Center"
-                        Command="{Binding ElementName=Window, Path=SettingsCommand}"
+                        Command="{Binding SettingsCommand, ElementName=Window}"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
                     <Rectangle Width="20"
@@ -459,6 +468,7 @@
                 <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="White" Content="Settings"
                        VerticalAlignment="Center" />
             </StackPanel>
+            <Label Grid.Row="0" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Center" Content="You might have to restart the program for the changes to take effect."/>
 
             <GroupBox Header="Apperance" Grid.Row="1" Margin="10,10,10,10">
                 <StackPanel>
@@ -467,38 +477,133 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Label>Theme Accent:</Label>
+                        <Label Content="Theme Accent:"/>
                         <ComboBox Grid.Column="1"
                                   ItemsSource="{Binding Source={x:Static metro:ThemeManager.DefaultAccents}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Name"
-                                  SelectedValue="{Binding ElementName=Window,Path=CurrentAccent}" />
+                                  SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
 
                     </Grid>
 
+                    <CheckBox Content="Sort Tv Shows Alphabetically"
+                              IsChecked="{Binding SortShowsAlphabetically, Source={x:Static local:Settings.Instance}}" />
                     <CheckBox Content="Sort Seasons Descending"
-                              IsChecked="{Binding Source={x:Static local:Settings.Instance},Path=SortSeasonsDesc}" />
+                              IsChecked="{Binding SortSeasonsDesc, Source={x:Static local:Settings.Instance}}" />
                     <CheckBox Content="Sort Episodes Descending"
-                              IsChecked="{Binding Source={x:Static local:Settings.Instance},Path=SortEpisodesDesc}" />
-                    <Label>You might have to restart the Programm after changeing values in this section.</Label>
+                              IsChecked="{Binding SortEpisodesDesc, Source={x:Static local:Settings.Instance}}" />
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Other" Grid.Row="2" Margin="10,10,10,10">
+            <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
                 <StackPanel>
+                    <CheckBox Content="Only Minimize to Tray when closing"
+        				IsChecked="{Binding MinimizeToTray, Source={x:Static local:Settings.Instance}}" />
                     <Grid Width="500" HorizontalAlignment="Left">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Label>Number of Fetching Threads:</Label>
+                        <Label Content="Number of Fetching Threads:"/>
                         <Slider Minimum="1" Maximum="8" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
-                                IsSnapToTickEnabled="True"
-                                Value="{Binding Source={x:Static local:Settings.Instance},Path=NumFetchThreads}" />
-                        <Label Content="{Binding ElementName=threadSlider,Path=Value}" Grid.Column="2" />
+        					IsSnapToTickEnabled="True"
+        					Value="{Binding NumFetchThreads, Source={x:Static local:Settings.Instance}}" />
+                        <Label Content="{Binding Value, ElementName=threadSlider}" Grid.Column="2" />
                     </Grid>
-                    <CheckBox Content="Only Minimize to Tray when closing"
-                              IsChecked="{Binding Source={x:Static local:Settings.Instance},Path=MinimizeToTray}" />
+                    <Grid Width="500" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Update Shows Automatically:"/>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:MainWindow.DictUpdateTimes}}"
+                                  DisplayMemberPath="Key" SelectedValuePath="Value"
+                                  SelectedValue="{Binding UpdateTime, Source={x:Static local:Settings.Instance}}"/>
+
+                    </Grid>
+   
                 </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Margin="10,10,10,10" Header="Default Filter">
+                <Grid DataContext="{Binding Source={x:Static local:Settings.Instance}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.Column="0" Content="Show Non-Season Stuff" IsChecked="{Binding FilterShowNonSeason}"  Margin="0,5,0,0"/>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Show Non-Episodes" IsChecked="{Binding FilterShowNonEpisode}"  Margin="0,5,0,0"/>
+                        <Label Grid.Row="2" Grid.Column="0" Content="Regex Name:"/>
+                        <TextBox Grid.Row="3" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. .*-TVS$"
+                             controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Grid.Row="4" Grid.Column="0" Content="Regex Format:"/>
+                        <TextBox Grid.Row="5" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
+                             controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Grid.Row="6" Grid.Column="0" Content="Regex Uploader:"/>
+                        <TextBox Grid.Row="7" Grid.Column="0" controls:TextboxHelper.Watermark="Regex or leave Empty"
+                             controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+
+                        <Label  Grid.Row="0" Grid.Column="2" Content="Regex Size:"/>
+                        <TextBox Grid.Row="1" Grid.Column="2" controls:TextboxHelper.Watermark="Regex or leave Empty"
+                             controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Grid.Row="2" Grid.Column="2" Content="Regex Runtime:"/>
+                        <TextBox Grid.Row="3" Grid.Column="2" controls:TextboxHelper.Watermark="Regex or leave Empty"
+                             controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Grid.Row="4" Grid.Column="2" Content="Regex Hoster:"/>
+                        <TextBox Grid.Row="5" Grid.Column="2" controls:TextboxHelper.Watermark="e.g. share-online|uploaded"
+                             controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Grid.Row="6" Grid.Column="2" Content="Language:"/>
+                        <ComboBox Grid.Row="7" Grid.Column="2" 
+                                  ItemsSource="{Binding Source={x:Static model:UploadData.LanguagesValues}}"  
+                                  SelectedItem="{Binding FilterLanguage}"/>
+                </Grid>
             </GroupBox>
         </Grid>
     </Grid>

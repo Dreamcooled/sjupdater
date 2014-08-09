@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
@@ -8,38 +9,38 @@ using System.Windows.Data;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using SjUpdater.Model;
+using SjUpdater.Utils;
 
 namespace SjUpdater.ViewModel
 {
     public class OverviewPanormaViewModel:PanoramaGroup
     {
         private readonly ObservableCollection<FavShowData> _shows;
-        //private readonly SimpleCommand<object, ShowViewModel> _openShowCommand;
-        private readonly ObservableCollection<object> _lisTiles; 
+        private readonly ObservableCollection<ShowTileViewModel> _lisTiles;
+
+        private static readonly Comparer<ShowTileViewModel> ShowComparer =
+          Comparer<ShowTileViewModel>.Create((m1, m2) => String.CompareOrdinal(m1.Title, m2.Title));
+
         public OverviewPanormaViewModel(ObservableCollection<FavShowData>  shows) : base("My TV Shows")
         {
             _shows = shows;
-            /*_openShowCommand = new SimpleCommand<object, ShowViewModel>(delegate(ShowViewModel model)
-            {
-                if (OpenShow != null)
-                {
-                    OpenShow(this, model);
-                }
-            });*/
+
 
             shows.CollectionChanged += update_source;
 
-            _lisTiles = new ObservableCollection<object>();
+            _lisTiles = new ObservableCollection<ShowTileViewModel>();
             SetSource(_lisTiles);
             foreach (FavShowData favShowData in _shows)
             {
                 var x = new ShowTileViewModel(favShowData);//, _openShowCommand);
                 _lisTiles.Add(x);
             }
+            if (Settings.Instance.SortShowsAlphabetically)
+                _lisTiles.Sort(ShowComparer);
 
 
          
-             var t =  new Tile();
+           /*  var t =  new Tile();
             t.Content = new TextBlock()
             {
                 Text = "+",
@@ -56,7 +57,7 @@ namespace SjUpdater.ViewModel
             b.ElementName = "Window";
             t.SetBinding(ButtonBase.CommandProperty, b);
 
-            _lisTiles.Add(t);
+            _lisTiles.Add(t);*/
             //{Binding ElementName=Window, Path=ShowClickedCommand }
             /* Command = new SimpleCommand<object, object>(o =>
              {
@@ -86,7 +87,7 @@ namespace SjUpdater.ViewModel
                         var o = oldItem as FavShowData;
                         for (int i=_lisTiles.Count-2; i>=0; i--)
                         {
-                            if (((ShowTileViewModel) _lisTiles[i]).Show == oldItem)
+                            if (_lisTiles[i].Show == oldItem)
                             {
                                 _lisTiles.RemoveAt(i);
                             }
@@ -99,10 +100,5 @@ namespace SjUpdater.ViewModel
 
             }
         }
-
-
-
-       /* public event EventHandler AddNew;
-        public event EventHandler<ShowViewModel> OpenShow;*/
     }
 }
