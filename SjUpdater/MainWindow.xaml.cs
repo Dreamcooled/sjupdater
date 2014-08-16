@@ -1,27 +1,20 @@
-﻿using System;
-using System.Collections;
+﻿using Amib.Threading;
+using MahApps.Metro;
+using SjUpdater.Model;
+using SjUpdater.Updater;
+using SjUpdater.Utils;
+using SjUpdater.ViewModel;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media.Animation;
-using Amib.Threading;
-using MahApps.Metro;
-using MahApps.Metro.Controls;
-using SjUpdater.Model;
-using SjUpdater.Utils;
-using SjUpdater.ViewModel;
 using Timer = System.Timers.Timer;
 
 namespace SjUpdater
@@ -33,10 +26,11 @@ namespace SjUpdater
     {
         private readonly Settings _setti;
         private readonly MainWindowViewModel _viewModel;
+        private UpdateWindow updater = null;
+
         public MainWindow()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
             Application.Current.SessionEnding += Current_SessionEnding;
 
             DownloadCommand = new SimpleCommand<object, String>(DownloadCommandExecute);
@@ -70,13 +64,13 @@ namespace SjUpdater
 
             if (Environment.GetCommandLineArgs().Contains("-nogui"))
             {
-               Hide();
+                Hide();
             }
 
-           StaticInstance.SmartThreadPool.QueueWorkItem(() => Stats.SendStats(!_setti.NoPersonalData));//Todo: Make Optional?
+            StaticInstance.SmartThreadPool.QueueWorkItem(() => Stats.SendStats(!_setti.NoPersonalData));
         }
 
-        void t_Elapsed(object sender, ElapsedEventArgs e)
+        private void t_Elapsed(object sender, ElapsedEventArgs e)
         {
             Update();
         }
@@ -86,7 +80,7 @@ namespace SjUpdater
             Update();
         }
 
-        private readonly Semaphore _sema = new Semaphore(1,1);
+        private readonly Semaphore _sema = new Semaphore(1, 1);
 
         private void Update()
         {
@@ -101,42 +95,37 @@ namespace SjUpdater
             }
             //wait for completion
             stp.QueueWorkItem(() =>
-            {
-                SmartThreadPool.WaitAll(results.ToArray());
-                _sema.Release();
+                              {
+                                  SmartThreadPool.WaitAll(results.ToArray());
+                                  _sema.Release();
 
-                var updates = _setti.TvShows.Where(show => show.NewEpisodes && !show.Notified).ToList();
-                if (updates.Count > 0)
-                {
-                    updates.ForEach(show => show.Notified=true);
-                    Dispatcher.Invoke(() =>
-                    {
-                        var n = new NotificationBalloon(updates);
-                        n.ShowViewClicked += on_ShowViewClicked;
-                        NotifyIcon.ShowCustomBalloon(n, PopupAnimation.Slide, 4000);
-                    });
-                }
-            });
+                                  var updates = _setti.TvShows.Where(show => show.NewEpisodes && !show.Notified).ToList();
+                                  if (updates.Count > 0)
+                                  {
+                                      updates.ForEach(show => show.Notified = true);
+                                      Dispatcher.Invoke(() =>
+                                                        {
+                                                            var n = new NotificationBalloon(updates);
+                                                            n.ShowViewClicked += on_ShowViewClicked;
+                                                            NotifyIcon.ShowCustomBalloon(n, PopupAnimation.Slide, 4000);
+                                                        });
+                                  }
+                              });
 
         }
 
-
-
-
-
-
-        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             MessageBox.Show("Unhandled Exception. Please report the following details:\n" + e.ExceptionObject);
         }
 
-
         private void AddShow(object sender, RoutedEventArgs e)
         {
             AddShowFlyout.IsOpen = true;
-        }   
+        }
 
         private int _lastpage = 0;
+
         private void SettingsClicked(object o)
         {
             if (CurrentPage() == 3)
@@ -155,8 +144,6 @@ namespace SjUpdater
             else
                 Activate(); //"Bring to front"
         }
-
-
 
         private void DownloadCommandExecute(string s)
         {
@@ -178,18 +165,20 @@ namespace SjUpdater
         }
 
         private Accent _currentAccent;
+
         public String CurrentAccent
         {
             get { return _currentAccent.Name; }
             set
             {
                 _currentAccent = ThemeManager.GetAccent(value);
-                ThemeManager.ChangeAppStyle(Application.Current, _currentAccent,_currentTheme);
+                ThemeManager.ChangeAppStyle(Application.Current, _currentAccent, _currentTheme);
                 _setti.ThemeAccent = _currentAccent.Name;
             }
         }
 
         private AppTheme _currentTheme;
+
         public String CurrentTheme
         {
             get { return _currentTheme.Name; }
@@ -209,7 +198,7 @@ namespace SjUpdater
         public ICommand IconClickedCommand { get; private set; }
         public ICommand TerminateCommand { get; private set; }
 
-        int CurrentPage()
+        private int CurrentPage()
         {
             int i = 0;
             foreach (object child in MainGrid.Children)
@@ -224,13 +213,13 @@ namespace SjUpdater
             return -1;
         }
 
-        void SwitchPage(int page)
+        private void SwitchPage(int page)
         {
             int i = 0;
             foreach (object child in MainGrid.Children)
             {
                 Grid g = child as Grid;
-                if (g.Visibility ==Visibility.Visible)
+                if (g.Visibility == Visibility.Visible)
                 {
                     g.Visibility = Visibility.Collapsed;
                     _lastpage = i;
@@ -268,10 +257,10 @@ namespace SjUpdater
             List<KeyValuePair<string, string>> result = SjInfo.SearchSjOrg(query);
 
             Dispatcher.Invoke(() =>
-            {
-                ListViewAutoCompl.ItemsSource =
-                    result;
-            });
+                              {
+                                  ListViewAutoCompl.ItemsSource =
+                                      result;
+                              });
 
             if (!string.IsNullOrEmpty(_nextSearchString) && _nextSearchString != query)
             {
@@ -288,13 +277,14 @@ namespace SjUpdater
         }
 
 
-        void on_ShowViewClicked(object sender, ShowViewModel showView)
+        private void on_ShowViewClicked(object sender, ShowViewModel showView)
         {
-            if(!IsVisible)
+            if (!IsVisible)
                 Show();
             showView.Show.NewEpisodes = false;
             OnShowViewClicked(showView);
         }
+
         private void OnShowViewClicked(ShowViewModel showView)
         {
             ShowGrid.DataContext = showView;
@@ -302,23 +292,23 @@ namespace SjUpdater
             SwitchPage(1);
         }
 
-       
 
-         private void ShowGotoPage(object sender, RoutedEventArgs e)
-         {
-             var vm = ((ShowViewModel) ShowGrid.DataContext).Show;
-             var url = vm.Show.Url;
-             var p = new Process();
-             p.StartInfo = new ProcessStartInfo(url);
-             p.Start();
-         }
 
-         private void OpenHomepage(object sender, RoutedEventArgs e)
-         {
-             var p = new Process();
-             p.StartInfo = new ProcessStartInfo("http://serienjunkies.org");
-             p.Start();
-         }
+        private void ShowGotoPage(object sender, RoutedEventArgs e)
+        {
+            var vm = ((ShowViewModel) ShowGrid.DataContext).Show;
+            var url = vm.Show.Url;
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(url);
+            p.Start();
+        }
+
+        private void OpenHomepage(object sender, RoutedEventArgs e)
+        {
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo("http://serienjunkies.org");
+            p.Start();
+        }
 
 
         private void ShowDelete(object sender, RoutedEventArgs e)
@@ -331,6 +321,7 @@ namespace SjUpdater
         {
             SwitchPage(1);
         }
+
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
             SwitchPage(0);
@@ -358,7 +349,7 @@ namespace SjUpdater
         {
             if (ListViewAutoCompl.SelectedValue != null)
             {
-                var selectedShow = (KeyValuePair<string,string>)ListViewAutoCompl.SelectedItem;
+                var selectedShow = (KeyValuePair<string, string>) ListViewAutoCompl.SelectedItem;
 
                 if (_setti.TvShows.Any(t => t.Show.Url == selectedShow.Value))
                 {
@@ -367,47 +358,44 @@ namespace SjUpdater
 
                 TextBoxAutoComl.Text = "";
                 AddShowFlyout.IsOpen = false;
-                _setti.TvShows.Add(new FavShowData(new ShowData{Name=selectedShow.Key, Url=selectedShow.Value},true));
+                _setti.TvShows.Add(new FavShowData(new ShowData {Name = selectedShow.Key, Url = selectedShow.Value}, true));
             }
         }
 
-        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        private bool force_close = false;
 
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
-            if (_setti.MinimizeToTray)
+            if (!force_close && _setti.MinimizeToTray)
             {
                 e.Cancel = true;
                 Hide();
-                Settings.Save();
             }
             else
             {
-                Settings.Save();
-                if (Debugger.IsAttached)
+                if (updater != null)
                 {
-                    Environment.Exit(0);
+                    updater.TryClose();
                 }
+                NotifyIcon.Dispose();
+                Settings.Save();
             }
         }
 
-
+        /// <summary>
+        /// Terminates the application instead of minimizing
+        /// </summary>
+        /// <param name="obj"></param>
         private void Terminate(object obj)
         {
-            Settings.Save();
-             if (Debugger.IsAttached)
-                Environment.Exit(0);
-            else
-                Application.Current.Shutdown(0);
+            force_close = true;
+            Close();
+            
         }
 
-        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        private void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
         {
-            Settings.Save();
-        }
-        
-        void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
-        {
-            Settings.Save();
+            Terminate(null);
         }
 
 
@@ -416,7 +404,6 @@ namespace SjUpdater
             FilterFlyout.IsOpen = !FilterFlyout.IsOpen;
         }
 
-    
 
         private void FilterFlyout_OnIsOpenChanged(object sender, EventArgs e)
         {
@@ -425,22 +412,35 @@ namespace SjUpdater
                 var vm = FilterFlyout.DataContext as ShowViewModel;
                 vm.Show.ApplyFilter();
             }
-   
+
         }
 
         public static readonly Dictionary<String, int> DictUpdateTimes = new Dictionary<string, int>()
-        {
-            {"Never", -1},
-            {"5 min", 1000*60*5},
-            {"15 min",  1000*60*15},
-            {"30 min",  1000*60*30},
-            {"1 h",  1000*3600*1},
-            {"2 h",  1000*3600*2},
-            {"3 h",  1000*3600*3},
-            {"6 h",  1000*3600*6},
-            {"12 h", 1000*3600*12},
-            {"24 h", 1000*3600*24}
-        };
+                                                                         {
+                                                                             {"Never", -1},
+                                                                             {"5 min", 1000 * 60 * 5},
+                                                                             {"15 min", 1000 * 60 * 15},
+                                                                             {"30 min", 1000 * 60 * 30},
+                                                                             {"1 h", 1000 * 3600 * 1},
+                                                                             {"2 h", 1000 * 3600 * 2},
+                                                                             {"3 h", 1000 * 3600 * 3},
+                                                                             {"6 h", 1000 * 3600 * 6},
+                                                                             {"12 h", 1000 * 3600 * 12},
+                                                                             {"24 h", 1000 * 3600 * 24}
+                                                                         };
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Timer timer = new Timer(3000);
+            timer.AutoReset = false;
+            timer.Elapsed += (o, args) => Dispatcher.Invoke(() =>
+                                                            {
+                                                                updater = new UpdateWindow("http://sjupdater.batrick.de/updater/latest", true, "SjUpdater.exe", "");
+                                                                updater.updateStartedEvent += (a, dsa) => Terminate(null);
+                                                                updater.Show(false, true);
+                                                            });
+
+            timer.Start();
+        }
     }
 }

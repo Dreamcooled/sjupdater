@@ -10,7 +10,7 @@ namespace SjUpdater.Utils
         {
             SmartThreadPool = new SmartThreadPool(new STPStartInfo()
             {
-                AreThreadsBackground = false,
+                AreThreadsBackground = true,
                 UseCallerCallContext = true
             });
         }

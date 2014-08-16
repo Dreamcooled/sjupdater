@@ -10,7 +10,7 @@
                       xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
                       x:Class="SjUpdater.MainWindow"
                       Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True"
-                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display">
+                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" Loaded="Window_Loaded">
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
             <Button Content="Settings" Command="{Binding SettingsCommand, ElementName=Window}" />

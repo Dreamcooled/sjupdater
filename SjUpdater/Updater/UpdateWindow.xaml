@@ -1,0 +1,35 @@
+﻿<controls:MetroWindow x:Class="SjUpdater.Updater.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="Updater" Height="475" Width="525" Loaded="UpdateWindow_Loaded" SizeToContent="Height">
+    <Grid>
+        <controls:TransitioningContentControl x:Name="TransitioningContentControl" Transition="Left" VerticalAlignment="Top" />
+        <Grid x:Name="updateGrid" VerticalAlignment="Top" Margin="10" Height="80">
+            <StackPanel VerticalAlignment="Top">
+
+                <Grid Margin="0,15,0,0">
+                    <Label Content="{Binding FileNumProgress, Mode=OneWay}" Padding="0" HorizontalAlignment="Left" />
+                    <Label Content="{Binding TotalDownloadProgressPercentageString, Mode=OneWay}" Padding="0" HorizontalAlignment="Center" />
+                    <Label Content="{Binding TotalDownloadProgressBytes, Mode=OneWay}" Padding="0" HorizontalAlignment="Right" />    
+                </Grid>
+                <ProgressBar Value="{Binding TotalDownloadProgressPercentageFloat, Mode=OneWay}" Maximum="1"/>
+            
+                <Grid Margin="0,15,0,0">
+                    <Label Content="{Binding CurrentFilename, Mode=OneWay}" Padding="0" HorizontalAlignment="Left" />
+                    <Label Content="{Binding CurrentDownloadProgressPercentageString, Mode=OneWay}" Padding="0" HorizontalAlignment="Center" />
+                    <Label Content="{Binding CurrentDownloadProgressBytes, Mode=OneWay}" Padding="0" HorizontalAlignment="Right" />
+                </Grid>
+                <ProgressBar Margin="0" Value="{Binding CurrentDownloadProgressPercentageFloat, Mode=OneWay}" Maximum="1"/>
+            </StackPanel>
+        </Grid>
+        
+        <Grid x:Name="changelogGrid" VerticalAlignment="Top" Margin="10">
+            <StackPanel>
+                <controls:MetroProgressBar IsIndeterminate="{Binding IsWorking, Mode=OneWay}" Visibility="{Binding ProgressbarVisibility}"/>
+                <Button IsEnabled="{Binding UpdateAvailable, Mode=OneWay}" Content="{Binding UpdateButtonContent, Mode=OneWay}" x:Name="SwitchToUpdateGridButton" Click="SwitchToUpdateGridButton_OnClick"></Button>
+                <TextBox Text="{Binding Changelog, Mode=OneWay}" MaxHeight="350" Margin="0,10,0,0" AcceptsReturn="True" AcceptsTab="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</controls:MetroWindow>

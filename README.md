@@ -6,8 +6,8 @@ Any contribution would be highly appreciated.
 
 
 #### Download
-Binaries of current version v0.14 (needs .NET 4.5): 
-#####http://www.share-online.biz/dl/32GS82ANO6
+Binaries of current version v0.15 (needs .NET 4.5): 
+#####http://www.share-online.biz/dl/9HZEBFAN9QH
 
 
 
