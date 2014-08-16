@@ -21,7 +21,6 @@ namespace SjUpdater.Model
         private ShowData _show;
         private int _nrSeasons ;
         private int _nrEpisodes;
-        private int _cachedNrEpisodes;
         private bool _newEpisodes;
         private bool _notified;
         private bool _isLoading;
@@ -95,16 +94,10 @@ namespace SjUpdater.Model
             }
             _mutexFetch.ReleaseMutex();
             ApplyFilter(false);
-            RecheckUpdate();
             IsLoading = false;
         }
 
-        private void RecheckUpdate()
-        {
-            if (NumberOfEpisodes > CachedNumberOfEpisodes)
-                NewEpisodes = true;
-            CachedNumberOfEpisodes = NumberOfEpisodes;
-        }
+
 
 
         public void ApplyFilter(bool reset=true)
@@ -121,19 +114,20 @@ namespace SjUpdater.Model
             SeasonData currentSeasonData = null;
             int seasonNr = -1;
 
+            reset = reset || Seasons.Count == 0; //0 seasons is also considered as "reset".
             if(reset) //start from scratch?
                 Seasons.Clear(); 
 
             UploadData currentUpload = null;
             bool ignoreCurrentUpload = false;
-            foreach (var episode in AllDownloads)
+            foreach (var download in AllDownloads)
             {
 
                 //Season stuff ------------------------------------------------------------------------------------
-                if (currentSeasonData == null || currentSeasonData != episode.Upload.Season)
+                if (currentSeasonData == null || currentSeasonData != download.Upload.Season)
                 {
-                    currentSeasonData = episode.Upload.Season;
-                    seasonNr = -1;
+                    currentSeasonData = download.Upload.Season;
+                    seasonNr = -1;  
                     Match m2 = new Regex("(?:season|staffel)\\s*(\\d+)", RegexOptions.IgnoreCase).Match(currentSeasonData.Title);
                     if (m2.Success)
                     {
@@ -154,9 +148,9 @@ namespace SjUpdater.Model
 
 
                 //upload stuff --------------------------------------------------------------------
-                if (currentUpload == null || currentUpload != episode.Upload)
+                if (currentUpload == null || currentUpload != download.Upload)
                 {
-                    currentUpload = episode.Upload;
+                    currentUpload = download.Upload;
                     ignoreCurrentUpload = true;
                     do
                     {
@@ -195,21 +189,21 @@ namespace SjUpdater.Model
                 //episode stuff ---------------------
 
                 if (!String.IsNullOrWhiteSpace(FilterName) && //Filter: Name
-                    !(new Regex(FilterName).Match(episode.Title).Success))
+                    !(new Regex(FilterName).Match(download.Title).Success))
                     continue;
 
                 if (!String.IsNullOrWhiteSpace(FilterHoster))
                 {
                     var r = new Regex(FilterHoster);
-                    var dls = episode.Links.Keys.Where(hoster => r.Match(hoster).Success).ToList(); //all keys that match the regex
+                    var dls = download.Links.Keys.Where(hoster => r.Match(hoster).Success).ToList(); //all keys that match the regex
                     if (!dls.Any()) //Filter: Hoster
                         continue;
-                    for (int i = episode.Links.Keys.Count - 1; i >= 0; i--)
+                    for (int i = download.Links.Keys.Count - 1; i >= 0; i--)
                     {
-                        string key = episode.Links.Keys.ElementAt(i);
+                        string key = download.Links.Keys.ElementAt(i);
                         if (!dls.Contains(key))
                         {
-                            episode.Links.Remove(key);
+                            download.Links.Remove(key);
                         }
                     }
                 }
@@ -220,7 +214,7 @@ namespace SjUpdater.Model
                 int episodeNr = -1;
                 if (seasonNr != -1)
                 {
-                    Match m1 = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Match(episode.Title);
+                    Match m1 = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Match(download.Title);
                     if (m1.Success)
                     {
                         int.TryParse(m1.Groups[1].Value, out episodeNr);
@@ -252,7 +246,7 @@ namespace SjUpdater.Model
                     }
                     else
                     {
-                        if (episodeData.Name == episode.Title)
+                        if (episodeData.Name == download.Title)
                         {
                             currentFavEpisode = episodeData;
                             break;
@@ -269,11 +263,21 @@ namespace SjUpdater.Model
                     currentFavEpisode.Season = currentFavSeason;
                     if (episodeNr == -1)
                     {
-                        currentFavEpisode.Name = episode.Title;
+                        currentFavEpisode.Name = download.Title;
+                        if (!reset)
+                        {
+                            currentFavEpisode.NewUpdate = true;
+                            NewEpisodes = true;
+                        }
                     }
                     else
                     {
                         currentFavEpisode.Number = episodeNr;
+                        if (!reset)
+                        {
+                            currentFavEpisode.NewEpisode = true;
+                            NewEpisodes = true;
+                        }
                     }
                     currentFavSeason.Episodes.Add(currentFavEpisode);
                     if (!String.IsNullOrWhiteSpace(InfoUrl))
@@ -284,19 +288,21 @@ namespace SjUpdater.Model
                                 currentFavEpisode.Season.Number, currentFavEpisode.Number);
                         });
                     }
-                    currentFavEpisode.Downloads.Add(episode);
+                    currentFavEpisode.Downloads.Add(download);
                 }
                 else
                 {
-                    if (currentFavEpisode.Downloads.All(download => download.Title != episode.Title))
+                    if (currentFavEpisode.Downloads.All(d => d.Title != download.Title))
                     {
-                        currentFavEpisode.Downloads.Add(episode);
+                        currentFavEpisode.Downloads.Add(download);
+                        if (!reset)
+                        {
+                            currentFavEpisode.NewUpdate = true;
+                        }
                     }
+
                 }
                 
-                
-              
-
             }
             RecalcNumbers();
             _mutexFilter.ReleaseMutex();
@@ -377,16 +383,6 @@ namespace SjUpdater.Model
         }
 
 
-        public int CachedNumberOfEpisodes
-        {
-            get { return _cachedNrEpisodes; }
-            internal set
-            {
-                if (value == _cachedNrEpisodes) return;
-                _cachedNrEpisodes = value;
-                OnPropertyChanged();
-            }
-        }
 
 
         /// <summary>
@@ -403,6 +399,7 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
+
 
         /// <summary>
         /// Not touched by class at all. It's intended to be set to true when you have notified the user about updates.

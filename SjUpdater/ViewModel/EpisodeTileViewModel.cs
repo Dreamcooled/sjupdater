@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using MahApps.Metro.Converters;
@@ -15,12 +16,16 @@ namespace SjUpdater.ViewModel
         private readonly EpisodeViewModel _vm;
         private CachedBitmap _thumbnail;
         private readonly Dispatcher _dispatcher;
+        private Visibility _newEpisodeVisible;
+        private Visibility _newUpdateVisible;
 
         public EpisodeTileViewModel(FavEpisodeData favEpisodeData)
         {
             _favEpisodeData = favEpisodeData;
             _vm = new EpisodeViewModel(favEpisodeData);
             Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
+            NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
+            NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
             _dispatcher = Dispatcher.CurrentDispatcher;
             favEpisodeData.PropertyChanged += favEpisodeData_PropertyChanged;
 
@@ -35,7 +40,15 @@ namespace SjUpdater.ViewModel
                     Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
                 });
 
+            } else if (e.PropertyName == "NewEpisode" || e.PropertyName=="NewUpdate")
+            {
+                NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
+                NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged("Background");
+                OnPropertyChanged("Foreground");
+                OnPropertyChanged("ImageOpacity");
             }
+
         }
 
         public FavEpisodeData Episode { get { return _favEpisodeData; } }
@@ -57,6 +70,34 @@ namespace SjUpdater.ViewModel
                 _thumbnail = value; 
                 OnPropertyChanged();
             }
+        }
+
+        public Visibility NewEpisodeVisible
+        {
+            get { return _newEpisodeVisible; }
+
+            private set
+            {
+                _newEpisodeVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility NewUpdateVisible
+        {
+            get { return _newUpdateVisible; }
+
+            private set
+            {
+                _newUpdateVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public float ImageOpacity
+        {
+            get { return (_favEpisodeData.NewEpisode||_favEpisodeData.NewUpdate) ? 0.2f : 0.4f; }
+
         }
 
         /* public string DetailTitle
@@ -141,8 +182,22 @@ namespace SjUpdater.ViewModel
         {
             get
             {
+                return new SolidColorBrush((_favEpisodeData.NewEpisode || _favEpisodeData.NewUpdate)? Color.FromRgb(220,220,220): getColor());
+            }
+        }
 
-                var colors = new Color[]
+        public Brush Foreground
+        {
+            get
+            {
+                return new SolidColorBrush((_favEpisodeData.NewEpisode || _favEpisodeData.NewUpdate) ? Colors.Black : Colors.White);
+            }
+        }
+
+
+        private Color getColor()
+        {
+            var colors = new Color[]
                 {
                     Color.FromRgb(111, 189, 69),
                     Color.FromRgb(75, 179, 221),
@@ -157,21 +212,17 @@ namespace SjUpdater.ViewModel
                     Color.FromRgb(127, 0, 55)
                 };
 
-                int season = _favEpisodeData.Season.Number;
-                if (season == -1) season = 0;
-                Color c = colors[season % colors.Length];
-                Color cb = Colors.Black;
-                float a = (_favEpisodeData.Number == -1) ? 0.8f : 0.5f;
-                byte r = (byte)(a * cb.R + (1 - a) * c.R);
-                byte g = (byte)(a * cb.G + (1 - a) * c.G);
-                byte b = (byte)(a * cb.B + (1 - a) * c.B);
-                return new SolidColorBrush(Color.FromRgb(r, g, b));
-
-
-            }
+            int season = _favEpisodeData.Season.Number;
+            if (season == -1) season = 0;
+            Color c = colors[season % colors.Length];
+            Color cb = Colors.Black;
+            float a = (_favEpisodeData.Number == -1) ? 0.8f : 0.5f;
+            byte r = (byte)(a * cb.R + (1 - a) * c.R);
+            byte g = (byte)(a * cb.G + (1 - a) * c.G);
+            byte b = (byte)(a * cb.B + (1 - a) * c.B);
+            return Color.FromRgb(r, g, b);
         }
 
-        
 
         public bool IsDoubleWidth
         {

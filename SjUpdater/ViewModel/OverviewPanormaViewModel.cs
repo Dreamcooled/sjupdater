@@ -38,37 +38,6 @@ namespace SjUpdater.ViewModel
             if (Settings.Instance.SortShowsAlphabetically)
                 _lisTiles.Sort(ShowComparer);
 
-
-         
-           /*  var t =  new Tile();
-            t.Content = new TextBlock()
-            {
-                Text = "+",
-                FontSize = 180,
-                Foreground = Brushes.White,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Padding = new Thickness(0),
-                Margin = new Thickness(0, -40, 0, 0)
-            };
-            t.Width = 120;
-            t.Height = 120;
-            Binding b = new Binding("AddShowCommand");
-            b.ElementName = "Window";
-            t.SetBinding(ButtonBase.CommandProperty, b);
-
-            _lisTiles.Add(t);*/
-            //{Binding ElementName=Window, Path=ShowClickedCommand }
-            /* Command = new SimpleCommand<object, object>(o =>
-             {
-                 if (AddNew != null)
-                     AddNew(this, EventArgs.Empty);
-             })*/
-
-
-
-
-
         }
 
         private void update_source(object sender, NotifyCollectionChangedEventArgs e)
@@ -78,14 +47,14 @@ namespace SjUpdater.ViewModel
                 case NotifyCollectionChangedAction.Add:
                     foreach (var newItem in e.NewItems)
                     {
-                        _lisTiles.Insert(_lisTiles.Count-1,new ShowTileViewModel(newItem as FavShowData));//,_openShowCommand));
+                        _lisTiles.Insert(_lisTiles.Count,new ShowTileViewModel(newItem as FavShowData));//,_openShowCommand));
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var oldItem in e.OldItems)
                     {
                         var o = oldItem as FavShowData;
-                        for (int i=_lisTiles.Count-2; i>=0; i--)
+                        for (int i=_lisTiles.Count-1; i>=0; i--)
                         {
                             if (_lisTiles[i].Show == oldItem)
                             {

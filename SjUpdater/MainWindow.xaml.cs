@@ -36,6 +36,8 @@ namespace SjUpdater
         public MainWindow()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            Application.Current.SessionEnding += Current_SessionEnding;
 
             DownloadCommand = new SimpleCommand<object, String>(DownloadCommandExecute);
             EpisodeClickedCommand = new SimpleCommand<object, EpisodeViewModel>(OnEpisodeViewClicked);
@@ -45,7 +47,8 @@ namespace SjUpdater
             TerminateCommand = new SimpleCommand<object, object>(Terminate);
 
             _setti = Settings.Instance;
-            _currentAccent = ThemeManager.DefaultAccents.First(x => x.Name ==  _setti.ThemeAccent);
+            _currentAccent = ThemeManager.GetAccent(_setti.ThemeAccent);
+            _currentTheme = ThemeManager.GetAppTheme(_setti.ThemeBase);
 
 
             InitializeComponent();
@@ -69,6 +72,8 @@ namespace SjUpdater
             {
                Hide();
             }
+
+           StaticInstance.SmartThreadPool.QueueWorkItem(() => Stats.SendStats(!_setti.NoPersonalData));//Todo: Make Optional?
         }
 
         void t_Elapsed(object sender, ElapsedEventArgs e)
@@ -140,9 +145,6 @@ namespace SjUpdater
                 return;
             }
 
-            AddShowFlyout.IsOpen = false;
-            FilterFlyout.IsOpen = false;
-            _lastpage = CurrentPage();
             SwitchPage(3);
         }
 
@@ -181,9 +183,21 @@ namespace SjUpdater
             get { return _currentAccent.Name; }
             set
             {
-                _currentAccent = ThemeManager.DefaultAccents.First(x => x.Name == value);
-                ThemeManager.ChangeTheme(this, _currentAccent, Theme.Dark);
+                _currentAccent = ThemeManager.GetAccent(value);
+                ThemeManager.ChangeAppStyle(Application.Current, _currentAccent,_currentTheme);
                 _setti.ThemeAccent = _currentAccent.Name;
+            }
+        }
+
+        private AppTheme _currentTheme;
+        public String CurrentTheme
+        {
+            get { return _currentTheme.Name; }
+            set
+            {
+                _currentTheme = ThemeManager.GetAppTheme(value);
+                ThemeManager.ChangeAppStyle(Application.Current, _currentAccent, _currentTheme);
+                _setti.ThemeBase = _currentTheme.Name;
             }
         }
 
@@ -219,6 +233,7 @@ namespace SjUpdater
                 if (g.Visibility ==Visibility.Visible)
                 {
                     g.Visibility = Visibility.Collapsed;
+                    _lastpage = i;
                 }
                 if (i++ == page)
                 {
@@ -226,6 +241,8 @@ namespace SjUpdater
                 }
 
             }
+            AddShowFlyout.IsOpen = false;
+            FilterFlyout.IsOpen = false;
 
         }
 
@@ -265,6 +282,8 @@ namespace SjUpdater
         private void OnEpisodeViewClicked(EpisodeViewModel episodeView)
         {
             EpisodeGrid.DataContext = episodeView;
+            episodeView.Episode.NewEpisode = false;
+            episodeView.Episode.NewUpdate = false;
             SwitchPage(2);
         }
 
@@ -273,14 +292,11 @@ namespace SjUpdater
         {
             if(!IsVisible)
                 Show();
-            AddShowFlyout.IsOpen = false;
-            FilterFlyout.IsOpen = false;
+            showView.Show.NewEpisodes = false;
             OnShowViewClicked(showView);
         }
         private void OnShowViewClicked(ShowViewModel showView)
         {
-            showView.Show.Notified = false;
-            showView.Show.NewEpisodes = false;
             ShowGrid.DataContext = showView;
             FilterFlyout.DataContext = showView;
             SwitchPage(1);
@@ -323,8 +339,6 @@ namespace SjUpdater
 
         private void NavBack(object sender, ExecutedRoutedEventArgs e)
         {
-            AddShowFlyout.IsOpen = false;
-            FilterFlyout.IsOpen = false;
             switch (CurrentPage())
             {
                 case 1:
@@ -374,28 +388,26 @@ namespace SjUpdater
                     Environment.Exit(0);
                 }
             }
-           
-   
-            /*var fadeAnimation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0.6f)));
-            fadeAnimation.AccelerationRatio = 0.2f;
-            fadeAnimation.Completed += (Sender, Args) =>
-                                       {
-                                           Visibility = Visibility.Collapsed;
-                                           Settings.Save();
-                                           Environment.Exit(0);
-                                       };
-            e.Cancel = true;
-            BeginAnimation(OpacityProperty, fadeAnimation);*/
         }
 
 
         private void Terminate(object obj)
         {
             Settings.Save();
-            if (Debugger.IsAttached)
+             if (Debugger.IsAttached)
                 Environment.Exit(0);
             else
                 Application.Current.Shutdown(0);
+        }
+
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Settings.Save();
+        }
+        
+        void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            Settings.Save();
         }
 
 

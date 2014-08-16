@@ -74,20 +74,12 @@
     <Reference Include="Hardcodet.Wpf.TaskbarNotification">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net45\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=0.11.0.18, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MahApps.Metro.0.11.0.18-ALPHA\lib\net45\MahApps.Metro.dll</HintPath>
-    </Reference>
     <Reference Include="SmartThreadPool, Version=2.2.3.0, Culture=neutral, PublicKeyToken=1126fe8b671e8a79, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\SmartThreadPool.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MahApps.Metro.0.11.0.18-ALPHA\lib\net45\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -116,6 +108,11 @@
     <Compile Include="NotificationBalloon.xaml.cs">
       <DependentUpon>NotificationBalloon.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Utils\CachedBitmap.cs" />
     <Compile Include="Utils\Crc64.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
@@ -128,6 +125,7 @@
     <Compile Include="SjInfo.cs" />
     <Compile Include="Utils\SimpleJson.cs" />
     <Compile Include="Utils\StaticInstance.cs" />
+    <Compile Include="Utils\Stats.cs" />
     <Compile Include="Utils\timehelper.cs" />
     <Compile Include="ViewModel\EpisodeTileViewModel.cs" />
     <Compile Include="ViewModel\EpisodeViewModel.cs" />
@@ -174,6 +172,10 @@
     <None Include="Overview.cd" />
     <AppDesigner Include="Properties\" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="SjUpdater_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +203,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon3.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MahApps.Metro\MahApps.Metro\MahApps.Metro.csproj">
+      <Project>{5b1710d2-5dc8-4754-91b2-19165de49b3d}</Project>
+      <Name>MahApps.Metro</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Hardcodet.Wpf.TaskbarNotification.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SmartThreadPool.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

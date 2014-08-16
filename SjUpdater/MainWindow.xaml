@@ -5,22 +5,12 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:viewModel="clr-namespace:SjUpdater.ViewModel"
                       xmlns:utils="clr-namespace:SjUpdater.Utils"
-                      xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
                       xmlns:tb="http://www.hardcodet.net/taskbar"
                       xmlns:model="clr-namespace:SjUpdater.Model"
+                      xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
                       x:Class="SjUpdater.MainWindow"
-                      Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window"
-                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" >
-    <controls:MetroWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/colours.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </controls:MetroWindow.Resources>
+                      Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True"
+                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display">
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
             <Button Content="Settings" Command="{Binding SettingsCommand, ElementName=Window}" />
@@ -28,95 +18,95 @@
     </controls:MetroWindow.WindowCommands>
 
     <controls:MetroWindow.Flyouts>
-        <controls:Flyout Header="Add TV Show" Position="Right" Background="#FF232323" x:Name="AddShowFlyout">
-            <Grid Margin="25" Width="250">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TextBox Grid.Row="0" controls:TextboxHelper.ClearTextButton="True"
-                         controls:TextboxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
-                         TextChanged="SearchTextBox_TextChanged" />
+        <controls:FlyoutsControl>
+            <controls:Flyout Header="Add TV Show" Position="Right" x:Name="AddShowFlyout" Theme="Adapt">
+                <Grid Margin="25" Width="250">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" controls:TextboxHelper.ClearTextButton="True"
+                             controls:TextboxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
+                             TextChanged="SearchTextBox_TextChanged" />
 
-                <ListView Grid.Row="1" Margin="0,-1,0,0" x:Name="ListViewAutoCompl" DisplayMemberPath="Key"
-                          MouseDoubleClick="ListViewAutoCompl_MouseDoubleClick" Foreground="{x:Null}"
-                          Background="{x:Null}" BorderBrush="{x:Null}" />
-
-            </Grid>
-        </controls:Flyout>
-        <controls:Flyout Header="Filter" Position="Left" Background="#FF232323" x:Name="FilterFlyout"
-                         IsOpenChanged="FilterFlyout_OnIsOpenChanged">
-            <Grid Margin="25" Width="250">
-                <StackPanel Orientation="Vertical">
-                    <CheckBox Content="Show Non-Season Stuff" IsChecked="{Binding FilterNonSeason}" />
-                    <CheckBox Content="Show Non-Episodes" IsChecked="{Binding FilterNonEpisode}" />
-                    <Label Content="Regex Name:"/>
-                    <TextBox controls:TextboxHelper.Watermark="e.g. .*-TVS$"
-                             controls:TextboxHelper.ClearTextButton="True">
-                        <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <utils:RegexValidationRule />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox>
-                    <Label Content="Regex Format:"/>
-                    <TextBox controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
-                             controls:TextboxHelper.ClearTextButton="True">
-                        <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <utils:RegexValidationRule />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox>
-                    <Label Content="Regex Uploader:"/>
-                    <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
-                             controls:TextboxHelper.ClearTextButton="True">
-                        <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <utils:RegexValidationRule />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox>
-                    <Label Content="Regex Size:"/>
-                    <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
-                             controls:TextboxHelper.ClearTextButton="True">
-                        <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <utils:RegexValidationRule />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox>
-                    <Label Content="Regex Runtime:"/>
-                    <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
-                             controls:TextboxHelper.ClearTextButton="True">
-                        <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <utils:RegexValidationRule />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox>
-                    <Label Content="Regex Hoster:"/>
-                    <TextBox controls:TextboxHelper.Watermark="e.g. share-online|uploaded"
-                             controls:TextboxHelper.ClearTextButton="True">
-                        <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <utils:RegexValidationRule />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox>
-                    <Label Content="Language:"/>
-                    <ComboBox ItemsSource="{Binding Source={x:Static model:UploadData.LanguagesValues}}" 
-                              SelectedItem="{Binding FilterLanguage}" />
-                </StackPanel>
-            </Grid>
-        </controls:Flyout>
+                    <ListView Grid.Row="1" Margin="0,-1,0,0" x:Name="ListViewAutoCompl" DisplayMemberPath="Key"
+                              MouseDoubleClick="ListViewAutoCompl_MouseDoubleClick" Foreground="{x:Null}"
+                              Background="{x:Null}" BorderBrush="{x:Null}" />
+                </Grid>
+            </controls:Flyout>
+            <controls:Flyout Header="Filter" Position="Left" x:Name="FilterFlyout"
+                             IsOpenChanged="FilterFlyout_OnIsOpenChanged" Theme="Adapt">
+                <Grid Margin="25" Width="250">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox Content="Show Non-Season Stuff" IsChecked="{Binding FilterNonSeason}" />
+                        <CheckBox Content="Show Non-Episodes" IsChecked="{Binding FilterNonEpisode}" />
+                        <Label Content="Regex Name:"/>
+                        <TextBox controls:TextboxHelper.Watermark="e.g. .*-TVS$"
+                                 controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Content="Regex Format:"/>
+                        <TextBox controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
+                                 controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Content="Regex Uploader:"/>
+                        <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
+                                 controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Content="Regex Size:"/>
+                        <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
+                                 controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Content="Regex Runtime:"/>
+                        <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
+                                 controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Content="Regex Hoster:"/>
+                        <TextBox controls:TextboxHelper.Watermark="e.g. share-online|uploaded"
+                                 controls:TextboxHelper.ClearTextButton="True">
+                            <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <utils:RegexValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label Content="Language:"/>
+                        <ComboBox ItemsSource="{Binding Source={x:Static model:UploadData.LanguagesValues}}" 
+                                  SelectedItem="{Binding FilterLanguage}" />
+                    </StackPanel>
+                </Grid>
+            </controls:Flyout>
+        </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts>
     <controls:MetroWindow.CommandBindings>
         <CommandBinding Command="BrowseBack" Executed="NavBack"/>
     </controls:MetroWindow.CommandBindings>
-    <Grid x:Name="MainGrid" Background="#FF1D1D1D">
+    <Grid x:Name="MainGrid" >
         <Grid x:Name="OverviewGrid">
-
             <tb:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" IconSource="icon3.ico" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" >
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu>
@@ -132,9 +122,10 @@
                     <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
                         <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ShowClickedCommand, ElementName=Window}"
-                                       CommandParameter="{Binding ShowViewModel}" Background="#00000000">
+                                       CommandParameter="{Binding ShowViewModel}" Background="{DynamicResource ControlBackgroundBrush}">
                             <Grid>
-                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.5" />
+                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.9" />
+                                <!--<Border Background="{DynamicResource AccentColorBrush}" Opacity="0.1" />-->
                                 <controls:MetroProgressBar IsIndeterminate="True" Margin="25,0,25,0"
                                                            Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
@@ -143,9 +134,10 @@
                                     <Label
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
-                                        Foreground="White" FontWeight="Bold" Content="{Binding Title}">
+                                        Foreground="White" FontWeight="Bold" Content="{Binding Title}" >
                                         <Label.Effect>
-                                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="0" BlurRadius="10" />
+                                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
+                                                                  BlurRadius="10" />
                                         </Label.Effect>
                                     </Label>
                                     <Grid HorizontalAlignment="Stretch">
@@ -207,17 +199,17 @@
             <Button Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,90,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                <Label Foreground="White" FontSize="20" Margin="0,-5,0,0" Content="+"/>
+                <Label FontSize="20" Margin="0,-5,0,0" Content="+"/>
             </Button>
             <Button Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,50,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                <Label Foreground="White" FontSize="20" Content="H"/>
+                <Label FontSize="20" Content="H"/>
             </Button>
             <Button Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,10,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                <Label Foreground="White" FontSize="20" Content="R"/>
+                <Label FontSize="20" Content="R"/>
             </Button>
 
         </Grid>
@@ -225,7 +217,6 @@
             <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Button Width="40" VerticalAlignment="Center" Click="EpisodesBack"
                         Height="40"
-
                         Style="{DynamicResource MetroCircleButtonStyle}">
                     <Rectangle Width="20"
                                Height="15">
@@ -238,10 +229,11 @@
                                             UseLayoutRounding="False">
                                         <Path Width="25"
                                               Height="18"
+                                              Fill="{DynamicResource LabelTextBrush}"
                                               Canvas.Left="12"
                                               Canvas.Top="15"
                                               Stretch="Fill"
-                                              Fill="White"
+                                             
                                               Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
                                     </Canvas>
                                 </VisualBrush.Visual>
@@ -252,22 +244,22 @@
                         </Rectangle.LayoutTransform>
                     </Rectangle>
                 </Button>
-                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="White" Content="{Binding Title}"
+                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
                        VerticalAlignment="Center" x:Name="SeasonLabel" />
                 <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="White" FontSize="20" Content="F"/>
+                    <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="F"/>
                 </Button>
                 <Button Width="40" VerticalAlignment="Center" Click="ShowGotoPage" ToolTip="Open on serienjunkies.org"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="White" FontSize="20" Content="H"/>
+                    <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="H"/>
                 </Button>
                 <Button Width="40" VerticalAlignment="Center" Click="ShowDelete" ToolTip="Remove this Show"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="White" FontSize="20" Content="X"/>
+                    <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="X"/>
                 </Button>
             </StackPanel>
             <controls:Panorama x:Name="Panorama" UseSnapBackScrolling="False" Margin="10,55,10,10"
@@ -285,22 +277,34 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-
-
-                                <Image Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
-                                       Grid.RowSpan="4" Opacity="0.4" />
+                                <Border Grid.RowSpan="5"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
+         
+                                <Image Grid.Row="0" Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
+                                       Grid.RowSpan="5" Opacity="{Binding ImageOpacity}" />
                                 <!---Border Grid.RowSpan="4" Background="#A0010101" /-->
 
 
-                                <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" Foreground="White"
+                                <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" Foreground="{Binding Foreground}"
                                            Margin="5,0,0,0" FontSize="20" />
-                                <TextBlock Grid.Row="1" Text="{Binding Languages}" Foreground="White" FontSize="10"
+                                <TextBlock Grid.Row="1" Text="{Binding Languages}" Foreground="{Binding Foreground}" FontSize="10"
                                            Margin="5,0,0,0" />
-                                <TextBlock Grid.Row="2" Text="{Binding Formats}" Foreground="White" FontSize="10"
+                                <TextBlock Grid.Row="2" Text="{Binding Formats}" Foreground="{Binding Foreground}" FontSize="10"
                                            Margin="5,0,0,0" />
-
+                                <TextBlock Grid.Row="3"
+                                            Margin="5,0,0,0"
+                                             Text="New Episode!"
+                                            Visibility="{Binding NewEpisodeVisible}"
+                                            Foreground="{Binding Foreground}" FontWeight="Bold">
+                                </TextBlock>
+                                <TextBlock Grid.Row="3"
+                                            Margin="5,0,0,0"
+                                             Text="Update!"
+                                            Visibility="{Binding NewUpdateVisible}"
+                                            Foreground="{Binding Foreground}" FontWeight="Bold">
+                                </TextBlock>
 
                             </Grid>
 
@@ -373,7 +377,7 @@
                                               Canvas.Left="12"
                                               Canvas.Top="15"
                                               Stretch="Fill"
-                                              Fill="White"
+                                              Fill="{DynamicResource LabelTextBrush}"
                                               Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
                                     </Canvas>
                                 </VisualBrush.Visual>
@@ -384,7 +388,7 @@
                         </Rectangle.LayoutTransform>
                     </Rectangle>
                 </Button>
-                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="White" Content="{Binding Title}"
+                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
                        VerticalAlignment="Center" />
             </StackPanel>
             <Image Margin="10" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Thumbnail.ImageSource}"
@@ -454,7 +458,7 @@
                                               Canvas.Left="12"
                                               Canvas.Top="15"
                                               Stretch="Fill"
-                                              Fill="White"
+                                              Fill="{DynamicResource LabelTextBrush}"
                                               Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
                                     </Canvas>
                                 </VisualBrush.Visual>
@@ -465,20 +469,28 @@
                         </Rectangle.LayoutTransform>
                     </Rectangle>
                 </Button>
-                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="White" Content="Settings"
+                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="Settings"
                        VerticalAlignment="Center" />
             </StackPanel>
             <Label Grid.Row="0" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Center" Content="You might have to restart the program for the changes to take effect."/>
 
             <GroupBox Header="Apperance" Grid.Row="1" Margin="10,10,10,10">
                 <StackPanel>
-                    <Grid Width="500" HorizontalAlignment="Left">
+                    <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition MaxWidth="500" Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition MaxWidth="500" Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Theme Accent:"/>
+                        <Label Content="Theme:"/>
                         <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding Source={x:Static metro:ThemeManager.AppThemes}}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Name"
+                                  SelectedValue="{Binding CurrentTheme, ElementName=Window}" />
+                        <Label Content="Accent:" Grid.Column="2"/>
+                        <ComboBox Grid.Column="3"
                                   ItemsSource="{Binding Source={x:Static metro:ThemeManager.DefaultAccents}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Name"
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
@@ -520,7 +532,8 @@
                                   SelectedValue="{Binding UpdateTime, Source={x:Static local:Settings.Instance}}"/>
 
                     </Grid>
-   
+                    <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
+        				IsChecked="{Binding NoPersonalData, Source={x:Static local:Settings.Instance}}" />
                 </StackPanel>
             </GroupBox>
             <GroupBox Grid.Row="2" Margin="10,10,10,10" Header="Default Filter">

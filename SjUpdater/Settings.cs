@@ -83,6 +83,16 @@ namespace SjUpdater
         /// </summary>
         public String ThemeAccent { get; set; }
 
+        /// <summary>
+        /// Theme Base
+        /// </summary>
+        public String ThemeBase  { get; set; }
+
+        /// <summary>
+        /// Whether we are allowed to send personal data to stats server
+        /// </summary>
+        public bool NoPersonalData { get; set; }
+
 
         //Default Filters: See FavShowData.cs
 
@@ -103,10 +113,12 @@ namespace SjUpdater
             SortEpisodesDesc = false;
             NumFetchThreads = 3;
             ThemeAccent = "Green";
+            ThemeBase = "BaseDark";
             UpdateTime = 1000*60*15; //15min
             FilterLanguage = UploadLanguage.Any;
             FilterShowNonEpisode = true;
             FilterShowNonSeason = true;
+            NoPersonalData = false;
         }
         
         public static Settings Load(string filename)

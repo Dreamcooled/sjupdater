@@ -4,29 +4,22 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:viewModel="clr-namespace:SjUpdater.ViewModel"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="SjUpdater.NotificationBalloon"
-                      Background="#FF232323" Width="256.167" Height="318.166" x:Name="Window"
+                      Background="{DynamicResource ControlBackgroundBrush}" Width="256.167" Height="318.166" x:Name="Window"
                      >
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/colours.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/controls.buttons.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid MouseEnter="Grid_MouseEnter_1">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border Background="#CC119EDA" >
+        <Border Background="{DynamicResource WindowTitleColorBrush}" >
             <StackPanel Orientation="Horizontal">
                 <Image Source="icon3.ico" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased"/>
                 <TextBlock Text="SERIENJUNKIES UPDATER" FontSize="16" FontFamily="Segoe UI Light" Foreground="White" Margin="10,0,0,0" VerticalAlignment="Center" ></TextBlock>
-                <Button Margin="20,1,9,1" Width="22" Style="{StaticResource ChromelessButtonStyle}" Click="CloseBalloon">x</Button>
+                <Button Margin="20,1,9,1" Width="22" Style="{DynamicResource MetroWindowButtonStyle}" Click="CloseBalloon">
+                    <Path Data="F1M0,0L2,0 5,3 8,0 10,0 6,4 10,8 8,8 5,5 2,8 0,8 4,4 0,0z"
+                                  SnapsToDevicePixels="True"
+                                  Fill="White" />
+                </Button>
             </StackPanel>
             
         </Border>
@@ -36,11 +29,9 @@
                     <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel }">
                         <controls:Tile Width="240" Height="60" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ElementName=Window, Path=ShowClickedCommand }"
-                                       CommandParameter="{Binding ShowViewModel}" Background="#00000000">
+                                       CommandParameter="{Binding ShowViewModel}" Background="{DynamicResource ControlBackgroundBrush}">
                             <Grid>
-                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.5" />
-                               
-
+                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.9" />
                                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" VerticalAlignment="Top"
                                             HorizontalAlignment="Stretch">
                                     <Label
