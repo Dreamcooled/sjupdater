@@ -9,14 +9,13 @@
                       xmlns:model="clr-namespace:SjUpdater.Model"
                       xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
                       x:Class="SjUpdater.MainWindow"
-                      Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True"
-                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" Loaded="Window_Loaded">
+                      Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True" MinWidth="800" MinHeight="600"
+                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" Loaded="Window_Loaded" >
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
             <Button Content="Settings" Command="{Binding SettingsCommand, ElementName=Window}" />
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
-
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
             <controls:Flyout Header="Add TV Show" Position="Right" x:Name="AddShowFlyout" Theme="Adapt">
@@ -105,129 +104,137 @@
     <controls:MetroWindow.CommandBindings>
         <CommandBinding Command="BrowseBack" Executed="NavBack"/>
     </controls:MetroWindow.CommandBindings>
-    <Grid x:Name="MainGrid" >
-        <Grid x:Name="OverviewGrid">
-            <tb:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" IconSource="icon3.ico" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" >
-                <tb:TaskbarIcon.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Open" Command="{Binding IconClickedCommand}" FontWeight="Bold"/>
-                        <MenuItem Header="Exit" Command="{Binding TerminateCommand}"/>
-                    </ContextMenu>
-                </tb:TaskbarIcon.ContextMenu>
-            </tb:TaskbarIcon>
-            <controls:Panorama x:Name="ShowsPanorama" UseSnapBackScrolling="False" Margin="10,10,10,10"
+    <TabControl x:Name="TabControl">
+        <TabControl.Template>
+            <ControlTemplate TargetType="TabControl">
+                <ContentPresenter Content="{TemplateBinding SelectedContent}"/>
+            </ControlTemplate>
+        </TabControl.Template>
+        <TabItem Header="Overview">
+            <Grid x:Name="OverviewGrid">
+                <tb:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" IconSource="icon3.ico" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" >
+                    <tb:TaskbarIcon.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Open" Command="{Binding IconClickedCommand}" FontWeight="Bold"/>
+                            <MenuItem Header="Exit" Command="{Binding TerminateCommand}"/>
+                        </ContextMenu>
+                    </tb:TaskbarIcon.ContextMenu>
+                </tb:TaskbarIcon>
+                <controls:Panorama x:Name="ShowsPanorama" UseSnapBackScrolling="False" Margin="10,10,10,10"
                                VerticalAlignment="Stretch" ItemBox="200">
 
-                <controls:Panorama.Resources>
-                    <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
-                        <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
+                    <controls:Panorama.Resources>
+                        <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
+                            <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ShowClickedCommand, ElementName=Window}"
                                        CommandParameter="{Binding ShowViewModel}" Background="{DynamicResource ControlBackgroundBrush}">
-                            <Grid>
-                                <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.9" />
-                                <!--<Border Background="{DynamicResource AccentColorBrush}" Opacity="0.1" />-->
-                                <controls:MetroProgressBar IsIndeterminate="True" Margin="25,0,25,0"
+                                <Grid>
+                                    <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.9" />
+                                    <!--<Border Background="{DynamicResource AccentColorBrush}" Opacity="0.1" />-->
+                                    <controls:MetroProgressBar IsIndeterminate="True" Margin="25,0,25,0"
                                                            Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
-                                <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top"
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top"
                                             HorizontalAlignment="Stretch">
-                                    <Label
+                                        <Label
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
                                         Foreground="White" FontWeight="Bold" Content="{Binding Title}" >
-                                        <Label.Effect>
-                                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
-                                                                  BlurRadius="10" />
-                                        </Label.Effect>
-                                    </Label>
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Label
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Center"
-                                            Foreground="White" Content="{Binding NumberText}">
                                             <Label.Effect>
                                                 <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
                                                                   BlurRadius="10" />
                                             </Label.Effect>
                                         </Label>
-                                        <Label
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Label
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Foreground="White" Content="{Binding NumberText}">
+                                                <Label.Effect>
+                                                    <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
+                                                                  BlurRadius="10" />
+                                                </Label.Effect>
+                                            </Label>
+                                            <Label
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center"
                                             Foreground="Lime" FontWeight="Bold" Content="+New!"
                                             Visibility="{Binding NewEpisodesVisible}">
-                                            <Label.Effect>
-                                                <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
+                                                <Label.Effect>
+                                                    <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
                                                                   BlurRadius="10" />
-                                            </Label.Effect>
-                                        </Label>
-                                    </Grid>
-                                </StackPanel>
-                            </Grid>
+                                                </Label.Effect>
+                                            </Label>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
 
-                        </controls:Tile>
-                    </DataTemplate>
-                    <Style TargetType="{x:Type controls:Tile}">
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type controls:Tile}">
-                                    <Grid Background="{TemplateBinding Background}">
-                                        <ContentPresenter RecognizesAccessKey="True" />
-                                    </Grid>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter Property="RenderTransform">
-                                                <Setter.Value>
-                                                    <ScaleTransform ScaleX="0.98"
+                            </controls:Tile>
+                        </DataTemplate>
+                        <Style TargetType="{x:Type controls:Tile}">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
+                                        <Grid Background="{TemplateBinding Background}">
+                                            <ContentPresenter RecognizesAccessKey="True" />
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="0.98"
                                                                     ScaleY="0.98"
                                                                     CenterX="0.5"
                                                                     CenterY="0.5" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </controls:Panorama.Resources>
-            </controls:Panorama>
-            <Button Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </controls:Panorama.Resources>
+                </controls:Panorama>
+                <Button Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,90,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                <Label FontSize="20" Margin="0,-5,0,0" Content="+"/>
-            </Button>
-            <Button Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    <Label FontSize="20" Margin="0,-5,0,0" Content="+"/>
+                </Button>
+                <Button Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,50,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                <Label FontSize="20" Content="H"/>
-            </Button>
-            <Button Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    <Label FontSize="20" Content="H"/>
+                </Button>
+                <Button Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,10,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                <Label FontSize="20" Content="R"/>
-            </Button>
+                    <Label FontSize="20" Content="R"/>
+                </Button>
 
-        </Grid>
-        <Grid x:Name="ShowGrid">
-            <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Button Width="40" VerticalAlignment="Center" Click="EpisodesBack"
+            </Grid>
+        </TabItem>
+        <TabItem Header="ShowGrid">
+            <Grid x:Name="ShowGrid">
+                <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Button Width="40" VerticalAlignment="Center" Click="EpisodesBack"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Width="20"
+                        <Rectangle Width="20"
                                Height="15">
-                        <Rectangle.Fill>
-                            <VisualBrush Stretch="Fill">
-                                <VisualBrush.Visual>
-                                    <Canvas Width="48"
+                            <Rectangle.Fill>
+                                <VisualBrush Stretch="Fill">
+                                    <VisualBrush.Visual>
+                                        <Canvas Width="48"
                                             Height="48"
                                             Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
                                             UseLayoutRounding="False">
-                                        <Path Width="25"
+                                            <Path Width="25"
                                               Height="18"
                                               Fill="{DynamicResource LabelTextBrush}"
                                               Canvas.Left="12"
@@ -235,327 +242,336 @@
                                               Stretch="Fill"
                                              
                                               Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
-                                    </Canvas>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Rectangle.Fill>
-                        <Rectangle.LayoutTransform>
-                            <ScaleTransform ScaleX="-1" />
-                        </Rectangle.LayoutTransform>
-                    </Rectangle>
-                </Button>
-                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
+                                        </Canvas>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Rectangle.Fill>
+                            <Rectangle.LayoutTransform>
+                                <ScaleTransform ScaleX="-1" />
+                            </Rectangle.LayoutTransform>
+                        </Rectangle>
+                    </Button>
+                    <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
                        VerticalAlignment="Center" x:Name="SeasonLabel" />
-                <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
+                    <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="F"/>
-                </Button>
-                <Button Width="40" VerticalAlignment="Center" Click="ShowGotoPage" ToolTip="Open on serienjunkies.org"
+                        <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="F"/>
+                    </Button>
+                    <Button Width="40" VerticalAlignment="Center" Click="ShowGotoPage" ToolTip="Open on serienjunkies.org"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="H"/>
-                </Button>
-                <Button Width="40" VerticalAlignment="Center" Click="ShowDelete" ToolTip="Remove this Show"
+                        <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="H"/>
+                    </Button>
+                    <Button Width="40" VerticalAlignment="Center" Click="ShowDelete" ToolTip="Remove this Show"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="X"/>
-                </Button>
-            </StackPanel>
-            <controls:Panorama x:Name="Panorama" UseSnapBackScrolling="False" Margin="10,55,10,10"
+                        <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="X"/>
+                    </Button>
+                </StackPanel>
+                <controls:Panorama x:Name="Panorama" UseSnapBackScrolling="False" Margin="10,55,10,10"
                                ItemsSource="{Binding PanoramaItems}">
-                <controls:Panorama.Resources>
-                    <DataTemplate DataType="{x:Type viewModel:EpisodeTileViewModel}">
-                        <controls:Tile Padding="0" Width="120" Height="120" x:Name="tile"
+                    <controls:Panorama.Resources>
+                        <DataTemplate DataType="{x:Type viewModel:EpisodeTileViewModel}">
+                            <controls:Tile Padding="0" Width="120" Height="120" x:Name="tile"
                                        Background="{Binding Background}"
                                        Command="{Binding EpisodeClickedCommand, ElementName=Window}"
                                        CommandParameter="{Binding EpisodeViewModel}">
 
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Border Grid.RowSpan="5"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
-         
-                                <Image Grid.Row="0" Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.RowSpan="5"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
+
+                                    <Image Grid.Row="0" Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
                                        Grid.RowSpan="5" Opacity="{Binding ImageOpacity}" />
-                                <!---Border Grid.RowSpan="4" Background="#A0010101" /-->
+                                    <!---Border Grid.RowSpan="4" Background="#A0010101" /-->
 
 
-                                <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" Foreground="{Binding Foreground}"
+                                    <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" Foreground="{Binding Foreground}"
                                            Margin="5,0,0,0" FontSize="20" />
-                                <TextBlock Grid.Row="1" Text="{Binding Languages}" Foreground="{Binding Foreground}" FontSize="10"
+                                    <TextBlock Grid.Row="1" Text="{Binding Languages}" Foreground="{Binding Foreground}" FontSize="10"
                                            Margin="5,0,0,0" />
-                                <TextBlock Grid.Row="2" Text="{Binding Formats}" Foreground="{Binding Foreground}" FontSize="10"
+                                    <TextBlock Grid.Row="2" Text="{Binding Formats}" Foreground="{Binding Foreground}" FontSize="10"
                                            Margin="5,0,0,0" />
-                                <TextBlock Grid.Row="3"
+                                    <TextBlock Grid.Row="3"
                                             Margin="5,0,0,0"
                                              Text="New Episode!"
                                             Visibility="{Binding NewEpisodeVisible}"
                                             Foreground="{Binding Foreground}" FontWeight="Bold">
-                                </TextBlock>
-                                <TextBlock Grid.Row="3"
+                                    </TextBlock>
+                                    <TextBlock Grid.Row="3"
                                             Margin="5,0,0,0"
                                              Text="Update!"
                                             Visibility="{Binding NewUpdateVisible}"
                                             Foreground="{Binding Foreground}" FontWeight="Bold">
-                                </TextBlock>
+                                    </TextBlock>
 
-                            </Grid>
+                                </Grid>
 
-                        </controls:Tile>
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding IsDoubleWidth}" Value="True">
-                                <Setter TargetName="tile" Property="Width" Value="248" />
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                    <Style TargetType="{x:Type controls:Tile}">
-                        <Setter Property="Width" Value="140" />
-                        <Setter Property="Height" Value="140" />
-                        <Setter Property="Margin" Value="3" />
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type controls:Tile}">
-                                    <Grid Background="{TemplateBinding Background}">
-                                        <ContentPresenter RecognizesAccessKey="True" Margin="5" />
-                                    </Grid>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter Property="RenderTransform">
-                                                <Setter.Value>
-                                                    <ScaleTransform ScaleX="0.98"
+                            </controls:Tile>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsDoubleWidth}" Value="True">
+                                    <Setter TargetName="tile" Property="Width" Value="248" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                        <Style TargetType="{x:Type controls:Tile}">
+                            <Setter Property="Width" Value="140" />
+                            <Setter Property="Height" Value="140" />
+                            <Setter Property="Margin" Value="3" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
+                                        <Grid Background="{TemplateBinding Background}">
+                                            <ContentPresenter RecognizesAccessKey="True" Margin="5" />
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="0.98"
                                                                     ScaleY="0.98"
                                                                     CenterX="0.5"
                                                                     CenterY="0.5" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </controls:Panorama.Resources>
-            </controls:Panorama>
-        </Grid>
-        <Grid x:Name="EpisodeGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Button Width="40" VerticalAlignment="Center" Click="EpisodeDataBack"
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </controls:Panorama.Resources>
+                </controls:Panorama>
+            </Grid>
+        </TabItem>
+        <TabItem Header="EpisodeGrid">
+            <Grid x:Name="EpisodeGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Button Width="40" VerticalAlignment="Center" Click="EpisodeDataBack"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Width="20"
+                        <Rectangle Width="20"
                                Height="15">
-                        <Rectangle.Fill>
-                            <VisualBrush Stretch="Fill">
-                                <VisualBrush.Visual>
-                                    <Canvas Width="48"
+                            <Rectangle.Fill>
+                                <VisualBrush Stretch="Fill">
+                                    <VisualBrush.Visual>
+                                        <Canvas Width="48"
                                             Height="48"
                                             Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
                                             UseLayoutRounding="False">
-                                        <Path Width="25"
+                                            <Path Width="25"
                                               Height="18"
                                               Canvas.Left="12"
                                               Canvas.Top="15"
                                               Stretch="Fill"
                                               Fill="{DynamicResource LabelTextBrush}"
                                               Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
-                                    </Canvas>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Rectangle.Fill>
-                        <Rectangle.LayoutTransform>
-                            <ScaleTransform ScaleX="-1" />
-                        </Rectangle.LayoutTransform>
-                    </Rectangle>
-                </Button>
-                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
+                                        </Canvas>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Rectangle.Fill>
+                            <Rectangle.LayoutTransform>
+                                <ScaleTransform ScaleX="-1" />
+                            </Rectangle.LayoutTransform>
+                        </Rectangle>
+                    </Button>
+                    <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
                        VerticalAlignment="Center" />
-            </StackPanel>
-            <Image Margin="10" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Thumbnail.ImageSource}"
+                </StackPanel>
+                <Image Margin="10" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Thumbnail.ImageSource}"
                    Stretch="UniformToFill" Height="105" />
-            <Button Grid.Column="0" Grid.Row="1" Content="Show Review" HorizontalAlignment="Left"
+                <Button Grid.Column="0" Grid.Row="1" Content="Show Review" HorizontalAlignment="Left"
                     VerticalAlignment="Top" Margin="10,10,10,10" Command="{Binding ReviewCommand}" />
 
-            <ListView x:Name="EpisodeDataList" Margin="10,10,10,10" ItemsSource="{Binding Downloads}" Grid.Column="0"
+                <ListView x:Name="EpisodeDataList" Margin="10,10,10,10" ItemsSource="{Binding Downloads}" Grid.Column="0"
                       Grid.Row="2" Grid.ColumnSpan="2">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
-                        <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                        <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
-                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
-                        <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
-                        <GridViewColumn Header="Links (Copy2Clipboard)">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ItemsControl ItemsSource="{Binding Links}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Button Margin="4" Content="{Binding Key}"
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
+                            <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
+                            <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
+                            <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
+                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
+                            <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
+                            <GridViewColumn Header="Links (Copy2Clipboard)">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ItemsControl ItemsSource="{Binding Links}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button Margin="4" Content="{Binding Key}"
                                                         Command="{Binding DownloadCommand, ElementName=Window}"
                                                         CommandParameter="{Binding Value}" />
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-
-        </Grid>
-        <Grid x:Name="SettingsGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Button Width="40" VerticalAlignment="Center"
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </TabItem>
+        <TabItem Header="SettingsGrid">
+            <Grid x:Name="SettingsGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Button Width="40" VerticalAlignment="Center"
                         Command="{Binding SettingsCommand, ElementName=Window}"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Width="20"
+                        <Rectangle Width="20"
                                Height="15">
-                        <Rectangle.Fill>
-                            <VisualBrush Stretch="Fill">
-                                <VisualBrush.Visual>
-                                    <Canvas Width="48"
+                            <Rectangle.Fill>
+                                <VisualBrush Stretch="Fill">
+                                    <VisualBrush.Visual>
+                                        <Canvas Width="48"
                                             Height="48"
                                             Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
                                             UseLayoutRounding="False">
-                                        <Path Width="25"
+                                            <Path Width="25"
                                               Height="18"
                                               Canvas.Left="12"
                                               Canvas.Top="15"
                                               Stretch="Fill"
                                               Fill="{DynamicResource LabelTextBrush}"
                                               Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
-                                    </Canvas>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Rectangle.Fill>
-                        <Rectangle.LayoutTransform>
-                            <ScaleTransform ScaleX="-1" />
-                        </Rectangle.LayoutTransform>
-                    </Rectangle>
-                </Button>
-                <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="Settings"
+                                        </Canvas>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Rectangle.Fill>
+                            <Rectangle.LayoutTransform>
+                                <ScaleTransform ScaleX="-1" />
+                            </Rectangle.LayoutTransform>
+                        </Rectangle>
+                    </Button>
+                    <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="Settings"
                        VerticalAlignment="Center" />
-            </StackPanel>
-            <Label Grid.Row="0" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Center" Content="You might have to restart the program for the changes to take effect."/>
+                </StackPanel>
+                <Label Grid.Row="0" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Center" Content="You might have to restart the program for the changes to take effect."/>
 
-            <GroupBox Header="Apperance" Grid.Row="1" Margin="10,10,10,10">
-                <StackPanel>
-                    <Grid HorizontalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition MaxWidth="500" Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition MaxWidth="500" Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Theme:"/>
-                        <ComboBox Grid.Column="1"
+                <GroupBox Header="Apperance" Grid.Row="1" Margin="10,10,10,10">
+                    <StackPanel>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition MaxWidth="500" Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition MaxWidth="500" Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Theme:"/>
+                            <ComboBox Grid.Column="1"
                                   ItemsSource="{Binding Source={x:Static metro:ThemeManager.AppThemes}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Name"
                                   SelectedValue="{Binding CurrentTheme, ElementName=Window}" />
-                        <Label Content="Accent:" Grid.Column="2"/>
-                        <ComboBox Grid.Column="3"
+                            <Label Content="Accent:" Grid.Column="2"/>
+                            <ComboBox Grid.Column="3"
                                   ItemsSource="{Binding Source={x:Static metro:ThemeManager.DefaultAccents}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Name"
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
 
-                    </Grid>
+                        </Grid>
 
-                    <CheckBox Content="Sort Tv Shows Alphabetically"
+                        <CheckBox Content="Sort Tv Shows Alphabetically"
                               IsChecked="{Binding SortShowsAlphabetically, Source={x:Static local:Settings.Instance}}" />
-                    <CheckBox Content="Sort Seasons Descending"
+                        <CheckBox Content="Sort Seasons Descending"
                               IsChecked="{Binding SortSeasonsDesc, Source={x:Static local:Settings.Instance}}" />
-                    <CheckBox Content="Sort Episodes Descending"
+                        <CheckBox Content="Sort Episodes Descending"
                               IsChecked="{Binding SortEpisodesDesc, Source={x:Static local:Settings.Instance}}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
-                <StackPanel>
-                    <CheckBox Content="Only Minimize to Tray when closing"
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
+                    <StackPanel>
+                        <CheckBox Content="Only Minimize to Tray when closing"
         				IsChecked="{Binding MinimizeToTray, Source={x:Static local:Settings.Instance}}" />
-                    <Grid Width="500" HorizontalAlignment="Left">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Number of Fetching Threads:"/>
-                        <Slider Minimum="1" Maximum="8" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
+                        <Grid Width="500" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Number of Fetching Threads:"/>
+                            <Slider Minimum="1" Maximum="8" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
         					IsSnapToTickEnabled="True"
         					Value="{Binding NumFetchThreads, Source={x:Static local:Settings.Instance}}" />
-                        <Label Content="{Binding Value, ElementName=threadSlider}" Grid.Column="2" />
-                    </Grid>
-                    <Grid Width="500" HorizontalAlignment="Left">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Update Shows Automatically:"/>
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:MainWindow.DictUpdateTimes}}"
+                            <Label Content="{Binding Value, ElementName=threadSlider}" Grid.Column="2" />
+                        </Grid>
+                        <Grid Width="500" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Update Shows Automatically:"/>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:MainWindow.DictUpdateTimes}}"
                                   DisplayMemberPath="Key" SelectedValuePath="Value"
                                   SelectedValue="{Binding UpdateTime, Source={x:Static local:Settings.Instance}}"/>
 
-                    </Grid>
-                    <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
+                        </Grid>
+                        <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
         				IsChecked="{Binding NoPersonalData, Source={x:Static local:Settings.Instance}}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Grid.Row="2" Margin="10,10,10,10" Header="Default Filter">
-                <Grid DataContext="{Binding Source={x:Static local:Settings.Instance}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50*" />
-                        <ColumnDefinition Width="50" />
-                        <ColumnDefinition Width="50*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                        <Separator Margin="0,10,0,5"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Current Version:</Label>
+                            <Label Content="{Binding ElementName=Window,Path=CurrentVersionString}" Margin="10,0"/>
+                            <Button Click="ChangeLogButtonClicked">Changelog / Updates</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Row="2" Margin="10,10,10,10" Header="Default Filter">
+                    <Grid DataContext="{Binding Source={x:Static local:Settings.Instance}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50*" />
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="50*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Grid.Column="0" Content="Show Non-Season Stuff" IsChecked="{Binding FilterShowNonSeason}"  Margin="0,5,0,0"/>
+                        <CheckBox Grid.Row="0" Grid.Column="0" Content="Show Non-Season Stuff" IsChecked="{Binding FilterShowNonSeason}"  Margin="0,5,0,0"/>
                         <CheckBox Grid.Row="1" Grid.Column="0" Content="Show Non-Episodes" IsChecked="{Binding FilterShowNonEpisode}"  Margin="0,5,0,0"/>
                         <Label Grid.Row="2" Grid.Column="0" Content="Regex Name:"/>
                         <TextBox Grid.Row="3" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. .*-TVS$"
@@ -616,8 +632,9 @@
                         <ComboBox Grid.Row="7" Grid.Column="2" 
                                   ItemsSource="{Binding Source={x:Static model:UploadData.LanguagesValues}}"  
                                   SelectedItem="{Binding FilterLanguage}"/>
-                </Grid>
-            </GroupBox>
-        </Grid>
-    </Grid>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </controls:MetroWindow>

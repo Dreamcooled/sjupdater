@@ -1,4 +1,5 @@
-﻿using Amib.Threading;
+﻿using System.Reflection;
+using Amib.Threading;
 using MahApps.Metro;
 using SjUpdater.Model;
 using SjUpdater.Updater;
@@ -26,13 +27,14 @@ namespace SjUpdater
     {
         private readonly Settings _setti;
         private readonly MainWindowViewModel _viewModel;
-        private UpdateWindow updater = null;
+        private readonly UpdateWindow _updater;
 
         public MainWindow()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.Current.SessionEnding += Current_SessionEnding;
 
+            //Commands
             DownloadCommand = new SimpleCommand<object, String>(DownloadCommandExecute);
             EpisodeClickedCommand = new SimpleCommand<object, EpisodeViewModel>(OnEpisodeViewClicked);
             ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
@@ -40,15 +42,27 @@ namespace SjUpdater
             IconClickedCommand = new SimpleCommand<object, object>(IconClicked);
             TerminateCommand = new SimpleCommand<object, object>(Terminate);
 
+            //Settings & Theme
             _setti = Settings.Instance;
             _currentAccent = ThemeManager.GetAccent(_setti.ThemeAccent);
             _currentTheme = ThemeManager.GetAppTheme(_setti.ThemeBase);
-
-
-            InitializeComponent();
-
             CurrentAccent = _setti.ThemeAccent;
 
+            //Updater
+            _updater = new UpdateWindow("http://sjupdater.batrick.de/updater/latest", true, "SjUpdater.exe", "");
+            _updater.updateStartedEvent += (a, dsa) => Terminate(null);
+
+            //Start!
+            InitializeComponent();
+            if (Environment.GetCommandLineArgs().Contains("-nogui"))
+                Hide();
+
+            //Initialize view
+            _viewModel = new MainWindowViewModel(_setti.TvShows);
+            ShowsPanorama.ItemsSource = _viewModel.PanoramaItems;
+            SwitchPage(0);
+    
+            //Autoupdate timer
             if (_setti.UpdateTime > 0) //Autoupdate enabled
             {
                 var t = new Timer(_setti.UpdateTime);
@@ -56,17 +70,10 @@ namespace SjUpdater
                 t.Start();
             }
 
+            //Inital update
             Update();
 
-            _viewModel = new MainWindowViewModel(_setti.TvShows);
-            ShowsPanorama.ItemsSource = _viewModel.PanoramaItems;
-            SwitchPage(0);
-
-            if (Environment.GetCommandLineArgs().Contains("-nogui"))
-            {
-                Hide();
-            }
-
+            //Stats
             StaticInstance.SmartThreadPool.QueueWorkItem(() => Stats.SendStats(!_setti.NoPersonalData));
         }
 
@@ -190,6 +197,11 @@ namespace SjUpdater
             }
         }
 
+        public String CurrentVersionString
+        {
+            get { return Stats.GetVersionString(); }
+        }
+
         public ICommand AddShowCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }
         public ICommand EpisodeClickedCommand { get; private set; }
@@ -200,39 +212,15 @@ namespace SjUpdater
 
         private int CurrentPage()
         {
-            int i = 0;
-            foreach (object child in MainGrid.Children)
-            {
-                Grid g = child as Grid;
-                if (g.Visibility == Visibility.Visible)
-                {
-                    return i;
-                }
-                i++;
-            }
-            return -1;
+            return TabControl.SelectedIndex;
         }
 
         private void SwitchPage(int page)
         {
-            int i = 0;
-            foreach (object child in MainGrid.Children)
-            {
-                Grid g = child as Grid;
-                if (g.Visibility == Visibility.Visible)
-                {
-                    g.Visibility = Visibility.Collapsed;
-                    _lastpage = i;
-                }
-                if (i++ == page)
-                {
-                    g.Visibility = Visibility.Visible;
-                }
-
-            }
+            _lastpage = TabControl.SelectedIndex;
+            TabControl.SelectedIndex = page;
             AddShowFlyout.IsOpen = false;
             FilterFlyout.IsOpen = false;
-
         }
 
         private IWorkItemResult _currentWorkItem;
@@ -258,8 +246,7 @@ namespace SjUpdater
 
             Dispatcher.Invoke(() =>
                               {
-                                  ListViewAutoCompl.ItemsSource =
-                                      result;
+                                  ListViewAutoCompl.ItemsSource = result;
                               });
 
             if (!string.IsNullOrEmpty(_nextSearchString) && _nextSearchString != query)
@@ -362,21 +349,18 @@ namespace SjUpdater
             }
         }
 
-        private bool force_close = false;
+        private bool _forceClose = false;
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
-            if (!force_close && _setti.MinimizeToTray)
+            if (!_forceClose && _setti.MinimizeToTray)
             {
                 e.Cancel = true;
                 Hide();
             }
             else
             {
-                if (updater != null)
-                {
-                    updater.TryClose();
-                }
+                _updater.TryClose();
                 NotifyIcon.Dispose();
                 Settings.Save();
             }
@@ -388,11 +372,12 @@ namespace SjUpdater
         /// <param name="obj"></param>
         private void Terminate(object obj)
         {
-            force_close = true;
+            _forceClose = true;
             Close();
             
         }
 
+        //called when windows shuts down or user logs out
         private void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
         {
             Terminate(null);
@@ -433,14 +418,15 @@ namespace SjUpdater
         {
             Timer timer = new Timer(3000);
             timer.AutoReset = false;
-            timer.Elapsed += (o, args) => Dispatcher.Invoke(() =>
-                                                            {
-                                                                updater = new UpdateWindow("http://sjupdater.batrick.de/updater/latest", true, "SjUpdater.exe", "");
-                                                                updater.updateStartedEvent += (a, dsa) => Terminate(null);
-                                                                updater.Show(false, true);
-                                                            });
+            timer.Elapsed += (o, args) => Dispatcher.Invoke(() => _updater.Show(false, true));
 
             timer.Start();
         }
+
+        private void ChangeLogButtonClicked(object sender, RoutedEventArgs e)
+        {
+            _updater.Show(true,false);
+        }
+
     }
 }

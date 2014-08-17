@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using MahApps.Metro;
 using MahApps.Metro.Controls;
 
 namespace SjUpdater.Updater
@@ -19,11 +20,12 @@ namespace SjUpdater.Updater
 
         public event UpdateStartetEventHandler updateStartedEvent;
 
-        private bool restart;
-        private string executable;
-        private string parameter;
+        private readonly bool restart;
+        private readonly string executable;
+        private readonly string parameter;
 
         private bool shownOnce = false;
+        private bool myThemeChangeEvent = false;
 
         public UpdateWindow(string updateurl, bool restart = false, string exectuable = "", string parameter = "")
         {
@@ -31,14 +33,29 @@ namespace SjUpdater.Updater
             this.executable = exectuable;
             this.parameter = parameter;
 
-            InitializeComponent();
+            ThemeManager.IsThemeChanged += ThemeManager_IsThemeChanged;
+            var mainThemeSettings = ThemeManager.DetectAppStyle(Application.Current);
+            ThemeManager.ChangeAppStyle(this,mainThemeSettings.Item2,ThemeManager.GetInverseAppTheme(mainThemeSettings.Item1));
 
+            InitializeComponent();
             updater = new Updater(updateurl);
             updater.errorEvent += updater_errorEvent;
 
             this.DataContext = new UpdaterViewModel(ref updater);
         }
 
+        void ThemeManager_IsThemeChanged(object sender, OnThemeChangedEventArgs e)
+        {
+            if (myThemeChangeEvent)
+            {
+                myThemeChangeEvent = false;
+                return;
+            }
+            myThemeChangeEvent = true;
+            ThemeManager.ChangeAppStyle(this,e.Accent, ThemeManager.GetInverseAppTheme(e.AppTheme));
+        }
+
+        private bool force_close = false;
         public bool TryClose()
         {
             if (updater.IsUpdating)
@@ -47,6 +64,7 @@ namespace SjUpdater.Updater
             if (!shownOnce)
                 this.Show(); //stupid workaround to correctly dispose window
 
+            force_close = true;
             this.Close();
             return true;
         }
@@ -61,6 +79,12 @@ namespace SjUpdater.Updater
 
         public void Show(bool ShowIfNoUpdateAvailable, bool SilentCheck)
         {
+            if (IsVisible)
+            {
+                this.Activate();
+                return;
+            }
+              
             if (!SilentCheck)
                 this.Show();
 
@@ -93,18 +117,17 @@ namespace SjUpdater.Updater
             base.Show();
         }
 
-
         private void UpdateWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            (this.Content as Grid).Children.Remove(changelogGrid);
-            (this.Content as Grid).Children.Remove(updateGrid);
+            ((Grid) Content).Children.Remove(changelogGrid);
+            ((Grid) Content).Children.Remove(updateGrid);
 
             TransitioningContentControl.Content = changelogGrid;
         }
 
         private void SwitchToUpdateGridButton_OnClick(object sender, RoutedEventArgs e)
         {
-            (this.Content as Grid).Children.Remove(changelogGrid);
+            ((Grid) Content).Children.Remove(changelogGrid);
             TransitioningContentControl.Content = updateGrid;
 
             DoubleAnimation heightAnimation = new DoubleAnimation(this.Height, updateGrid.Height + 50, new Duration(TimeSpan.FromSeconds(1)));
@@ -113,12 +136,21 @@ namespace SjUpdater.Updater
 
             this.SizeToContent = SizeToContent.Manual;
 
-            this.BeginAnimation(MetroWindow.HeightProperty, heightAnimation);
+            this.BeginAnimation(FrameworkElement.HeightProperty, heightAnimation);
 
             var doUpdateTask = updater.DoUpdate(restart, executable, parameter);
 
             if (updateStartedEvent != null)
                 updateStartedEvent(this, null);
+        }
+
+        private void UpdateWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!force_close)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
         }
     }
 }

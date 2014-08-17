@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -10,6 +11,27 @@ namespace SjUpdater.Utils
 {
     public class Stats
     {
+
+        public static string GetVersionString()
+        {
+            Version v = Assembly.GetExecutingAssembly().GetName().Version;
+            var sli  = new List<String>();
+            sli.Add(v.Major.ToString());
+            if (v.Minor != 0 || v.Revision != 0 || v.Build != 0)
+            {
+                sli.Add(v.Minor.ToString());
+                if (v.Revision != 0 || v.Build != 0)
+                {
+                    sli.Add(v.Build.ToString());
+                    if (v.Revision != 0)
+                    {
+                        sli.Add(v.Revision.ToString());
+                    }
+                }
+            }
+            return "v"+String.Join(".", sli);
+        }
+
         public static void SendStats(bool sendPersonalData)
         {
             try
@@ -22,7 +44,7 @@ namespace SjUpdater.Utils
                 request.AllowAutoRedirect = true;
                 request.KeepAlive = false;
 
-                string data = string.Format("uid={0}&version={1}", uid, Assembly.GetExecutingAssembly().GetName().Version);
+                string data = string.Format("uid={0}&version={1}", uid,GetVersionString());
                 if (sendPersonalData)
                 {
                     data += "&shows=" + String.Join(",", Settings.Instance.TvShows.Select(f => f.Name));
