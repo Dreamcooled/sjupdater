@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
 using System.Windows.Documents;
 
 namespace SjUpdater.Utils
@@ -67,17 +69,22 @@ namespace SjUpdater.Utils
 
         private static string getUniqueID()
         {
-            if (Properties.Settings.Default.uid.Length != 16)
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SjUpdater", "uid.uid");
+
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            if (!File.Exists(path) || File.ReadAllText(path).Length != 16)
             {
                 RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
                 byte[] data = new byte[8];
                 random.GetBytes(data);
                 string uid = BitConverter.ToString(data).ToLower().Replace("-", "");
-                Properties.Settings.Default.uid = uid;
-                Properties.Settings.Default.Save();
+
+                File.WriteAllText(path, uid);
             }
 
-            return Properties.Settings.Default.uid;
+            return File.ReadAllText(path);
         }
     }
 }
