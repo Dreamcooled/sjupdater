@@ -49,7 +49,7 @@ namespace SjUpdater
             CurrentAccent = _setti.ThemeAccent;
 
             //Updater
-            _updater = new UpdateWindow("http://sjupdater.batrick.de/updater/latest", true, "SjUpdater.exe", "");
+            _updater = new UpdateWindow("http://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "");
             _updater.updateStartedEvent += (a, dsa) => Terminate(null);
 
             //Start!
