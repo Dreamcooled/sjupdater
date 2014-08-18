@@ -1,0 +1,20 @@
+#filename:md5hash
+
+Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
+MahApps.Metro.dll:2775ed4cfa5a530b70070c9d6c97ad6a
+SjUpdater.exe:5720792a98568ca0d06515b6b83b9261
+SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
+System.Windows.Interactivity.dll:3ab57a33a6e3a1476695d5a6e856c06a
+
+[###CHANGELOG###]
+
+v0.15.1 (2014-08-17)
+- improved some light-theme colors
+- further integration of app updater
+- minor bugfixes
+
+v0.15 (2014-08-16)
+- More Theme Settings & Updated Metro Version
+- Automatic App Updater + Anonymous User Statistics
+- New Marking of the New/Updated Episodes on the Episode Screen
+- Some other minor stuff and various bugfixes
