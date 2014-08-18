@@ -366,8 +366,9 @@ namespace SjUpdater.Updater
                     bytesCounter += CurrentFileBytes;
                 }
 
-                string command = "/C @echo off && echo 5s delay (giving time to close) && timeout /t 4 > NUL && move /Y " + Path.Combine(tempdir, "*.*") + " . && rd /s /q " + tempdir + (restart ? (" && start " + exectuable + " " + parameter) : "");
-
+                string command =
+                    "/C @echo off & for /l %a in (0) do TaskList /FI \"IMAGENAME eq " + exectuable + "\" 2>NUL | Find \"" + exectuable + "\" >NUL || "+ //Waits on app termination
+                    "(move /Y " + Path.Combine(tempdir, "*.*") + " . && rd /s /q " + tempdir + (restart ? (" && start " + exectuable + " " + parameter) : "") + " & EXIT)"; //actual update
                 ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", command);
                 psi.CreateNoWindow = true;
                 psi.UseShellExecute = false;
