@@ -171,7 +171,7 @@ namespace SjUpdater
             return resultList;
         }
 
-        public static List<DownloadData> ParseSjOrgSite(ShowData showData, out string firstcover)
+        public static List<DownloadData> ParseSjOrgSite(ShowData showData, out string firstcover, UploadCache uploadCache = null)
         {
             if(showData==null || String.IsNullOrWhiteSpace(showData.Url) ||  String.IsNullOrWhiteSpace(showData.Name)) 
                 throw new ArgumentNullException();
@@ -181,7 +181,7 @@ namespace SjUpdater
             do
             {
                 string cover;
-                var a = ParseSite(showData, nextpage, out nextpage, out cover);
+                var a = ParseSite(showData, nextpage, out nextpage, out cover,uploadCache);
                 if (firstcover == "")
                 {
                     firstcover = cover;
@@ -191,7 +191,7 @@ namespace SjUpdater
             return episodes;
         }
 
-        private static List<DownloadData> ParseSite(ShowData showData, string url, out string nextpageurl, out string firstcover )
+        private static List<DownloadData> ParseSite(ShowData showData, string url, out string nextpageurl, out string firstcover, UploadCache uploadCache)
         {
             nextpageurl = "";
             firstcover = "";
@@ -283,8 +283,7 @@ namespace SjUpdater
                                     if (line.Contains("</p>"))
                                         break;
                                 }
-                                DownloadData dd = new DownloadData();
-                                dd.Upload = uploadData;
+
          
                             
                                 if (title.Contains("720p") )
@@ -303,12 +302,12 @@ namespace SjUpdater
                                 {
                                     uploadData.Format = "1080i";
                                 }
-                                
-                                
-                           
 
 
-                         
+                                DownloadData dd = new DownloadData();
+                                dd.Upload = uploadCache == null ? uploadData : uploadCache.GetUniqueUploadData(uploadData);
+
+
                                 //ed.EpisodeN = episode;
                                 dd.Title = title;
 

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.Xml.Serialization;
 using SjUpdater.Model;
 using SjUpdater.Utils;
 using SjUpdater.XML;
@@ -13,6 +16,7 @@ namespace SjUpdater
         #region Static Stuff
 
         private static readonly Settings setti;
+        private ObservableCollection<FavShowData> _tvShows;
 
         static Settings()
         {
@@ -42,11 +46,47 @@ namespace SjUpdater
         } 
         #endregion
 
+        private readonly UploadCache uploadCache = new UploadCache();
+        [XmlIgnore]
+        public UploadCache UploadCache
+        {
+            get { return uploadCache; }
+        }
 
         /// <summary>
         /// The TV-Show Cache
         /// </summary>
-        public ObservableCollection<FavShowData> TvShows { get; set; } 
+        public ObservableCollection<FavShowData> TvShows
+        {
+            get { return _tvShows; }
+            set
+            {
+                foreach (var favShowData in value)
+                {
+                    foreach (var favSeasonData in favShowData.Seasons)
+                    {
+                        foreach (var favEpisodeData in favSeasonData.Episodes)
+                        {
+                            foreach (var downloadData in favEpisodeData.Downloads)
+                            {
+                                if(downloadData.Upload==null) continue;
+                                UploadData v = uploadCache.GetUniqueUploadData(downloadData.Upload);
+                                if (ReferenceEquals(v, downloadData.Upload))
+                                {
+                                    //cache hit or new to cache
+                                }
+                                else
+                                {
+                                    downloadData.Upload = v; //correct, to use value from cache
+                                }
+                            }
+                        }
+                    }
+                }
+   
+                _tvShows = value;
+            }
+        }
 
         /// <summary>
         /// Wheather to sort the Seasons inside a Show asc or desc

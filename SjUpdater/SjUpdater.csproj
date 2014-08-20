@@ -129,6 +129,7 @@
     <Compile Include="Utils\StaticInstance.cs" />
     <Compile Include="Utils\Stats.cs" />
     <Compile Include="Utils\timehelper.cs" />
+    <Compile Include="Utils\UploadCache.cs" />
     <Compile Include="ViewModel\EpisodeTileViewModel.cs" />
     <Compile Include="ViewModel\EpisodeViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
@@ -176,6 +177,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <AppDesigner Include="Properties\" />
+    <None Include="Model\ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -206,6 +208,10 @@
     <Resource Include="icon3.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MahApps.Metro\MahApps.Metro.Resources\MahApps.Metro.Resources.csproj">
+      <Project>{e708ac99-605b-42a0-8d20-abca8fe42dd2}</Project>
+      <Name>MahApps.Metro.Resources</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MahApps.Metro\MahApps.Metro\MahApps.Metro.csproj">
       <Project>{5b1710d2-5dc8-4754-91b2-19165de49b3d}</Project>
       <Name>MahApps.Metro</Name>

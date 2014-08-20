@@ -97,7 +97,6 @@ namespace SjUpdater.Model
         }
 
 
-
         public ObservableCollection<DownloadData> Downloads
         {
             get { return _downloads; }

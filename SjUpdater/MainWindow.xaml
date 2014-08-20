@@ -13,7 +13,15 @@
                       Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" Loaded="Window_Loaded" >
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
-            <Button Content="Settings" Command="{Binding SettingsCommand, ElementName=Window}" />
+            <Button Command="{Binding SettingsCommand, ElementName=Window}" >
+                <Rectangle Width="20" Height="20"
+                   Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                         Visual="{StaticResource appbar_settings}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
     <controls:MetroWindow.Flyouts>
@@ -204,17 +212,30 @@
                 <Button Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,90,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label FontSize="20" Margin="0,-5,0,0" Content="+"/>
+                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
                 </Button>
                 <Button Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,50,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label FontSize="20" Content="H"/>
+                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_browser}" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
                 </Button>
+
                 <Button Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Top"
                         Height="40" Margin="0,10,10,0"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Label FontSize="20" Content="R"/>
+                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_refresh}" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
                 </Button>
 
             </Grid>
@@ -225,30 +246,10 @@
                     <Button Width="40" VerticalAlignment="Center" Click="EpisodesBack"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Rectangle Width="20"
-                               Height="15">
-                            <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill">
-                                    <VisualBrush.Visual>
-                                        <Canvas Width="48"
-                                            Height="48"
-                                            Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
-                                            UseLayoutRounding="False">
-                                            <Path Width="25"
-                                              Height="18"
-                                              Fill="{DynamicResource LabelTextBrush}"
-                                              Canvas.Left="12"
-                                              Canvas.Top="15"
-                                              Stretch="Fill"
-                                             
-                                              Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
-                                        </Canvas>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Rectangle.Fill>
-                            <Rectangle.LayoutTransform>
-                                <ScaleTransform ScaleX="-1" />
-                            </Rectangle.LayoutTransform>
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_arrow_left}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button>
                     <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
@@ -256,17 +257,29 @@
                     <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="F"/>
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_filter}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
                     </Button>
                     <Button Width="40" VerticalAlignment="Center" Click="ShowGotoPage" ToolTip="Open on serienjunkies.org"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="H"/>
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_browser}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
                     </Button>
                     <Button Width="40" VerticalAlignment="Center" Click="ShowDelete" ToolTip="Remove this Show"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Label Foreground="{DynamicResource LabelTextBrush}" FontSize="20" Content="X"/>
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
                     </Button>
                 </StackPanel>
                 <controls:Panorama x:Name="Panorama" UseSnapBackScrolling="False" Margin="10,55,10,10"
@@ -372,29 +385,10 @@
                     <Button Width="40" VerticalAlignment="Center" Click="EpisodeDataBack"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Rectangle Width="20"
-                               Height="15">
-                            <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill">
-                                    <VisualBrush.Visual>
-                                        <Canvas Width="48"
-                                            Height="48"
-                                            Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
-                                            UseLayoutRounding="False">
-                                            <Path Width="25"
-                                              Height="18"
-                                              Canvas.Left="12"
-                                              Canvas.Top="15"
-                                              Stretch="Fill"
-                                              Fill="{DynamicResource LabelTextBrush}"
-                                              Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
-                                        </Canvas>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Rectangle.Fill>
-                            <Rectangle.LayoutTransform>
-                                <ScaleTransform ScaleX="-1" />
-                            </Rectangle.LayoutTransform>
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_arrow_left}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button>
                     <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
@@ -409,6 +403,53 @@
                       Grid.Row="2" Grid.ColumnSpan="2">
                     <ListView.View>
                         <GridView>
+                            <GridViewColumn Header="Fav" Width="30" >
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox  ToolTip="Favorite/Unfavorite this Release" IsChecked="{Binding Upload.Favorized}">
+                                            <CheckBox.Style>
+                                                <Style TargetType="CheckBox">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type CheckBox}">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Rectangle  x:Name="rect" Fill="{DynamicResource LabelTextBrush}" Width="17" Height="17" Opacity="0.2">
+                                                                        <Rectangle.Style>
+                                                                            <Style TargetType="Rectangle">
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="OpacityMask">
+                                                                                            <Setter.Value>
+                                                                                                <VisualBrush Visual="{StaticResource appbar_star_invincible}" Stretch="Uniform" />
+                                                                                            </Setter.Value>
+                                                                                        </Setter>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                                <Setter Property="OpacityMask">
+                                                                                    <Setter.Value>
+                                                                                        <VisualBrush Visual="{StaticResource appbar_star}" Stretch="Uniform" />
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                            </Style>
+                                                                        </Rectangle.Style>
+                                                                    </Rectangle>
+                                                                    <ContentPresenter VerticalAlignment="Center" Margin="10,0,0,0" />
+                                                                </StackPanel>
+
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsChecked" Value="true">
+                                                                        <Setter TargetName="rect" Property="Opacity" Value="1" />
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </CheckBox.Style>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                             <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
                             <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
                             <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
@@ -454,29 +495,10 @@
                         Command="{Binding SettingsCommand, ElementName=Window}"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Rectangle Width="20"
-                               Height="15">
-                            <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill">
-                                    <VisualBrush.Visual>
-                                        <Canvas Width="48"
-                                            Height="48"
-                                            Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
-                                            UseLayoutRounding="False">
-                                            <Path Width="25"
-                                              Height="18"
-                                              Canvas.Left="12"
-                                              Canvas.Top="15"
-                                              Stretch="Fill"
-                                              Fill="{DynamicResource LabelTextBrush}"
-                                              Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
-                                        </Canvas>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Rectangle.Fill>
-                            <Rectangle.LayoutTransform>
-                                <ScaleTransform ScaleX="-1" />
-                            </Rectangle.LayoutTransform>
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_arrow_left}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button>
                     <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="Settings"

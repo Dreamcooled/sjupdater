@@ -86,7 +86,7 @@ namespace SjUpdater.Model
             }
             IsLoading = true;
             String cover;
-            var episodes = SjInfo.ParseSjOrgSite(_show, out cover);
+            var episodes = SjInfo.ParseSjOrgSite(_show, out cover,Settings.Instance.UploadCache);
             AllDownloads = episodes;
             if (cover != "")
             {

@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SjUpdater.Model.DownloadData">
+    <Position X="9.75" Y="4.75" Width="1.5" />
+    <Members>
+      <Method Name="DownloadData" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAgAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Model\DownloadData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Upload" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.FavEpisodeData">
+    <Position X="7.25" Y="4.75" Width="1.5" />
+    <Members>
+      <Field Name="_downloads" Hidden="true" />
+      <Field Name="_name" Hidden="true" />
+      <Field Name="_newEpisode" Hidden="true" />
+      <Field Name="_newUpdate" Hidden="true" />
+      <Field Name="_number" Hidden="true" />
+      <Field Name="_reviewInfoReview" Hidden="true" />
+      <Field Name="_season" Hidden="true" />
+      <Method Name="FavEpisodeData" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>QAAIIAAAgQAAAAABAEAAAAQCAAAAAAACACEEAABAAAA=</HashCode>
+      <FileName>Model\FavEpisodeData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Season" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Downloads" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.FavSeasonData">
+    <Position X="4" Y="4.5" Width="2.25" />
+    <Members>
+      <Field Name="_episodes" Hidden="true" />
+      <Method Name="_episodes_CollectionChanged" Hidden="true" />
+      <Field Name="_nrEpisodes" Hidden="true" />
+      <Field Name="_number" Hidden="true" />
+      <Field Name="_show" Hidden="true" />
+      <Method Name="FavSeasonData" Hidden="true" />
+      <Method Name="RecountEpisodes" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AABABAAQACAAAAAAIUAAAAAAAAAEAAAAAAAAAAJAAAA=</HashCode>
+      <FileName>Model\FavSeasonData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Episodes" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.FavShowData">
+    <Position X="1.5" Y="4" Width="1.5" />
+    <Members>
+      <Field Name="_allDownloads" Hidden="true" />
+      <Field Name="_cover" Hidden="true" />
+      <Field Name="_filterFormat" Hidden="true" />
+      <Field Name="_filterHoster" Hidden="true" />
+      <Field Name="_filterLanguage" Hidden="true" />
+      <Field Name="_filterName" Hidden="true" />
+      <Field Name="_filterRuntime" Hidden="true" />
+      <Field Name="_filterShowNonEpisode" Hidden="true" />
+      <Field Name="_filterShowNonSeason" Hidden="true" />
+      <Field Name="_filterSize" Hidden="true" />
+      <Field Name="_filterUploader" Hidden="true" />
+      <Field Name="_infoUrl" Hidden="true" />
+      <Field Name="_isLoading" Hidden="true" />
+      <Field Name="_mutexFetch" Hidden="true" />
+      <Field Name="_mutexFilter" Hidden="true" />
+      <Field Name="_name" Hidden="true" />
+      <Field Name="_newEpisodes" Hidden="true" />
+      <Field Name="_notified" Hidden="true" />
+      <Field Name="_nrEpisodes" Hidden="true" />
+      <Field Name="_nrSeasons" Hidden="true" />
+      <Field Name="_seasons" Hidden="true" />
+      <Field Name="_show" Hidden="true" />
+      <Method Name="ApplyFilter" Hidden="true" />
+      <Method Name="FavShowData" Hidden="true" />
+      <Method Name="Fetch" Hidden="true" />
+      <Method Name="RecalcNumbers" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>kAgANAoQCAiCAAABA0EAQAxEIAAWgBAhAAAACSgYIAc=</HashCode>
+      <FileName>Model\FavShowData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Seasons" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.SeasonData">
+    <Position X="14.75" Y="5.25" Width="1.5" />
+    <Members>
+      <Method Name="SeasonData" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAEAAAAAAAAAAAAAEAAAACAgAAAAAAAA=</HashCode>
+      <FileName>Model\SeasonData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Show" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SjUpdater.Model.ShowData">
+    <Position X="17" Y="5.25" Width="1.5" />
+    <Members>
+      <Method Name="ShowData" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Model\ShowData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SjUpdater.Model.UploadData">
+    <Position X="12.25" Y="5" Width="1.5" />
+    <Members>
+      <Method Name="GetHashCode" Hidden="true" />
+      <Method Name="UploadData" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACQAAgAAACAAAAAAAAAgAAIAEAAAAAQAAAAA=</HashCode>
+      <FileName>Model\UploadData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Season" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
