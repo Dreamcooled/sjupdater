@@ -110,15 +110,19 @@ namespace SjUpdater
                                   if (updates.Count > 0)
                                   {
                                       updates.ForEach(show => show.Notified = true);
-                                      Dispatcher.Invoke(() =>
-                                                        {
-                                                            var n = new NotificationBalloon(updates);
-                                                            n.ShowViewClicked += on_ShowViewClicked;
-                                                            NotifyIcon.ShowCustomBalloon(n, PopupAnimation.Slide, 4000);
-                                                        });
+
+                                      if (_setti.ShowNotifications)
+                                      {
+                                          Dispatcher.Invoke(() =>
+                                                            {
+                                                                var n = new NotificationBalloon(updates);
+                                                                n.ShowViewClicked += on_ShowViewClicked;
+
+                                                                NotifyIcon.ShowCustomBalloon(n, PopupAnimation.Slide, _setti.NotificationTimeout <= 0 ? (int?) null : _setti.NotificationTimeout);
+                                                            });
+                                      }
                                   }
                               });
-
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -412,6 +416,21 @@ namespace SjUpdater
                                                                              {"6 h", 1000 * 3600 * 6},
                                                                              {"12 h", 1000 * 3600 * 12},
                                                                              {"24 h", 1000 * 3600 * 24}
+                                                                         };
+
+        public static readonly Dictionary<String, int> DictNotifyTimeouts = new Dictionary<string, int>()
+                                                                         {
+                                                                             {"Never", -1},
+                                                                             {"2 sec", 1000 * 2},
+                                                                             {"3 sec", 1000 * 3},
+                                                                             {"5 sec", 1000 * 5},
+                                                                             {"10 sec", 1000 * 10},
+                                                                             {"20 sec", 1000 * 20},
+                                                                             {"30 sec", 1000 * 30},
+                                                                             {"1 m", 1000 * 60},
+                                                                             {"2 m", 1000 * 60 * 2},
+                                                                             {"3 m", 1000 * 60 * 3},
+                                                                             {"5 m", 1000 * 60 * 5}
                                                                          };
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

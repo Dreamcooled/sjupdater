@@ -535,6 +535,14 @@
                               IsChecked="{Binding SortSeasonsDesc, Source={x:Static local:Settings.Instance}}" />
                         <CheckBox Content="Sort Episodes Descending"
                               IsChecked="{Binding SortEpisodesDesc, Source={x:Static local:Settings.Instance}}" />
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications, Source={x:Static local:Settings.Instance}}"/>
+                            <Label VerticalContentAlignment="Center" Content="Timeout for popup:" Margin="20,0,0,0"/>
+                            <ComboBox Width="100" ItemsSource="{Binding Source={x:Static local:MainWindow.DictNotifyTimeouts}}"
+                                  DisplayMemberPath="Key" SelectedValuePath="Value"
+                                  SelectedValue="{Binding NotificationTimeout, Source={x:Static local:Settings.Instance}}"/>
+                        </StackPanel>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
@@ -558,8 +566,13 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
                             <Label Content="Update Shows Automatically:"/>
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:MainWindow.DictUpdateTimes}}"
+                            <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Source={x:Static local:MainWindow.DictUpdateTimes}}"
                                   DisplayMemberPath="Key" SelectedValuePath="Value"
                                   SelectedValue="{Binding UpdateTime, Source={x:Static local:Settings.Instance}}"/>
 

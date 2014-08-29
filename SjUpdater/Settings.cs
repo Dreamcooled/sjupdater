@@ -114,9 +114,16 @@ namespace SjUpdater
         public bool MinimizeToTray { get; set; }
 
         /// <summary>
-        /// How often to update the TV Shows (in miliseconds)
+        /// How often to update the TV Shows (in milliseconds)
         /// </summary>
         public int UpdateTime { get; set; }
+
+        public bool ShowNotifications { get; set; }
+
+        /// <summary>
+        /// How long the popup will stay, use 0 to not automatically close (in milliseconds)
+        /// </summary>
+        public int NotificationTimeout { get; set; }
 
         /// <summary>
         /// Theme Color
@@ -155,6 +162,8 @@ namespace SjUpdater
             ThemeAccent = "Green";
             ThemeBase = "BaseDark";
             UpdateTime = 1000*60*15; //15min
+            ShowNotifications = true;
+            NotificationTimeout = 10000; //10 seconds
             FilterLanguage = UploadLanguage.Any;
             FilterShowNonEpisode = true;
             FilterShowNonSeason = true;
