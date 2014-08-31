@@ -5,14 +5,104 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.ServiceModel;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using RestSharp;
+using SjUpdater.Updater;
+using DataFormat = RestSharp.DataFormat;
 
 namespace SjUpdater.Utils
 {
     public class Stats
     {
+
+        public class SimpleResponse<T> {
+
+            public T Value { get; set; }
+        }
+
+        public enum TrackActivity
+        {
+            AppStart,
+            AppTerm,
+            AppUpdate,
+            ShowAdd,
+            Download,
+            Review,
+            Browse,
+            Filter
+        };
+
+        public static String StatsUrl;
+        public static bool AllowCustom;
+
+        public static void TrackAction(TrackActivity action, String comment=null)
+        {
+            try
+            {
+                var client = new RestClient(StatsUrl);
+
+                var request = new RestRequest("trackAction", Method.GET);
+                request.AddHeader("Accept", "application/xml");
+
+                request.AddParameter("id", getUniqueID());
+                request.AddParameter("version", GetVersionString());
+                request.AddParameter("action", action.ToString());
+                if (!String.IsNullOrEmpty(comment))
+                {
+                    request.AddParameter("comment", comment);
+                }
+
+                var response = client.Execute<SimpleResponse<String>>(request);
+
+                if (response.Data.Value == "ok")
+                {
+                    //good
+                }
+            }
+            catch
+            {
+                //sorry
+            }
+
+        }
+
+        public static void TrackCustomVariable(String key, object value, String comment=null)
+        {
+            if (!AllowCustom) return;
+            try
+            {
+                var client = new RestClient(StatsUrl);
+
+                var request = new RestRequest("trackCustomVariable", Method.GET);
+                request.AddHeader("Accept", "application/xml");
+
+                request.AddParameter("id", getUniqueID());
+                request.AddParameter("version", GetVersionString());
+                request.AddParameter("key", key);
+                request.AddParameter("value", SimpleJson.SerializeObject(value));
+                if (!String.IsNullOrEmpty(comment))
+                {
+                    request.AddParameter("comment", comment);
+                }
+
+                var response = client.Execute<SimpleResponse<String>>(request);
+
+                if (response.Data.Value == "ok")
+                {
+                    //good
+                }
+            }
+            catch 
+            {
+                //sorry
+            }
+          
+        }
+
 
         public static string GetVersionString()
         {
@@ -32,39 +122,6 @@ namespace SjUpdater.Utils
                 }
             }
             return "v"+String.Join(".", sli);
-        }
-
-        public static void SendStats(bool sendPersonalData)
-        {
-            try
-            {
-                string uid = BitConverter.ToString(new Crc64Iso().ComputeHash(Encoding.ASCII.GetBytes(getUniqueID()))).ToLower().Replace("-", "");
-
-                HttpWebRequest request = HttpWebRequest.CreateHttp("http://sjupdater.batrick.de/stats/");
-                request.Method = "POST";
-                request.ContentType = "application/x-www-form-urlencoded";
-                request.AllowAutoRedirect = true;
-                request.KeepAlive = false;
-
-                string data = string.Format("uid={0}&version={1}", uid,GetVersionString());
-                if (sendPersonalData)
-                {
-                    data += "&shows=" + String.Join(",", Settings.Instance.TvShows.Select(f => f.Name));
-                }
-
-
-                byte[] postData = Encoding.UTF8.GetBytes(data);
-
-                request.ContentLength = postData.Length;
-
-                request.GetRequestStream().Write(postData, 0, postData.Length);
-                request.GetResponse().Close();
-            }
-            catch
-            {
-                // :'(
-            }
-
         }
 
         private static string getUniqueID()

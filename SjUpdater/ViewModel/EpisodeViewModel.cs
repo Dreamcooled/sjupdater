@@ -19,6 +19,7 @@ namespace SjUpdater.ViewModel
                 var p = new Process();
                 p.StartInfo.FileName = _episode.ReviewInfoReview.ReviewUrl;
                 p.Start();
+                Stats.TrackAction(Stats.TrackActivity.Review);
             });
         }
 

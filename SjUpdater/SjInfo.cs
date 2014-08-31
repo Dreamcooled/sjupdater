@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using RestSharp;
 using SjUpdater.Model;
 using SjUpdater.Utils;
 
