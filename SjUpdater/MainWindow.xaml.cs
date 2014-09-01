@@ -50,7 +50,10 @@ namespace SjUpdater
 
             //Updater
             _updater = new UpdateWindow("http://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "");
-            _updater.updateStartedEvent += (a, dsa) => Terminate(null);
+            _updater.updateStartedEvent += (a, dsa) => { 
+                Terminate(null); 
+                Stats.TrackAction(Stats.TrackActivity.AppUpdate); 
+            };
 
             //Start!
             InitializeComponent();
@@ -74,7 +77,11 @@ namespace SjUpdater
             Update();
 
             //Stats
-            StaticInstance.SmartThreadPool.QueueWorkItem(() => Stats.SendStats(!_setti.NoPersonalData));
+
+            Stats.StatsUrl = "http://sjupdaer.enter_host_here.com/stats"; //Todo:
+            Stats.AllowCustom = !_setti.NoPersonalData;
+            Stats.TrackAction(Stats.TrackActivity.AppStart);
+            Stats.TrackCustomVariable("Shows",_setti.TvShows.Select(s => s.Name));
         }
 
         private void t_Elapsed(object sender, ElapsedEventArgs e)
@@ -164,6 +171,7 @@ namespace SjUpdater
                 {
                     Clipboard.SetText(s);
                     Clipboard.Flush();
+                    Stats.TrackAction(Stats.TrackActivity.Download);
                     return;
                 }
                 catch
@@ -292,6 +300,7 @@ namespace SjUpdater
             var p = new Process();
             p.StartInfo = new ProcessStartInfo(url);
             p.Start();
+            Stats.TrackAction(Stats.TrackActivity.Browse,"Show");
         }
 
         private void OpenHomepage(object sender, RoutedEventArgs e)
@@ -299,6 +308,7 @@ namespace SjUpdater
             var p = new Process();
             p.StartInfo = new ProcessStartInfo("http://serienjunkies.org");
             p.Start();
+            Stats.TrackAction(Stats.TrackActivity.Browse, "Home");
         }
 
 
@@ -350,6 +360,7 @@ namespace SjUpdater
                 TextBoxAutoComl.Text = "";
                 AddShowFlyout.IsOpen = false;
                 _setti.TvShows.Add(new FavShowData(new ShowData {Name = selectedShow.Key, Url = selectedShow.Value}, true));
+                Stats.TrackAction(Stats.TrackActivity.ShowAdd);
             }
         }
 
@@ -367,6 +378,7 @@ namespace SjUpdater
                 _updater.TryClose();
                 NotifyIcon.Dispose();
                 Settings.Save();
+                Stats.TrackAction(Stats.TrackActivity.AppTerm);
             }
         }
 
@@ -400,6 +412,7 @@ namespace SjUpdater
             {
                 var vm = FilterFlyout.DataContext as ShowViewModel;
                 vm.Show.ApplyFilter();
+                Stats.TrackAction(Stats.TrackActivity.Filter);
             }
 
         }
