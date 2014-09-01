@@ -1,14 +1,19 @@
 #filename:md5hash
 
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
-MahApps.Metro.dll:679722bbd4b992085ae8dc3a07728e25
-MahApps.Metro.Resources.dll:b093dfedc9ab46ecce0f1bd16091323f
-SjUpdater.exe:2e196812fb8f75ae8a79d8ef0b396573
+MahApps.Metro.dll:706f16b4bd3c0300daca57aee710fa3f
+MahApps.Metro.Resources.dll:0cffeea57a66aea081ba491f64632c5d
+RestSharp.dll:33d116ac4b9b681570b805412f242eed
+SjUpdater.exe:ec8b490e17f8b732fcfd64e540ea6725
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
 System.Windows.Interactivity.dll:3ab57a33a6e3a1476695d5a6e856c06a
 
 
 [###CHANGELOG###]
+
+v0.15.3 (2014-09-01)
+- ability to set the timeout for the notification (or disable it at all)
+- new stats system
 
 v0.15.2 (2014-08-20)
 - added icons and ability to favorize an upload
