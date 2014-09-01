@@ -78,7 +78,7 @@ namespace SjUpdater
 
             //Stats
 
-            Stats.StatsUrl = "http://sjupdaer.enter_host_here.com/stats"; //Todo:
+            Stats.StatsUrl = "http://sjupdater.batrick.de/stats";
             Stats.AllowCustom = !_setti.NoPersonalData;
             Stats.TrackAction(Stats.TrackActivity.AppStart);
             Stats.TrackCustomVariable("Shows",_setti.TvShows.Select(s => s.Name));
