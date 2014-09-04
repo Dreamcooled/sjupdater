@@ -1,15 +1,25 @@
 #filename:md5hash
 
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
-MahApps.Metro.dll:706f16b4bd3c0300daca57aee710fa3f
-MahApps.Metro.Resources.dll:0cffeea57a66aea081ba491f64632c5d
+MahApps.Metro.dll:f78f27ab00eea24225daf80105194dcb
+MahApps.Metro.Resources.dll:08b0d6812231ba5b08e7ccba2726ce4a
 RestSharp.dll:33d116ac4b9b681570b805412f242eed
-SjUpdater.exe:ec8b490e17f8b732fcfd64e540ea6725
+SjUpdater.exe:c9df97cd455ffbe1df6c0508abded0a6
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
 System.Windows.Interactivity.dll:3ab57a33a6e3a1476695d5a6e856c06a
 
 
 [###CHANGELOG###]
+
+v0.15.4 (2014-09-04)
+- fixed high cpu usage
+- maximum threads increased to 25
+- added button to add a new show
+- clicking enter at show searching adds the first show in the list
+- added ability to disable updater
+- updater now checks every 30 minutes (because on a server it's always running,
+  so checking only at programstart makes no sense)
+- background images can now be disabled
 
 v0.15.3 (2014-09-01)
 - ability to set the timeout for the notification (or disable it at all)
