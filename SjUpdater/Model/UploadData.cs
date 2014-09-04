@@ -33,7 +33,6 @@ namespace SjUpdater.Model
 
         public bool Favorized { get; set; } //Todo: move to Fav* class, since it's user data
 
-
         public static IEnumerable<UploadLanguage> LanguagesValues
         {
             get

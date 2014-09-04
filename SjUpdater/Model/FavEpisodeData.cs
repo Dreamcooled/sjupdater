@@ -25,7 +25,6 @@ namespace SjUpdater.Model
             _newUpdate = false;
         }
 
-
         public SjDeReview ReviewInfoReview
         {
             get { return _reviewInfoReview; }
@@ -95,7 +94,6 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
-
 
         public ObservableCollection<DownloadData> Downloads
         {

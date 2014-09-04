@@ -194,6 +194,9 @@ namespace SjUpdater.ViewModel
             }
         }
 
+        public Visibility BackgroundImageVisibility
+        { get { return Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Collapsed; } }
+
 
         private Color getColor()
         {

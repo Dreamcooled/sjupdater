@@ -28,6 +28,7 @@ namespace SjUpdater
         private readonly Settings _setti;
         private readonly MainWindowViewModel _viewModel;
         private readonly UpdateWindow _updater;
+        private readonly Timer updateTimer;
 
         public MainWindow()
         {
@@ -48,12 +49,14 @@ namespace SjUpdater
             _currentTheme = ThemeManager.GetAppTheme(_setti.ThemeBase);
             CurrentAccent = _setti.ThemeAccent;
 
+            updateTimer = new Timer();
             //Updater
             _updater = new UpdateWindow("http://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "");
-            _updater.updateStartedEvent += (a, dsa) => { 
-                Terminate(null); 
-                Stats.TrackAction(Stats.TrackActivity.AppUpdate); 
-            };
+            _updater.updateStartedEvent += (a, dsa) =>
+                                           {
+                                               Terminate(null);
+                                               Stats.TrackAction(Stats.TrackActivity.AppUpdate);
+                                           };
 
             //Start!
             InitializeComponent();
@@ -64,7 +67,7 @@ namespace SjUpdater
             _viewModel = new MainWindowViewModel(_setti.TvShows);
             ShowsPanorama.ItemsSource = _viewModel.PanoramaItems;
             SwitchPage(0);
-    
+
             //Autoupdate timer
             if (_setti.UpdateTime > 0) //Autoupdate enabled
             {
@@ -81,7 +84,15 @@ namespace SjUpdater
             Stats.StatsUrl = "http://sjupdater.batrick.de/stats";
             Stats.AllowCustom = !_setti.NoPersonalData;
             Stats.TrackAction(Stats.TrackActivity.AppStart);
-            Stats.TrackCustomVariable("Shows",_setti.TvShows.Select(s => s.Name));
+            Stats.TrackCustomVariable("Shows", _setti.TvShows.Select(s => s.Name));
+
+            if (_setti.CheckForUpdates)
+            {
+                _updater.Show(false, true);
+                updateTimer = new Timer(1000 * 60 * 30); // 30 minutes
+                updateTimer.Elapsed += (o, args) => Dispatcher.Invoke(() => _updater.Show(false, true));
+                updateTimer.Start();
+            }
         }
 
         private void t_Elapsed(object sender, ElapsedEventArgs e)
@@ -209,10 +220,7 @@ namespace SjUpdater
             }
         }
 
-        public String CurrentVersionString
-        {
-            get { return Stats.GetVersionString(); }
-        }
+        public String CurrentVersionString { get { return Stats.GetVersionString(); } }
 
         public ICommand AddShowCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }
@@ -275,7 +283,6 @@ namespace SjUpdater
             SwitchPage(2);
         }
 
-
         private void on_ShowViewClicked(object sender, ShowViewModel showView)
         {
             if (!IsVisible)
@@ -291,8 +298,6 @@ namespace SjUpdater
             SwitchPage(1);
         }
 
-
-
         private void ShowGotoPage(object sender, RoutedEventArgs e)
         {
             var vm = ((ShowViewModel) ShowGrid.DataContext).Show;
@@ -300,7 +305,7 @@ namespace SjUpdater
             var p = new Process();
             p.StartInfo = new ProcessStartInfo(url);
             p.Start();
-            Stats.TrackAction(Stats.TrackActivity.Browse,"Show");
+            Stats.TrackAction(Stats.TrackActivity.Browse, "Show");
         }
 
         private void OpenHomepage(object sender, RoutedEventArgs e)
@@ -310,7 +315,6 @@ namespace SjUpdater
             p.Start();
             Stats.TrackAction(Stats.TrackActivity.Browse, "Home");
         }
-
 
         private void ShowDelete(object sender, RoutedEventArgs e)
         {
@@ -327,7 +331,6 @@ namespace SjUpdater
         {
             SwitchPage(0);
         }
-
 
         private void NavBack(object sender, ExecutedRoutedEventArgs e)
         {
@@ -348,9 +351,28 @@ namespace SjUpdater
 
         private void ListViewAutoCompl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            AddSelectedShow();
+        }
+
+        private void TextBoxAutoComl_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                AddSelectedShow();
+        }
+
+        private void AddSelectedShowButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddSelectedShow();
+        }
+
+        private void AddSelectedShow()
+        {
+            if (ListViewAutoCompl.HasItems)
+                ListViewAutoCompl.SelectedIndex = 0;
+
             if (ListViewAutoCompl.SelectedValue != null)
             {
-                var selectedShow = (KeyValuePair<string, string>) ListViewAutoCompl.SelectedItem;
+                var selectedShow = (KeyValuePair<string, string>)ListViewAutoCompl.SelectedItem;
 
                 if (_setti.TvShows.Any(t => t.Show.Url == selectedShow.Value))
                 {
@@ -359,7 +381,7 @@ namespace SjUpdater
 
                 TextBoxAutoComl.Text = "";
                 AddShowFlyout.IsOpen = false;
-                _setti.TvShows.Add(new FavShowData(new ShowData {Name = selectedShow.Key, Url = selectedShow.Value}, true));
+                _setti.TvShows.Add(new FavShowData(new ShowData { Name = selectedShow.Key, Url = selectedShow.Value }, true));
                 Stats.TrackAction(Stats.TrackActivity.ShowAdd);
             }
         }
@@ -390,7 +412,7 @@ namespace SjUpdater
         {
             _forceClose = true;
             Close();
-            
+
         }
 
         //called when windows shuts down or user logs out
@@ -399,12 +421,10 @@ namespace SjUpdater
             Terminate(null);
         }
 
-
         private void ShowFilter(object sender, RoutedEventArgs e)
         {
             FilterFlyout.IsOpen = !FilterFlyout.IsOpen;
         }
-
 
         private void FilterFlyout_OnIsOpenChanged(object sender, EventArgs e)
         {
@@ -432,33 +452,30 @@ namespace SjUpdater
                                                                          };
 
         public static readonly Dictionary<String, int> DictNotifyTimeouts = new Dictionary<string, int>()
-                                                                         {
-                                                                             {"Never", -1},
-                                                                             {"2 sec", 1000 * 2},
-                                                                             {"3 sec", 1000 * 3},
-                                                                             {"5 sec", 1000 * 5},
-                                                                             {"10 sec", 1000 * 10},
-                                                                             {"20 sec", 1000 * 20},
-                                                                             {"30 sec", 1000 * 30},
-                                                                             {"1 m", 1000 * 60},
-                                                                             {"2 m", 1000 * 60 * 2},
-                                                                             {"3 m", 1000 * 60 * 3},
-                                                                             {"5 m", 1000 * 60 * 5}
-                                                                         };
+                                                                            {
+                                                                                {"Never", -1},
+                                                                                {"2 sec", 1000 * 2},
+                                                                                {"3 sec", 1000 * 3},
+                                                                                {"5 sec", 1000 * 5},
+                                                                                {"10 sec", 1000 * 10},
+                                                                                {"20 sec", 1000 * 20},
+                                                                                {"30 sec", 1000 * 30},
+                                                                                {"1 m", 1000 * 60},
+                                                                                {"2 m", 1000 * 60 * 2},
+                                                                                {"3 m", 1000 * 60 * 3},
+                                                                                {"5 m", 1000 * 60 * 5}
+                                                                            };
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Timer timer = new Timer(3000);
-            timer.AutoReset = false;
-            timer.Elapsed += (o, args) => Dispatcher.Invoke(() => _updater.Show(false, true));
 
-            timer.Start();
         }
 
         private void ChangeLogButtonClicked(object sender, RoutedEventArgs e)
         {
-            _updater.Show(true,false);
+            _updater.Show(true, false);
         }
 
+        
     }
 }

@@ -38,8 +38,6 @@ namespace SjUpdater.Utils
             }
         }
 
-
-
         #endregion // Debugging Aides
 
         #region INotifyPropertyChanged Members

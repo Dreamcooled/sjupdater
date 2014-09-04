@@ -42,6 +42,11 @@ namespace SjUpdater.Updater
             updater.errorEvent += updater_errorEvent;
 
             this.DataContext = new UpdaterViewModel(ref updater);
+
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            //   typeof(Timeline),
+            //   new FrameworkPropertyMetadata { DefaultValue = 1 }
+            //   );
         }
 
         void ThemeManager_IsThemeChanged(object sender, OnThemeChangedEventArgs e)
@@ -69,7 +74,7 @@ namespace SjUpdater.Updater
             return true;
         }
 
-        private bool error = false;
+        private bool error;
         void updater_errorEvent(object sender, System.IO.ErrorEventArgs e)
         {
             error = true;
@@ -84,31 +89,31 @@ namespace SjUpdater.Updater
                 this.Activate();
                 return;
             }
-              
+
             if (!SilentCheck)
                 this.Show();
 
+            updater.GetChangelog();
+
             var updaterTask = updater.CheckForUpdates();
 
-            Task getChangelogTask = updater.GetChangelog();
-
-            if(SilentCheck)
-            updaterTask.ContinueWith(t =>
-                                     {
-                                         if (!updater.UpdateAvailable && !ShowIfNoUpdateAvailable)
+            if (SilentCheck)
+                updaterTask.ContinueWith(t =>
                                          {
-                                             return;
-                                         }
+                                             if (!updater.UpdateAvailable && !ShowIfNoUpdateAvailable)
+                                             {
+                                                 return;
+                                             }
 
-                                         Dispatcher.Invoke(() =>
-                                                           {
-                                                               if (!error)
+                                             Dispatcher.Invoke(() =>
                                                                {
-                                                                   if(!error)
-                                                                   this.Show();
-                                                               }
-                                                           });
-                                     });
+                                                                   if (!error)
+                                                                   {
+                                                                       if (!error)
+                                                                           this.Show();
+                                                                   }
+                                                               });
+                                         });
         }
 
         public new void Show()

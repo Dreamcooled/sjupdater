@@ -24,8 +24,6 @@ namespace SjUpdater
     /// </summary>
     public partial class NotificationBalloon :UserControl
     {
-
-
         public ICommand ShowClickedCommand { get; private set; }
         public NotificationBalloon(IEnumerable<FavShowData> list)
         {

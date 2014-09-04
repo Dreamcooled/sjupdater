@@ -20,7 +20,6 @@ namespace SjUpdater.Utils
             return Native.memcmp(array, array2, array.Length) == 0;
         }
 
-
         public static void Sort<TSource>(this ObservableCollection<TSource> source, Comparer<TSource> comparer, bool desc = false)
         {
             if (source == null) return;

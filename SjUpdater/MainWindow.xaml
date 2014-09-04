@@ -31,10 +31,27 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" controls:TextboxHelper.ClearTextButton="True"
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <TextBox MaxWidth="210" controls:TextboxHelper.ClearTextButton="True"
                              controls:TextboxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
-                             TextChanged="SearchTextBox_TextChanged" />
+                             TextChanged="SearchTextBox_TextChanged" PreviewKeyUp="TextBoxAutoComl_PreviewKeyUp" />
+
+                        <Button Width="Auto" Height="Auto" Content="Add" VerticalAlignment="Center" Margin="10,0,10,0" Style="{DynamicResource MetroFlatButton}" Click="AddSelectedShowButton_Click" >
+                            <Button.ToolTip>
+                                <TextBlock>
+                                    Add selected show
+                                    <LineBreak />
+                                    <LineBreak />
+                                    you can also doubleclick on a show
+                                    <LineBreak/>
+                                    or use Enter to add the first show
+                                </TextBlock>
+                            </Button.ToolTip>
+                        </Button>
+                    </StackPanel>
 
                     <ListView Grid.Row="1" Margin="0,-1,0,0" x:Name="ListViewAutoCompl" DisplayMemberPath="Key"
                               MouseDoubleClick="ListViewAutoCompl_MouseDoubleClick" Foreground="{x:Null}"
@@ -137,10 +154,16 @@
                                        Command="{Binding ShowClickedCommand, ElementName=Window}"
                                        CommandParameter="{Binding ShowViewModel}" Background="{DynamicResource ControlBackgroundBrush}">
                                 <Grid>
-                                    <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.9" />
+                                    <Image Source="{Binding Background.ImageSource}" Visibility="{Binding BackgroundImageVisibility}" Stretch="UniformToFill" Opacity="0.9" />
+                                    <Rectangle Fill="{DynamicResource AccentColorBrush3}" Visibility="{Binding BackgroundRectangleVisibility}">
+                                        <Rectangle.Effect>
+                                            <BlurEffect Radius="2"/>
+                                        </Rectangle.Effect>
+                                    </Rectangle>
                                     <!--<Border Background="{DynamicResource AccentColorBrush}" Opacity="0.1" />-->
-                                    <controls:MetroProgressBar IsIndeterminate="True" Margin="25,0,25,0"
-                                                           Visibility="{Binding IsLoadingVisible}" Foreground="White" />
+                                    
+                                   
+                                    <controls:ProgressRing Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
                                     <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top"
                                             HorizontalAlignment="Stretch">
@@ -303,7 +326,9 @@
                                     <Border Grid.RowSpan="5"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
 
                                     <Image Grid.Row="0" Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
-                                       Grid.RowSpan="5" Opacity="{Binding ImageOpacity}" />
+                                       Grid.RowSpan="5" Opacity="{Binding ImageOpacity}" Visibility="{Binding BackgroundImageVisibility}"/>
+
+                                    
                                     <!---Border Grid.RowSpan="4" Background="#A0010101" /-->
 
 
@@ -526,7 +551,6 @@
                                   ItemsSource="{Binding Source={x:Static metro:ThemeManager.DefaultAccents}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Name"
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
-
                         </Grid>
 
                         <CheckBox Content="Sort Tv Shows Alphabetically"
@@ -543,6 +567,10 @@
                                   DisplayMemberPath="Key" SelectedValuePath="Value"
                                   SelectedValue="{Binding NotificationTimeout, Source={x:Static local:Settings.Instance}}"/>
                         </StackPanel>
+                        
+                        <StackPanel Margin="0,10,0,0">
+                            <CheckBox Content="Enable Images (restart needed)" IsChecked="{Binding EnableImages, Source={x:Static local:Settings.Instance}}"/>
+                        </StackPanel>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
@@ -556,7 +584,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Label Content="Number of Fetching Threads:"/>
-                            <Slider Minimum="1" Maximum="8" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
+                            <Slider Minimum="1" Maximum="25" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
         					IsSnapToTickEnabled="True"
         					Value="{Binding NumFetchThreads, Source={x:Static local:Settings.Instance}}" />
                             <Label Content="{Binding Value, ElementName=threadSlider}" Grid.Column="2" />
@@ -584,6 +612,7 @@
                             <Label>Current Version:</Label>
                             <Label Content="{Binding ElementName=Window,Path=CurrentVersionString}" Margin="10,0"/>
                             <Button Click="ChangeLogButtonClicked">Changelog / Updates</Button>
+                            <CheckBox Margin="20,0,0,0" Content="Autocheck at start and every 30 minutes (restart needed)" IsChecked="{Binding CheckForUpdates, Source={x:Static local:Settings.Instance}}"/>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>

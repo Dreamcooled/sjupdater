@@ -103,7 +103,6 @@ namespace SjUpdater.Utils
           
         }
 
-
         public static string GetVersionString()
         {
             Version v = Assembly.GetExecutingAssembly().GetName().Version;

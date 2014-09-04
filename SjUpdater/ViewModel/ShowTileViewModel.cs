@@ -153,5 +153,11 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public Visibility BackgroundImageVisibility
+        { get { return Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Collapsed; } }
+
+        public Visibility BackgroundRectangleVisibility
+        { get { return Settings.Instance.EnableImages ? Visibility.Collapsed : Visibility.Visible; } }
     }
 }

@@ -125,6 +125,13 @@ namespace SjUpdater
         /// </summary>
         public int NotificationTimeout { get; set; }
 
+        public bool EnableImages { get; set; }
+
+        /// <summary>
+        /// whether it should automatically check for updates
+        /// </summary>
+        public bool CheckForUpdates { get; set; }
+
         /// <summary>
         /// Theme Color
         /// </summary>
@@ -139,7 +146,6 @@ namespace SjUpdater
         /// Whether we are allowed to send personal data to stats server
         /// </summary>
         public bool NoPersonalData { get; set; }
-
 
         //Default Filters: See FavShowData.cs
 
@@ -158,7 +164,7 @@ namespace SjUpdater
             TvShows = new ObservableCollection<FavShowData>();
             SortSeasonsDesc = false;
             SortEpisodesDesc = false;
-            NumFetchThreads = 3;
+            NumFetchThreads = 5;
             ThemeAccent = "Green";
             ThemeBase = "BaseDark";
             UpdateTime = 1000*60*15; //15min
@@ -168,6 +174,8 @@ namespace SjUpdater
             FilterShowNonEpisode = true;
             FilterShowNonSeason = true;
             NoPersonalData = false;
+            EnableImages = true;
+            CheckForUpdates = true;
         }
         
         public static Settings Load(string filename)

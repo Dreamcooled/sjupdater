@@ -68,7 +68,6 @@ namespace SjUpdater.Model
 
         }
 
-
         readonly Mutex _mutexFetch = new Mutex();
         readonly Mutex _mutexFilter = new Mutex();
         public void Fetch()
@@ -84,21 +83,25 @@ namespace SjUpdater.Model
             {
                 InfoUrl = SjInfo.SearchSjDe(Name);
             }
-            IsLoading = true;
-            String cover;
-            var episodes = SjInfo.ParseSjOrgSite(_show, out cover,Settings.Instance.UploadCache);
-            AllDownloads = episodes;
-            if (cover != "")
+
+            try
             {
-                Cover = cover;
+                IsLoading = true;
+                String cover;
+                var episodes = SjInfo.ParseSjOrgSite(_show, out cover, Settings.Instance.UploadCache);
+                AllDownloads = episodes;
+                if (cover != "")
+                {
+                    Cover = cover;
+                }
+                _mutexFetch.ReleaseMutex();
+                ApplyFilter(false);
             }
-            _mutexFetch.ReleaseMutex();
-            ApplyFilter(false);
-            IsLoading = false;
+            finally
+            {
+                IsLoading = false;
+            }
         }
-
-
-
 
         public void ApplyFilter(bool reset=true)
         {
@@ -146,7 +149,6 @@ namespace SjUpdater.Model
                                        new FavSeasonData() {Number = seasonNr,Show=this};
                 }
 
-
                 //upload stuff --------------------------------------------------------------------
                 if (currentUpload == null || currentUpload != download.Upload)
                 {
@@ -185,7 +187,6 @@ namespace SjUpdater.Model
                     continue;
                 }
 
-
                 //episode stuff ---------------------
 
                 if (!String.IsNullOrWhiteSpace(FilterName) && //Filter: Name
@@ -207,9 +208,6 @@ namespace SjUpdater.Model
                         }
                     }
                 }
-
-       
-
 
                 int episodeNr = -1;
                 if (seasonNr != -1)
@@ -253,9 +251,6 @@ namespace SjUpdater.Model
                         }
                     }
                 }
-
-
-
 
                 if (currentFavEpisode == null)
                 {
@@ -309,7 +304,6 @@ namespace SjUpdater.Model
 
         }
 
-
         public ShowData Show
         {
             get { return _show; }
@@ -331,8 +325,6 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
-
-
 
         public String Cover
         {
@@ -382,9 +374,6 @@ namespace SjUpdater.Model
             }
         }
 
-
-
-
         /// <summary>
         /// Is set to true when we have new episodes (count > cached number). Reset this to false, yourself
         /// </summary>
@@ -399,7 +388,6 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
-
 
         /// <summary>
         /// Not touched by class at all. It's intended to be set to true when you have notified the user about updates.
@@ -428,7 +416,6 @@ namespace SjUpdater.Model
             }
         }
 
-
         private void RecalcNumbers()
         {
             int episodes = 0;
@@ -444,7 +431,6 @@ namespace SjUpdater.Model
             NumberOfEpisodes = episodes;
             NumberOfSeasons = seasons;
         }
-
 
         [XmlIgnore]
         public List<DownloadData> AllDownloads
@@ -612,7 +598,5 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
-
-
     }
 }

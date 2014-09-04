@@ -25,7 +25,6 @@ namespace SjUpdater.Utils
             this.canExecuteMethod = (x) => { return true; };
         }
 
-
         public bool CanExecute(T1 parameter)
         {
             if (canExecuteMethod == null) return true;
@@ -78,9 +77,6 @@ namespace SjUpdater.Utils
             }
         }
 #endif
-
-
-
         /// <summary>
         /// Raises the <see cref="CanExecuteChanged" /> event.
         /// </summary>

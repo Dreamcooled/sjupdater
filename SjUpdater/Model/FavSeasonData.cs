@@ -21,8 +21,6 @@ namespace SjUpdater.Model
             
         }
 
-
-
         public FavShowData Show
         {
             get { return _show; }

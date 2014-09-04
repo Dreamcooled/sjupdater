@@ -226,82 +226,82 @@ namespace SjUpdater.Updater
             IsChecking = true;
             try
             {
-            HttpWebRequest request = WebRequest.CreateHttp(infofileurl);
-            request.AllowAutoRedirect = true;
+                HttpWebRequest request = WebRequest.CreateHttp(infofileurl);
+                request.AllowAutoRedirect = true;
 
-            HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
-            StreamReader reader = new StreamReader(response.GetResponseStream());
+                HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
+                StreamReader reader = new StreamReader(response.GetResponseStream());
 
-            List<UpdateFile> files = new List<UpdateFile>();
+                List<UpdateFile> files = new List<UpdateFile>();
 
-            while (reader.Peek() >= 0)
-            {
-                string line = (await reader.ReadLineAsync()).Trim();
-
-                if (line.ToLower() == "[###changelog###]")
-                    break;
-
-                if (!line.Contains(":"))
-                    continue;
-
-                if (line.StartsWith("#"))
-                    continue;
-
-                string[] linesplit = (line).Split(new char[] {':'});
-                files.Add(new UpdateFile(linesplit[0].Trim(), linesplit[1].Trim().ToLower()));
-            }
-
-            List<UpdateFile> newfiles = new List<UpdateFile>();
-
-            foreach (var file in files)
-            {
-                bool addFile = false;
-
-                if (string.IsNullOrWhiteSpace(file.name))
-                    continue;
-
-                if (!File.Exists(file.name))
+                while (reader.Peek() >= 0)
                 {
-                    addFile = true;
+                    string line = (await reader.ReadLineAsync()).Trim();
+
+                    if (line.ToLower() == "[###changelog###]")
+                        break;
+
+                    if (!line.Contains(":"))
+                        continue;
+
+                    if (line.StartsWith("#"))
+                        continue;
+
+                    string[] linesplit = (line).Split(new char[] {':'});
+                    files.Add(new UpdateFile(linesplit[0].Trim(), linesplit[1].Trim().ToLower()));
                 }
 
-                if (!addFile)
-                {
-                    using (FileStream fs = new FileStream(file.name, FileMode.Open, FileAccess.Read))
-                    {
-                        if (file.length > 0 && file.length != fs.Length)
-                        {
-                            addFile = true;
-                        }
-                        else
-                        {
-                            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-                            byte[] hashbytes = md5.ComputeHash(fs);
-                            string hashstring = BitConverter.ToString(hashbytes).ToLower().Replace("-", "");
+                List<UpdateFile> newfiles = new List<UpdateFile>();
 
-                            if (file.md5hash != hashstring)
+                foreach (var file in files)
+                {
+                    bool addFile = false;
+
+                    if (string.IsNullOrWhiteSpace(file.name))
+                        continue;
+
+                    if (!File.Exists(file.name))
+                    {
+                        addFile = true;
+                    }
+
+                    if (!addFile)
+                    {
+                        using (FileStream fs = new FileStream(file.name, FileMode.Open, FileAccess.Read))
+                        {
+                            if (file.length > 0 && file.length != fs.Length)
+                            {
                                 addFile = true;
+                            }
+                            else
+                            {
+                                MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+                                byte[] hashbytes = md5.ComputeHash(fs);
+                                string hashstring = BitConverter.ToString(hashbytes).ToLower().Replace("-", "");
+
+                                if (file.md5hash != hashstring)
+                                    addFile = true;
+                            }
                         }
+                    }
+
+                    if (addFile)
+                    {
+                        request = WebRequest.CreateHttp(_baseurl + file.name);
+                        request.AllowAutoRedirect = true;
+
+                        response = await request.GetResponseAsync() as HttpWebResponse;
+
+                        int length = (int) response.ContentLength;
+                        response.Close();
+
+                        newfiles.Add(new UpdateFile(file.name, file.md5hash, length));
                     }
                 }
 
-                if (addFile)
-                {
-                    request = WebRequest.CreateHttp(_baseurl + file.name);
-                    request.AllowAutoRedirect = true;
+                UpdateAvailable = newfiles.Count > 0;
 
-                    response = await request.GetResponseAsync() as HttpWebResponse;
-
-                    int length = (int)response.ContentLength;
-                    response.Close();
-
-                    newfiles.Add(new UpdateFile(file.name, file.md5hash, length));
-                }
-            }
-
-            UpdateAvailable = newfiles.Count > 0;
-
-            UpdateFiles = newfiles.ToArray();
+                UpdateFiles = newfiles.ToArray();
 
             }
             catch (Exception e)

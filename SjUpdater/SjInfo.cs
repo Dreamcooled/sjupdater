@@ -43,7 +43,6 @@ namespace SjUpdater
 
         }
 
-
         public static String SearchSjDe(String Title)
         {
             Title = CleanText(Title);
@@ -97,7 +96,6 @@ namespace SjUpdater
             return "";
         }
 
-
         public static SjDeReview ParseSjDeSite(String SjDeUrl , int season, int episode)
         {
             if (String.IsNullOrWhiteSpace(SjDeUrl) || season==-1 || episode ==-1)
@@ -135,9 +133,6 @@ namespace SjUpdater
             }
             return null;
         }
-
-
-
 
         public static List<KeyValuePair<String, String>> SearchSjOrg(string Title)
         {
@@ -213,8 +208,6 @@ namespace SjUpdater
             SeasonData seasonData=null;
             UploadData uploadData=null;
            // int season = -1;
-
-
 
             while (!reader.EndOfStream)
             {
@@ -304,10 +297,8 @@ namespace SjUpdater
                                     uploadData.Format = "1080i";
                                 }
 
-
                                 DownloadData dd = new DownloadData();
                                 dd.Upload = uploadCache == null ? uploadData : uploadCache.GetUniqueUploadData(uploadData);
-
 
                                 //ed.EpisodeN = episode;
                                 dd.Title = title;
@@ -318,8 +309,6 @@ namespace SjUpdater
                                 }
 
                                 list.Add(dd);
-
-
                             }
                             else if ((m = new Regex("(?:(?:<p(?:\\s+style\\s*\\=\\s*\\\"[^\\\"]+\\\"\\s*)?>)|(?:<div\\s+class\\s*=\\s*\"info\">))\\s*(.*?(?:Dauer|Größe|Sprache|Format|Uploader).*?)\\s*(?:(?:</p>)|(?:</div>))").Match(line)).Success || 
                                 ((m = new Regex("<p\\s+style\\s*\\=\\s*\\\"[^\\\"]+\\\"\\s*>").Match(line)).Success && ((line=reader.ReadLine())!="") && (m = new Regex("\\s*(.*?(?:Dauer|Größe|Sprache|Format|Uploader).*?)\\s*</p>").Match(line)).Success))
@@ -446,10 +435,6 @@ namespace SjUpdater
                                     nextpageurl += "page/" + nextPage + "/";
                                 }
                             }
-
-
-
-                           
                         }
                         if (new Regex("</div>").Match(line).Success)
                         {
@@ -465,9 +450,6 @@ namespace SjUpdater
             reader.Close();
             return list;
         }
-
-
-
 
         /*public static ImageSource GetNewestCover(String urlOrName)
         {
@@ -491,7 +473,6 @@ namespace SjUpdater
             {
                 throw new ArgumentException("Invalid Url or Tvshow name");
             }
-
 
             HttpWebRequest req = HttpWebRequest.CreateHttp(url);
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
