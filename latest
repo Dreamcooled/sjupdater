@@ -16,7 +16,7 @@ v0.15.5 (2014-09-06)
 - fixed some bugs on "Add show"-screen
 - added restart button in settings
 - you can now select and add multiple shows
-- removed the need of administrator
+- removed the need of administrator-rights
 - reduced maximum threads to 12
 - improved multithreading (performance)
 - fixed bug, which caused that searching is not possible
