@@ -1,15 +1,26 @@
 #filename:md5hash
 
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
-MahApps.Metro.dll:f78f27ab00eea24225daf80105194dcb
-MahApps.Metro.Resources.dll:08b0d6812231ba5b08e7ccba2726ce4a
+MahApps.Metro.dll:0bf6c9febd4e471b9e24fb3e7b5275d1
+MahApps.Metro.Resources.dll:c4e2b4fbb3b7ef747a29b328743f1ffd
 RestSharp.dll:33d116ac4b9b681570b805412f242eed
-SjUpdater.exe:c9df97cd455ffbe1df6c0508abded0a6
+SjUpdater.exe:3a0e2574bad06442309f6fa99caec891
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
 System.Windows.Interactivity.dll:3ab57a33a6e3a1476695d5a6e856c06a
 
 
 [###CHANGELOG###]
+
+v0.15.5 (2014-09-06)
+- fixed width of search textbox
+- fixed some bugs on "Add show"-screen
+- added restart button in settings
+- you can now select and add multiple shows
+- removed the need of administrator
+- reduced maximum threads to 12
+- improved multithreading (performance)
+- fixed bug, which caused that searching is not possible
+  while shows are updating
 
 v0.15.4 (2014-09-04)
 - fixed high cpu usage
