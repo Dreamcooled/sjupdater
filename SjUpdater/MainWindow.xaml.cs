@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using Amib.Threading;
 using MahApps.Metro;
 using SjUpdater.Model;
@@ -111,12 +112,12 @@ namespace SjUpdater
         {
             if (!_sema.WaitOne(10)) return;
 
-            var stp = new SmartThreadPool();
-            stp.MaxThreads = (int) _setti.NumFetchThreads;
+            var stp = StaticInstance.ThreadPool;
+            //stp.MaxThreads = (int) _setti.NumFetchThreads;
             var results = new List<IWaitableResult>();
             foreach (FavShowData t in _setti.TvShows)
             {
-                results.Add(stp.QueueWorkItem(data => data.Fetch(), t)); //schedule update of show (executed paralell)
+                results.Add(stp.QueueWorkItem(data => data.Fetch(), t,true,ThreadPriority.AboveNormal)); //schedule update of show (executed paralell)
             }
             //wait for completion
             stp.QueueWorkItem(() =>
@@ -140,7 +141,7 @@ namespace SjUpdater
                                                             });
                                       }
                                   }
-                              });
+                              }, true, ThreadPriority.AboveNormal);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -252,7 +253,7 @@ namespace SjUpdater
 
             if (_currentWorkItem == null || _currentWorkItem.IsCompleted)
             {
-                _currentWorkItem = StaticInstance.SmartThreadPool.QueueWorkItem(UpdateShowSearch, searchString);
+                _currentWorkItem = StaticInstance.ThreadPool.QueueWorkItem(UpdateShowSearch, searchString, true, ThreadPriority.Highest);
             }
             else
             {
@@ -271,7 +272,7 @@ namespace SjUpdater
 
             if (!string.IsNullOrEmpty(_nextSearchString) && _nextSearchString != query)
             {
-                _currentWorkItem = StaticInstance.SmartThreadPool.QueueWorkItem(UpdateShowSearch, _nextSearchString);
+                _currentWorkItem = StaticInstance.ThreadPool.QueueWorkItem(UpdateShowSearch, _nextSearchString, true, ThreadPriority.Highest);
             }
         }
 
@@ -367,22 +368,25 @@ namespace SjUpdater
 
         private void AddSelectedShow()
         {
-            if (ListViewAutoCompl.HasItems)
+            if (ListViewAutoCompl.HasItems && ListViewAutoCompl.SelectedItem == null)
                 ListViewAutoCompl.SelectedIndex = 0;
 
-            if (ListViewAutoCompl.SelectedValue != null)
+            if (ListViewAutoCompl.SelectedItem != null)
             {
-                var selectedShow = (KeyValuePair<string, string>)ListViewAutoCompl.SelectedItem;
-
-                if (_setti.TvShows.Any(t => t.Show.Url == selectedShow.Value))
+                foreach (var item in ListViewAutoCompl.SelectedItems)
                 {
-                    return;
-                }
+                    var selectedShow = (KeyValuePair<string, string>)item;
 
-                TextBoxAutoComl.Text = "";
-                AddShowFlyout.IsOpen = false;
-                _setti.TvShows.Add(new FavShowData(new ShowData { Name = selectedShow.Key, Url = selectedShow.Value }, true));
-                Stats.TrackAction(Stats.TrackActivity.ShowAdd);
+                    if (_setti.TvShows.Any(t => t.Show.Url == selectedShow.Value))
+                    {
+                        return;
+                    }
+
+                    TextBoxAutoComl.Text = "";
+                    AddShowFlyout.IsOpen = false;
+                    _setti.TvShows.Add(new FavShowData(new ShowData { Name = selectedShow.Key, Url = selectedShow.Value }, true));
+                    Stats.TrackAction(Stats.TrackActivity.ShowAdd);
+                }
             }
         }
 
@@ -476,6 +480,24 @@ namespace SjUpdater
             _updater.Show(true, false);
         }
 
-        
+        private void restartButton_Click(object sender, RoutedEventArgs e)
+        {
+            string exectuable = "SjUpdater.exe";
+
+            string parameter = "";
+
+            string command =
+                "/C @echo off & for /l %a in (0) do TaskList /FI \"IMAGENAME eq " + exectuable + "\" 2>NUL | Find \"" + exectuable + "\" >NUL || " + //Waits on app termination
+                "( start " + exectuable + " " + parameter + " & EXIT)";
+            ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", command);
+            psi.CreateNoWindow = true;
+            psi.UseShellExecute = false;
+            psi.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            Process cmd = new Process();
+            cmd.StartInfo = psi;
+            cmd.Start();
+            Terminate(null);
+        }
     }
 }

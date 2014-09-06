@@ -43,72 +43,74 @@ namespace SjUpdater.Utils
         {
             if (_workItem != null && !_workItem.IsCompleted) 
                 return;
-            _workItem =  StaticInstance.SmartThreadPool.QueueWorkItem(() =>
-                              {
-                                 // var instance = dependencyObject as CachedBitmap;
-                                  //SetLoading(true, instance);
- 
+            _workItem = StaticInstance.ThreadPool.QueueWorkItem(() =>
+                                                                {
+                                                                    // var instance = dependencyObject as CachedBitmap;
+                                                                    //SetLoading(true, instance);
 
-                                  HashAlgorithm hashAlg = new SHA512CryptoServiceProvider();
 
-                                  Crc64 crc64 = new Crc64(Crc64Iso.Iso3309Polynomial);
+                                                                    HashAlgorithm hashAlg = new SHA512CryptoServiceProvider();
 
-                                  string urlcrc64 =
-                                      BitConverter.ToString(crc64.ComputeHash(Encoding.ASCII.GetBytes(url)))
-                                                  .Replace("-", "").ToLower();
+                                                                    Crc64 crc64 = new Crc64(Crc64Iso.Iso3309Polynomial);
 
-                                  string cachePath = Path.Combine(Path.GetTempPath(), "sjupdater", "imagechache");
-                                  string filepath = Path.Combine(cachePath, urlcrc64.ToLower() + ".imagecache");
+                                                                    string urlcrc64 =
+                                                                        BitConverter.ToString(crc64.ComputeHash(Encoding.ASCII.GetBytes(url)))
+                                                                                    .Replace("-", "").ToLower();
 
-                                  Action downloadAndSetAndCache = () =>
-                                      {
-                                          using ( MemoryStream ms = DownloadData(url))
-                                          {
-                                              BitmapSource bitmapSource =  BitmapImageFromStream(ms);
-                                              dispatcher.Invoke(() =>
-                                                  {
-                                                      
-                                                          ImageSource = bitmapSource;
-                                                  });
+                                                                    string cachePath = Path.Combine(Path.GetTempPath(), "sjupdater", "imagechache");
+                                                                    string filepath = Path.Combine(cachePath, urlcrc64.ToLower() + ".imagecache");
 
-                                              CacheData(filepath, ms, hashAlg);
-                                          }
-                                      };
+                                                                    Action downloadAndSetAndCache = () =>
+                                                                                                    {
+                                                                                                        using (MemoryStream ms = DownloadData(url))
+                                                                                                        {
+                                                                                                            if (ms == null) return;
 
-                                  if (File.Exists(filepath))
-                                  {
-                                      byte[] cacheHash;
+                                                                                                            BitmapSource bitmapSource = BitmapImageFromStream(ms);
+                                                                                                            dispatcher.Invoke(() =>
+                                                                                                                              {
 
-                                      MemoryStream ms = GetCachedData(filepath, hashAlg, out cacheHash);
-                                      BitmapImage image = BitmapImageFromStream(ms);
-                                    //  SetLoading(false, instance);
+                                                                                                                                  ImageSource = bitmapSource;
+                                                                                                                              });
 
-                                      dispatcher.Invoke(() =>
-                                                                 {
-                                                                     ImageSource = image;
-                                                                 });
+                                                                                                            CacheData(filepath, ms, hashAlg);
+                                                                                                        }
+                                                                                                    };
 
-                                      MemoryStream data = DownloadData(url);
-                                      if (data == null)
-                                          return;
+                                                                    if (File.Exists(filepath))
+                                                                    {
+                                                                        byte[] cacheHash;
 
-                                      byte[] downloadHash = new byte[hashAlg.HashSize / 8];
-                                      downloadHash = hashAlg.ComputeHash(data);
+                                                                        MemoryStream ms = GetCachedData(filepath, hashAlg, out cacheHash);
+                                                                        BitmapImage image = BitmapImageFromStream(ms);
+                                                                        //  SetLoading(false, instance);
 
-                                      if (!cacheHash.Memcmp(downloadHash))
-                                      {
-                                         // SetLoading(true, instance);
-                                          downloadAndSetAndCache();
-                                        //  SetLoading(false, instance);
-                                      }
-                                  }
-                                  else
-                                  {
-                                     // SetLoading(true, instance);
-                                      downloadAndSetAndCache();
-                                    //  SetLoading(false, instance);
-                                  }
-                              });
+                                                                        dispatcher.Invoke(() =>
+                                                                                          {
+                                                                                              ImageSource = image;
+                                                                                          });
+
+                                                                        MemoryStream data = DownloadData(url);
+                                                                        if (data == null)
+                                                                            return;
+
+                                                                        byte[] downloadHash = new byte[hashAlg.HashSize / 8];
+                                                                        downloadHash = hashAlg.ComputeHash(data);
+
+                                                                        if (!cacheHash.Memcmp(downloadHash))
+                                                                        {
+                                                                            // SetLoading(true, instance);
+                                                                            downloadAndSetAndCache();
+                                                                            //  SetLoading(false, instance);
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        // SetLoading(true, instance);
+                                                                        downloadAndSetAndCache();
+                                                                        //  SetLoading(false, instance);
+                                                                    }
+                                                                }, true, ThreadPriority.Lowest);
         }
 
        /* private static void SetLoading(bool value, CachedBitmap instance)
@@ -159,7 +161,6 @@ namespace SjUpdater.Utils
             {
                 MemoryStream ms = new MemoryStream();
                 HttpWebRequest request = WebRequest.CreateHttp(url);
-                request.Proxy = null;
 
                 HttpWebResponse response = request.GetResponse() as HttpWebResponse;
                 Stream responseStream = response.GetResponseStream();

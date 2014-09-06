@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Xml.Serialization;
+using Amib.Threading;
 using SjUpdater.Utils;
 
 namespace SjUpdater.Model
@@ -43,7 +44,7 @@ namespace SjUpdater.Model
             _name = show.Name;
             if (autofetch)
             {
-                StaticInstance.SmartThreadPool.QueueWorkItem(Fetch);
+                StaticInstance.ThreadPool.QueueWorkItem(Fetch,true, ThreadPriority.BelowNormal);
             }
         }
 
@@ -277,11 +278,11 @@ namespace SjUpdater.Model
                     currentFavSeason.Episodes.Add(currentFavEpisode);
                     if (!String.IsNullOrWhiteSpace(InfoUrl))
                     {
-                        Task.Run(delegate
-                        {
-                            currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl,
-                                currentFavEpisode.Season.Number, currentFavEpisode.Number);
-                        });
+                        StaticInstance.ThreadPool.QueueWorkItem(() =>
+                                                                {
+                                                                    currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl,
+                                                                                            currentFavEpisode.Season.Number, currentFavEpisode.Number);
+                                                                });
                     }
                     currentFavEpisode.Downloads.Add(download);
                 }

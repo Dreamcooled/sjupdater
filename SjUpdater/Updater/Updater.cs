@@ -376,8 +376,6 @@ namespace SjUpdater.Updater
 
                 Process cmd = new Process();
                 cmd.StartInfo = psi;
-
-                System.Threading.Thread.Sleep(1500);
                 cmd.Start();
                 Environment.Exit(0);
             }

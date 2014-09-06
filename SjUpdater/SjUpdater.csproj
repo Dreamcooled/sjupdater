@@ -57,7 +57,7 @@
     <ManifestKeyFile>SjUpdater_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
@@ -65,11 +65,15 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
-  <PropertyGroup>
-    <NoWin32Manifest>true</NoWin32Manifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <ApplicationIcon>icon3.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification">
@@ -134,6 +138,7 @@
     <Compile Include="SjInfo.cs" />
     <Compile Include="Utils\StaticInstance.cs" />
     <Compile Include="Utils\Stats.cs" />
+    <Compile Include="Utils\ThreadPool.cs" />
     <Compile Include="Utils\timehelper.cs" />
     <Compile Include="Utils\UploadCache.cs" />
     <Compile Include="ViewModel\EpisodeTileViewModel.cs" />
@@ -185,6 +190,7 @@
     <AppDesigner Include="Properties\" />
     <None Include="Model\ClassDiagram1.cd" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

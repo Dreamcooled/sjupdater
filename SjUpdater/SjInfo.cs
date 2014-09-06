@@ -61,7 +61,6 @@ namespace SjUpdater
             {
                 String url = "http://www.serienjunkies.de/i/autocomplete.php?q=" + WebUtility.UrlEncode(query);
                 HttpWebRequest request = WebRequest.CreateHttp(url);
-                request.Proxy = null;
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.Method = "GET";
                 request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64)";
@@ -105,7 +104,6 @@ namespace SjUpdater
             String url = SjDeUrl + "/reviews/";
 
             HttpWebRequest request = WebRequest.CreateHttp(url);
-            request.Proxy = null;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64)";
@@ -139,7 +137,6 @@ namespace SjUpdater
             byte[] data = Encoding.ASCII.GetBytes(WebUtility.HtmlEncode("string=" + Title));
 
             HttpWebRequest request = WebRequest.CreateHttp("http://serienjunkies.org/media/ajax/search/search.php");
-            request.Proxy = null;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
@@ -194,7 +191,6 @@ namespace SjUpdater
 
             HttpWebRequest req = HttpWebRequest.CreateHttp(url);
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            req.Proxy = null;
             var resp = req.GetResponse();
             BufferedStream buffStream = new BufferedStream(req.GetResponse().GetResponseStream());
             url = resp.ResponseUri.ToString();
@@ -476,7 +472,6 @@ namespace SjUpdater
 
             HttpWebRequest req = HttpWebRequest.CreateHttp(url);
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            req.Proxy = null;
             BufferedStream buffStream = new BufferedStream(req.GetResponse().GetResponseStream());
             StreamReader reader = new StreamReader(buffStream);
             Regex r = new Regex("<li\\s+class\\s*=\\s*\"cat-item.*?href=\"([^\"]+)\".*?>(.*?)</a>");

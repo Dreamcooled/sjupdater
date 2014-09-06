@@ -4,15 +4,12 @@ namespace SjUpdater.Utils
 {
     public static class StaticInstance
     {
-        public static SmartThreadPool SmartThreadPool = new SmartThreadPool();
+        private static readonly ThreadPool threadPool;
+        public static ThreadPool ThreadPool { get { return threadPool; } }
 
         static StaticInstance()
         {
-            SmartThreadPool = new SmartThreadPool(new STPStartInfo()
-            {
-                AreThreadsBackground = true,
-                UseCallerCallContext = true
-            });
+            threadPool = new ThreadPool();
         }
     }
 }

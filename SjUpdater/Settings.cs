@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Mime;
+using System.Windows;
 using System.Xml.Serialization;
 using SjUpdater.Model;
 using SjUpdater.Utils;
@@ -47,6 +49,9 @@ namespace SjUpdater
         #endregion
 
         private readonly UploadCache uploadCache = new UploadCache();
+        [XmlIgnore]
+        private uint numFetchThreads;
+
         [XmlIgnore]
         public UploadCache UploadCache
         {
@@ -106,7 +111,15 @@ namespace SjUpdater
         /// <summary>
         /// The Numer of Threads used to fetch updates on programm start
         /// </summary>
-        public uint NumFetchThreads { get; set; }
+        public uint NumFetchThreads 
+        { 
+            get { return numFetchThreads; }
+            set
+            {
+                numFetchThreads = value;
+                StaticInstance.ThreadPool.MaxThreads = value > 12 ? 12 : (int) value;
+            } 
+        }
 
         /// <summary>
         /// Whether to minimize only to tray when pressing the close button
@@ -180,7 +193,6 @@ namespace SjUpdater
         
         public static Settings Load(string filename)
         {
-
             return XmlSerialization.LoadFromXml<Settings>(filename);
         }
 

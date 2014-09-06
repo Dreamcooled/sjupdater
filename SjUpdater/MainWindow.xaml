@@ -33,25 +33,29 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <TextBox MaxWidth="210" controls:TextboxHelper.ClearTextButton="True"
+                    
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" MaxWidth="210" controls:TextboxHelper.ClearTextButton="True"
                              controls:TextboxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
                              TextChanged="SearchTextBox_TextChanged" PreviewKeyUp="TextBoxAutoComl_PreviewKeyUp" />
 
-                        <Button Width="Auto" Height="Auto" Content="Add" VerticalAlignment="Center" Margin="10,0,10,0" Style="{DynamicResource MetroFlatButton}" Click="AddSelectedShowButton_Click" >
+                        <Button Grid.Column="1" Width="Auto" Height="Auto" Content="Add" VerticalAlignment="Center" Margin="10,0,10,0" Style="{DynamicResource MetroFlatButton}" Click="AddSelectedShowButton_Click" >
                             <Button.ToolTip>
                                 <TextBlock>
-                                    Add selected show
-                                    <LineBreak />
-                                    <LineBreak />
-                                    you can also doubleclick on a show
-                                    <LineBreak/>
-                                    or use Enter to add the first show
+                                        Add selected show
+                                        <LineBreak />
+                                        <LineBreak />
+                                        you can also doubleclick on a show
+                                        <LineBreak/>
+                                        or use Enter to add the first show
                                 </TextBlock>
                             </Button.ToolTip>
                         </Button>
-                    </StackPanel>
+                    </Grid>
 
                     <ListView Grid.Row="1" Margin="0,-1,0,0" x:Name="ListViewAutoCompl" DisplayMemberPath="Key"
                               MouseDoubleClick="ListViewAutoCompl_MouseDoubleClick" Foreground="{x:Null}"
@@ -160,8 +164,6 @@
                                             <BlurEffect Radius="2"/>
                                         </Rectangle.Effect>
                                     </Rectangle>
-                                    <!--<Border Background="{DynamicResource AccentColorBrush}" Opacity="0.1" />-->
-                                    
                                    
                                     <controls:ProgressRing Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
@@ -529,7 +531,19 @@
                     <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="Settings"
                        VerticalAlignment="Center" />
                 </StackPanel>
-                <Label Grid.Row="0" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Center" Content="You might have to restart the program for the changes to take effect."/>
+
+                <StackPanel Margin="0,15,10,0" HorizontalAlignment="Right" Grid.Row="0" Orientation="Horizontal">
+                    <Label VerticalAlignment="Center" Content="You might have to restart the program for the changes to take effect."/>
+                    <Button Width="40" ToolTip="Restart Application" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}" Click="restartButton_Click">
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_debug_restart}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Button>
+                </StackPanel>
 
                 <GroupBox Header="Apperance" Grid.Row="1" Margin="10,10,10,10">
                     <StackPanel>
@@ -568,8 +582,8 @@
                                   SelectedValue="{Binding NotificationTimeout, Source={x:Static local:Settings.Instance}}"/>
                         </StackPanel>
                         
-                        <StackPanel Margin="0,10,0,0">
-                            <CheckBox Content="Enable Images (restart needed)" IsChecked="{Binding EnableImages, Source={x:Static local:Settings.Instance}}"/>
+                        <StackPanel>
+                            <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages, Source={x:Static local:Settings.Instance}}"/>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
@@ -583,8 +597,8 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="Number of Fetching Threads:"/>
-                            <Slider Minimum="1" Maximum="25" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
+                            <Label Content="Number of working Threads:"/>
+                            <Slider Minimum="1" Maximum="12" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
         					IsSnapToTickEnabled="True"
         					Value="{Binding NumFetchThreads, Source={x:Static local:Settings.Instance}}" />
                             <Label Content="{Binding Value, ElementName=threadSlider}" Grid.Column="2" />
@@ -612,7 +626,7 @@
                             <Label>Current Version:</Label>
                             <Label Content="{Binding ElementName=Window,Path=CurrentVersionString}" Margin="10,0"/>
                             <Button Click="ChangeLogButtonClicked">Changelog / Updates</Button>
-                            <CheckBox Margin="20,0,0,0" Content="Autocheck at start and every 30 minutes (restart needed)" IsChecked="{Binding CheckForUpdates, Source={x:Static local:Settings.Instance}}"/>
+                            <CheckBox Margin="20,0,0,0" Content="Autocheck at start and every 30 minutes" IsChecked="{Binding CheckForUpdates, Source={x:Static local:Settings.Instance}}"/>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
