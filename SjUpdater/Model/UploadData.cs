@@ -20,6 +20,7 @@ namespace SjUpdater.Model
             Size = "";
             Runtime = "";
             Language = 0;
+            Subbed = false;
             Season = null;
             Favorized = false;
         }
@@ -30,6 +31,7 @@ namespace SjUpdater.Model
         public String Runtime { get; set; }
         public UploadLanguage Language { get; set; }
         public SeasonData Season { get; set; }
+        public bool Subbed { get; set; }
 
         public bool Favorized { get; set; } //Todo: move to Fav* class, since it's user data
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using RestSharp;
 using SjUpdater.Model;
 using SjUpdater.Utils;
@@ -203,11 +204,14 @@ namespace SjUpdater
             Match m;
             SeasonData seasonData=null;
             UploadData uploadData=null;
-           // int season = -1;
 
             while (!reader.EndOfStream)
             {
                 String line = reader.ReadLine();
+                if (line.Contains("line-height") && line.Contains("&nbsp;")) //detect: <div style="line-height:5px;height:5px;background-color:lightgrey;">&nbsp;</div>
+                {
+                    continue; //I can only hope this will never occour in any other case..
+                }
                 if (inContent)
                 {
                     if (inPost)
@@ -229,15 +233,6 @@ namespace SjUpdater
                                     continue;
                                 } 
                                 string title = WebUtility.HtmlDecode(m.Groups[1].Value);
-                                /*int episode = -1;
-                                if (season != -1)
-                                {
-                                    Match m1 = new Regex("S0{0,4}" + season + "E(\\d+)", RegexOptions.IgnoreCase).Match(title);
-                                    if (m1.Success)
-                                    {
-                                        int.TryParse(m1.Groups[1].Value, out episode);
-                                    }
-                                }*/
 
                                 var downloads = new Dictionary<string, string>();
                                 Regex r = new Regex("<a\\s+href\\s*=\"([^\"]+)\".+\\s+(.+?)\\s*<");
@@ -261,20 +256,19 @@ namespace SjUpdater
                                             key = keyOrg + "(" + ++num + ")";
                                         }
                                         String val = m2.Groups[1].Value;
-                                        if (val != null && !String.IsNullOrWhiteSpace(val) && val.StartsWith("http://"))
+                                        if (val != null && !String.IsNullOrWhiteSpace(val) && val.Trim().StartsWith("http://"))
                                         {
                                             downloads.Add(key, val);
                                         }
                                         else
                                         {
+                                            Console.WriteLine("Warning: Invalid Download received while parsing " + showData.Name + ". Ignoring link");
                                             //ignoring invalid download
                                         }
                                     }
                                     if (line.Contains("</p>"))
                                         break;
                                 }
-
-         
                             
                                 if (title.Contains("720p") )
                                 {
@@ -295,9 +289,12 @@ namespace SjUpdater
 
                                 DownloadData dd = new DownloadData();
                                 dd.Upload = uploadCache == null ? uploadData : uploadCache.GetUniqueUploadData(uploadData);
-
-                                //ed.EpisodeN = episode;
                                 dd.Title = title;
+
+                                if (title.ToLower().Contains("subbed"))
+                                {
+                                    dd.Upload.Subbed = true;
+                                }
 
                                 foreach (var download in downloads)
                                 {
@@ -354,6 +351,10 @@ namespace SjUpdater
                                         {
                                             uploadData.Language |= UploadLanguage.English;
                                         }
+                                        if (value.Contains("subbed"))
+                                        {
+                                            uploadData.Subbed = true;
+                                        }
                                     }
                                 }
                             }
@@ -388,13 +389,6 @@ namespace SjUpdater
 
                             seasonData.Url= m.Groups[1].Value;
                             seasonData.Title = WebUtility.HtmlDecode(m.Groups[2].Value);
-                            /*season = -1;
-                            Match m2 = new Regex("(?:season|staffel)\\s*(\\d+)", RegexOptions.IgnoreCase).Match(seasonData.Title);
-                            if (m2.Success)
-                            {
-                                int.TryParse(m2.Groups[1].Value,out season);
-                            }*/
-
                         } 
                         else if (new Regex("<div\\s+class\\s*=\\s*\"post-content\"\\s*>").Match(line).Success)
                         {

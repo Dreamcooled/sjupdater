@@ -24,6 +24,9 @@
             </Button>
         </controls:WindowCommands>
     </controls:MetroWindow.WindowCommands>
+    <controls:MetroWindow.Resources>
+        <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
+    </controls:MetroWindow.Resources>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
             <controls:Flyout Header="Add TV Show" Position="Right" x:Name="AddShowFlyout" Theme="Adapt">
@@ -494,9 +497,15 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Button Margin="4" Content="{Binding Key}"
+                                                    <Button Margin="4"
                                                         Command="{Binding DownloadCommand, ElementName=Window}"
-                                                        CommandParameter="{Binding Value}" />
+                                                        CommandParameter="{Binding Value}" >
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Key}" />
+                                                            <Image Source="{Binding Key,Converter={StaticResource StringToFaviconConverter}}"></Image>
+                                                        </StackPanel>
+                                             
+                                                    </Button>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
@@ -567,12 +576,14 @@
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
                         </Grid>
 
-                        <CheckBox Content="Sort Tv Shows Alphabetically"
+                        <CheckBox Content="Sort Tv Shows Alphabetically" Margin="0,2"
                               IsChecked="{Binding SortShowsAlphabetically, Source={x:Static local:Settings.Instance}}" />
-                        <CheckBox Content="Sort Seasons Descending"
+                        <CheckBox Content="Sort Seasons Descending"  Margin="0,2"
                               IsChecked="{Binding SortSeasonsDesc, Source={x:Static local:Settings.Instance}}" />
-                        <CheckBox Content="Sort Episodes Descending"
+                        <CheckBox Content="Sort Episodes Descending"  Margin="0,2"
                               IsChecked="{Binding SortEpisodesDesc, Source={x:Static local:Settings.Instance}}" />
+                        <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2,0,1"
+                              IsChecked="{Binding MarkSubbedAsGerman, Source={x:Static local:Settings.Instance}}" />
                         
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications, Source={x:Static local:Settings.Instance}}"/>
@@ -582,9 +593,8 @@
                                   SelectedValue="{Binding NotificationTimeout, Source={x:Static local:Settings.Instance}}"/>
                         </StackPanel>
                         
-                        <StackPanel>
-                            <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages, Source={x:Static local:Settings.Instance}}"/>
-                        </StackPanel>
+                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages, Source={x:Static local:Settings.Instance}}"/>
+                       
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">

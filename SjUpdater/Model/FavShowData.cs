@@ -157,9 +157,15 @@ namespace SjUpdater.Model
                     ignoreCurrentUpload = true;
                     do
                     {
-                        if ((currentUpload.Language & FilterLanguage) == 0) //Filter: Language
+
+                        UploadLanguage language = currentUpload.Language;
+                        if (!Settings.Instance.MarkSubbedAsGerman && currentUpload.Subbed) //dont mark german-subbed as german
+                        {
+                            language&=~UploadLanguage.German; //remove german
+                        }
+
+                        if ((language & FilterLanguage) == 0) //Filter: Language
                             break;
-                        
 
                         if (!String.IsNullOrWhiteSpace(FilterRuntime) &&     //Filter: Runtime
                             !(new Regex(FilterRuntime).Match(currentUpload.Runtime).Success))
@@ -213,10 +219,11 @@ namespace SjUpdater.Model
                 int episodeNr = -1;
                 if (seasonNr != -1)
                 {
-                    Match m1 = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Match(download.Title);
-                    if (m1.Success)
+                    MatchCollection mts = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                    MatchCollection mts_ep = new Regex("[^A-Z]E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                    if (mts.Count==1 && mts_ep.Count==1) //if there is exactly one match for "S<xx>E<yy>" and there is no second "E<zz>" (e.g. S01E01-E12) 
                     {
-                        int.TryParse(m1.Groups[1].Value, out episodeNr);
+                        int.TryParse(mts[0].Groups[1].Value, out episodeNr);
                     }
 
                     if (episodeNr == -1 && !FilterShowNonEpisode.GetValueOrDefault()) //Filter: NonEpisode Stuff

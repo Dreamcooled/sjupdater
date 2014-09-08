@@ -178,7 +178,7 @@ namespace SjUpdater.Utils
             }
         }
 
-        private static BitmapImage BitmapImageFromStream(Stream stream, bool freeze = true)
+        public static BitmapImage BitmapImageFromStream(Stream stream, bool freeze = true)
         {
             try
             {

@@ -128,6 +128,7 @@
     <Compile Include="Utils\CachedBitmap.cs" />
     <Compile Include="Utils\Crc64.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
+    <Compile Include="Utils\FavIcon.cs" />
     <Compile Include="Utils\GlobalMutex.cs" />
     <Compile Include="Utils\Native.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="SjInfo.cs" />
     <Compile Include="Utils\StaticInstance.cs" />
     <Compile Include="Utils\Stats.cs" />
+    <Compile Include="Utils\StringToFaviconConverter.cs" />
     <Compile Include="Utils\ThreadPool.cs" />
     <Compile Include="Utils\timehelper.cs" />
     <Compile Include="Utils\UploadCache.cs" />
@@ -186,6 +188,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <AppDesigner Include="Properties\" />
     <None Include="Model\ClassDiagram1.cd" />

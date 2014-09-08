@@ -111,6 +111,8 @@ namespace SjUpdater
         /// <summary>
         /// The Numer of Threads used to fetch updates on programm start
         /// </summary>
+
+        public bool MarkSubbedAsGerman { get; set; }
         public uint NumFetchThreads 
         { 
             get { return numFetchThreads; }
@@ -171,6 +173,7 @@ namespace SjUpdater
         public String FilterUploader { get; set; }
         public String FilterSize { get; set; }
         public String FilterRuntime { get; set; }
+    
 
         public Settings()
         {
@@ -186,6 +189,7 @@ namespace SjUpdater
             FilterLanguage = UploadLanguage.Any;
             FilterShowNonEpisode = true;
             FilterShowNonSeason = true;
+            MarkSubbedAsGerman = false;
             NoPersonalData = false;
             EnableImages = true;
             CheckForUpdates = true;
