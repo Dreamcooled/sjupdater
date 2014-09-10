@@ -288,12 +288,12 @@ namespace SjUpdater
         {
             if (!IsVisible)
                 Show();
-            showView.Show.NewEpisodes = false;
             OnShowViewClicked(showView);
         }
 
         private void OnShowViewClicked(ShowViewModel showView)
         {
+            showView.Show.NewEpisodes = false;
             ShowGrid.DataContext = showView;
             FilterFlyout.DataContext = showView;
             SwitchPage(1);

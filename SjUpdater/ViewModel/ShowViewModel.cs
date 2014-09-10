@@ -15,7 +15,7 @@ namespace SjUpdater.ViewModel
         private readonly FavShowData _show;
         private readonly ObservableCollection<SeasonPanoramaViewModel> _lisSeasons;
         private readonly Dispatcher _dispatcher;
-        private Visibility backgroundImageVisibility;
+        private Visibility _backgroundImageVisibility;
 
         private static readonly Comparer<SeasonPanoramaViewModel> SeasonComparer = 
             Comparer<SeasonPanoramaViewModel>.Create( delegate(SeasonPanoramaViewModel m1, SeasonPanoramaViewModel m2)
@@ -50,7 +50,7 @@ namespace SjUpdater.ViewModel
             }
             _lisSeasons.Sort(SeasonComparer);
 
-            backgroundImageVisibility = Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Hidden;
+            _backgroundImageVisibility = Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void update_source(object sender, NotifyCollectionChangedEventArgs e)
@@ -204,13 +204,13 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-                return backgroundImageVisibility;
+                return _backgroundImageVisibility;
             }
             set
             {
-                if (backgroundImageVisibility != value)
+                if (_backgroundImageVisibility != value)
                 {
-                    backgroundImageVisibility = value;
+                    _backgroundImageVisibility = value;
                 }
             }
         }

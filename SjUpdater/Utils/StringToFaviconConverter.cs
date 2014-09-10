@@ -14,11 +14,11 @@ namespace SjUpdater.Utils
         public object Convert(object value, Type targetType,
             object parameter, CultureInfo culture)
         {
-            if (targetType != typeof(ImageSource) || value.GetType() != typeof(string))
+            if (targetType != typeof(FavIcon) || value.GetType() != typeof(string))
             {
-                throw new ArgumentException();
+               // throw new ArgumentException();
             }
-            return FavIcon.Get(value as String);
+            return  new FavIcon(value as String);
         }
 
         public object ConvertBack(object value, Type targetType,

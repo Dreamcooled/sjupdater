@@ -497,14 +497,16 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Button Margin="4"
-                                                        Command="{Binding DownloadCommand, ElementName=Window}"
+                                                    <Button Margin="4" Padding="4,0" Background="{DynamicResource LabelTextBrush}"
+                                                        Command="{Binding DownloadCommand, ElementName=Window}" ToolTip="{Binding Key}"
                                                         CommandParameter="{Binding Value}" >
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{Binding Key}" />
-                                                            <Image Source="{Binding Key,Converter={StaticResource StringToFaviconConverter}}"></Image>
-                                                        </StackPanel>
-                                             
+                                                        <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
+                                                            <ContentPresenter.ContentTemplate>
+                                                                <DataTemplate>
+                                                                    <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                                </DataTemplate>
+                                                            </ContentPresenter.ContentTemplate>
+                                                        </ContentPresenter>
                                                     </Button>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
