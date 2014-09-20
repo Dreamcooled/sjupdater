@@ -300,6 +300,22 @@
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button>
+                    <Button Width="40" VerticalAlignment="Center" ToolTip="Mark all..." Click="MarkAllContextMenuButtonClicked"  ContextMenuService.IsEnabled="false"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_checkmark_pencil}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        <Button.ContextMenu>
+                            <ContextMenu Placement="RelativePoint" VerticalOffset="32" HorizontalOffset="32" DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                <MenuItem Header ="Mark all as Watched" Command="{Binding MarkAllWatchedCommand}" />
+                                <MenuItem Header ="Mark all as Downloaded" Command="{Binding MarkAllDownloadedCommand}" />
+                                <MenuItem Header ="Unmark all" Command="{Binding UnmarkAllCommand}"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
                     <Button Width="40" VerticalAlignment="Center" Click="ShowDelete" ToolTip="Remove this Show"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
@@ -327,18 +343,20 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                    <Border Grid.RowSpan="5"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
+                                    <Border Grid.RowSpan="6"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
 
                                     <Image Grid.Row="0" Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
-                                       Grid.RowSpan="5" Opacity="{Binding ImageOpacity}" Visibility="{Binding BackgroundImageVisibility}"/>
+                                       Grid.RowSpan="6" Opacity="{Binding ImageOpacity}" Visibility="{Binding BackgroundImageVisibility}"/>
 
                                     
                                     <!---Border Grid.RowSpan="4" Background="#A0010101" /-->
 
 
+                                
                                     <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" Foreground="{Binding Foreground}"
-                                           Margin="5,0,0,0" FontSize="20" />
+                                        Margin="5,0,0,0" FontSize="20" />
                                     <TextBlock Grid.Row="1" Text="{Binding Languages}" Foreground="{Binding Foreground}" FontSize="10"
                                            Margin="5,0,0,0" />
                                     <TextBlock Grid.Row="2" Text="{Binding Formats}" Foreground="{Binding Foreground}" FontSize="10"
@@ -355,6 +373,19 @@
                                             Visibility="{Binding NewUpdateVisible}"
                                             Foreground="{Binding Foreground}" FontWeight="Bold">
                                     </TextBlock>
+                                    
+                                    <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,5">
+                                        <Rectangle Width="16" Height="16" Visibility="{Binding DownloadedCheckVisibility}">
+                                            <Rectangle.Fill>
+                                                <VisualBrush Visual="{StaticResource appbar_check}" />
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                        <Rectangle Width="16" Height="16"  Visibility="{Binding WatchedCheckVisibility}">
+                                            <Rectangle.Fill>
+                                                <VisualBrush Visual="{StaticResource appbar_check}" />
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </StackPanel>
 
                                 </Grid>
 
@@ -423,12 +454,26 @@
                     </Button>
                     <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
                        VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,0,0" Visibility="{Binding MarkStuffVisibility}">
+                        <Rectangle Width="24" Height="24" Visibility="{Binding DownloadedCheckVisibility}" ToolTip="Downloaded" Fill="{DynamicResource LabelTextBrush}">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        <Rectangle Width="24" Height="24"  Visibility="{Binding WatchedCheckVisibility}" ToolTip="Watched" Fill="{DynamicResource LabelTextBrush}">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </StackPanel>
                 </StackPanel>
                 <Image Margin="10" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Thumbnail.ImageSource}"
                    Stretch="UniformToFill" Height="105" />
-                <Button Grid.Column="0" Grid.Row="1" Content="Show Review" HorizontalAlignment="Left"
-                    VerticalAlignment="Top" Margin="10,10,10,10" Command="{Binding ReviewCommand}" />
-
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" >
+                    <Button Content="Show Review" Margin="10,10,10,10" Command="{Binding ReviewCommand}" />
+                    <Button Content="{Binding ButtonStateChangeText}"  Margin="10,10,10,10" Command="{Binding StateChangeCommand }" Visibility="{Binding MarkStuffVisibility}"/>
+                </StackPanel>
+              
                 <ListView x:Name="EpisodeDataList" Margin="10,10,10,10" ItemsSource="{Binding Downloads}" Grid.Column="0"
                       Grid.Row="2" Grid.ColumnSpan="2">
                     <ListView.View>
@@ -497,8 +542,8 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Button Margin="4" Padding="4,0" Background="{DynamicResource LabelTextBrush}"
-                                                        Command="{Binding DownloadCommand, ElementName=Window}" ToolTip="{Binding Key}"
+                                                    <Button Margin="4" Padding="4,0" 
+                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeGrid}" ToolTip="{Binding Key}"
                                                         CommandParameter="{Binding Value}" >
                                                         <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
                                                             <ContentPresenter.ContentTemplate>

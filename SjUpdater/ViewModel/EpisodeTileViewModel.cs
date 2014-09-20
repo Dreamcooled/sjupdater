@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using MahApps.Metro.Converters;
@@ -18,6 +19,8 @@ namespace SjUpdater.ViewModel
         private readonly Dispatcher _dispatcher;
         private Visibility _newEpisodeVisible;
         private Visibility _newUpdateVisible;
+        private Visibility _downloadedCheckVisible;
+        private Visibility _watchedCheckVisible;
 
         public EpisodeTileViewModel(FavEpisodeData favEpisodeData)
         {
@@ -26,6 +29,8 @@ namespace SjUpdater.ViewModel
             Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
             NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
             NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
+            DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
+            WatchedCheckVisibility = (_favEpisodeData.Watched) ? Visibility.Visible : Visibility.Collapsed;
             _dispatcher = Dispatcher.CurrentDispatcher;
             favEpisodeData.PropertyChanged += favEpisodeData_PropertyChanged;
 
@@ -47,6 +52,14 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged("Background");
                 OnPropertyChanged("Foreground");
                 OnPropertyChanged("ImageOpacity");
+            }
+            else if (e.PropertyName == "Downloaded")
+            {
+                DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else if (e.PropertyName == "Watched")
+            {
+                WatchedCheckVisibility = (_favEpisodeData.Watched) ? Visibility.Visible : Visibility.Collapsed;
             }
 
         }
@@ -90,6 +103,29 @@ namespace SjUpdater.ViewModel
             private set
             {
                 _newUpdateVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public Visibility DownloadedCheckVisibility
+        {
+            get { return _downloadedCheckVisible; }
+
+            private set
+            {
+                _downloadedCheckVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility WatchedCheckVisibility
+        {
+            get { return _watchedCheckVisible; }
+
+            private set
+            {
+                _watchedCheckVisible = value;
                 OnPropertyChanged();
             }
         }
@@ -177,6 +213,22 @@ namespace SjUpdater.ViewModel
             }
         }
 
+       /* public List<DownloadData> FavorizedUploads
+        {
+            get { return _favEpisodeData.Downloads.Where(d => d.Upload.Favorized).OrderByDescending(d => d.Upload.Size).ToList(); }
+        }
+
+        private bool _popupOpen;
+        public bool IsPopupOpen
+        {
+            get { return _popupOpen; }
+            set
+            {
+                if (value == _popupOpen) return;
+                _popupOpen = value;
+                OnPropertyChanged();
+            }
+        }*/
 
         public Brush Background
         {

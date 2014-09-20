@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using SjUpdater.Model;
 using SjUpdater.Utils;
@@ -51,6 +52,58 @@ namespace SjUpdater.ViewModel
             _lisSeasons.Sort(SeasonComparer);
 
             _backgroundImageVisibility = Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Hidden;
+
+            UnmarkAllCommand = new SimpleCommand<object, object>(o =>
+            {
+                foreach (var season in Show.Seasons)
+                {
+                    if (season.Number != -1)
+                    {
+                        foreach (var episode in season.Episodes)
+                        {
+                            if (episode.Number != -1)
+                            {
+                                episode.Downloaded = false;
+                                episode.Watched = false;
+                            }
+                        }
+                    }
+                }
+            });
+            MarkAllDownloadedCommand = new SimpleCommand<object, object>(o =>
+            {
+                foreach (var season in Show.Seasons)
+                {
+                    if (season.Number != -1)
+                    {
+                        foreach (var episode in season.Episodes)
+                        {
+                            if (episode.Number != -1)
+                            {
+                                episode.Downloaded = true;
+                                //episode.Watched = false; //not sure here
+                            }
+                        }
+                    }
+                }
+            });
+            MarkAllWatchedCommand = new SimpleCommand<object, object>(o =>
+            {
+                foreach (var season in Show.Seasons)
+                {
+                    if (season.Number != -1)
+                    {
+                        foreach (var episode in season.Episodes)
+                        {
+                            if (episode.Number != -1)
+                            {
+                                episode.Downloaded = true;
+                                episode.Watched = true;
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         private void update_source(object sender, NotifyCollectionChangedEventArgs e)
@@ -216,5 +269,9 @@ namespace SjUpdater.ViewModel
         }
 
         public FavShowData Show { get { return _show; } }
+
+        public ICommand UnmarkAllCommand { get; private set; }
+        public ICommand MarkAllDownloadedCommand { get; private set; }
+        public ICommand MarkAllWatchedCommand { get; private set; }
     }
 }

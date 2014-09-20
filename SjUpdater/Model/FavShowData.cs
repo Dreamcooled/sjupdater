@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Xml.Serialization;
 using Amib.Threading;
+using MahApps.Metro.Converters;
 using SjUpdater.Utils;
 
 namespace SjUpdater.Model
@@ -37,10 +38,12 @@ namespace SjUpdater.Model
         private bool? _filterShowNonEpisode;
         private string _infoUrl;
         private List<DownloadData> _allDownloads;
+        private readonly bool _isNewShow; //=false
 
         public FavShowData(ShowData show, bool autofetch= false) :this()
         {
             _show = show;
+            _isNewShow = true;
             _name = show.Name;
             if (autofetch)
             {
@@ -118,9 +121,15 @@ namespace SjUpdater.Model
             SeasonData currentSeasonData = null;
             int seasonNr = -1;
 
-            reset = reset || Seasons.Count == 0; //0 seasons is also considered as "reset".
-            if(reset) //start from scratch?
-                Seasons.Clear(); 
+            ObservableCollection<FavSeasonData> oldSeasons = null;
+
+            reset = reset || _isNewShow;
+            if (reset)
+            {
+                //start from scratch?
+                oldSeasons = new ObservableCollection<FavSeasonData>(Seasons);
+                Seasons.Clear();
+            }
 
             UploadData currentUpload = null;
             bool ignoreCurrentUpload = false;
@@ -283,13 +292,28 @@ namespace SjUpdater.Model
                         }
                     }
                     currentFavSeason.Episodes.Add(currentFavEpisode);
-                    if (!String.IsNullOrWhiteSpace(InfoUrl))
+    
+                    if (oldSeasons != null && currentFavSeason.Number!=-1 && currentFavEpisode.Number!=-1) //old data possible
+                    {
+                        var oldSeason = oldSeasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
+                        if (oldSeason != null)
+                        {
+                            var oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
+                            if (oldEpisode != null) //we can copy old data to current episode
+                            {
+                                currentFavEpisode.Watched = oldEpisode.Watched;
+                                currentFavEpisode.Downloaded = oldEpisode.Downloaded;
+                                currentFavEpisode.ReviewInfoReview = oldEpisode.ReviewInfoReview;
+                            }
+                        }
+                    }
+
+                    if (!String.IsNullOrWhiteSpace(InfoUrl) && currentFavEpisode.ReviewInfoReview == null)
                     {
                         StaticInstance.ThreadPool.QueueWorkItem(() =>
-                                                                {
-                                                                    currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl,
-                                                                                            currentFavEpisode.Season.Number, currentFavEpisode.Number);
-                                                                });
+                        {
+                            currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl, currentFavEpisode.Season.Number, currentFavEpisode.Number);
+                        });
                     }
                     currentFavEpisode.Downloads.Add(download);
                 }

@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -13,7 +14,8 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
-using Brushes = System.Windows.Media.Brushes;
+using SjUpdater.Properties;
+using Brush = System.Drawing.Brush;
 
 namespace SjUpdater.Utils
 {
@@ -100,9 +102,6 @@ namespace SjUpdater.Utils
 
         private static BitmapImage GetFromLetters(String value)
         {
-
-
-
             Bitmap bmp = new Bitmap(48,48);
             RectangleF rectf = new RectangleF(0,0,48,48);
             Graphics g = Graphics.FromImage(bmp);
@@ -114,19 +113,14 @@ namespace SjUpdater.Utils
             StringFormat format = new StringFormat();
             format.LineAlignment = StringAlignment.Center;
             format.Alignment = StringAlignment.Center;
-            g.DrawString(""+value.ToUpper().First(), new Font("Tahoma", 40,FontStyle.Bold,GraphicsUnit.Pixel), System.Drawing.Brushes.Blue, rectf, format);
-
+            System.Windows.Media.Color c = ((SolidColorBrush)App.Current.FindResource("LabelTextBrush")).Color; // ye i know, it's hacky but it works
+            g.DrawString(""+value.ToUpper().First(), new Font("Tahoma", 40,FontStyle.Bold,GraphicsUnit.Pixel), new SolidBrush(System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B)), rectf, format);
             g.Flush();
             MemoryStream ms = new MemoryStream();
             bmp.Save(ms,ImageFormat.Png);
             ms.Position = 0;
             return CachedBitmap.BitmapImageFromStream(ms);
         }
-
-
-
-     
-
 
 
         private static BitmapImage GetFromCache(string value)
@@ -142,10 +136,6 @@ namespace SjUpdater.Utils
             }
             return null;
         }
-
-
-
-
 
         static String FindUrl(string value)
         {

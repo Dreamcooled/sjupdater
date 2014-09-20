@@ -11,6 +11,8 @@ namespace SjUpdater.Model
         private int _number;
         private bool _newEpisode;
         private bool _newUpdate;
+        private bool _watched;
+        private bool _downloaded;
         private ObservableCollection<DownloadData> _downloads;
         private FavSeasonData _season;
         private SjDeReview _reviewInfoReview;
@@ -23,6 +25,8 @@ namespace SjUpdater.Model
             _reviewInfoReview = null;
             _newEpisode = false;
             _newUpdate = false;
+            _downloaded = false;
+            _watched = false;
         }
 
         public SjDeReview ReviewInfoReview
@@ -61,6 +65,29 @@ namespace SjUpdater.Model
             set
             {
                 _number = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool Watched
+        {
+            get { return _watched; }
+            set
+            {
+                if (value == _watched)
+                    return;
+                _watched = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool Downloaded
+        {
+            get { return _downloaded; }
+            set
+            {
+                if (value == _downloaded)
+                    return;
+                _downloaded = value;
                 OnPropertyChanged();
             }
         }

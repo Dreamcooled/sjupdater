@@ -37,7 +37,6 @@ namespace SjUpdater
             Application.Current.SessionEnding += Current_SessionEnding;
 
             //Commands
-            DownloadCommand = new SimpleCommand<object, String>(DownloadCommandExecute);
             EpisodeClickedCommand = new SimpleCommand<object, EpisodeViewModel>(OnEpisodeViewClicked);
             ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
             SettingsCommand = new SimpleCommand<object, object>(SettingsClicked);
@@ -175,25 +174,6 @@ namespace SjUpdater
                 Activate(); //"Bring to front"
         }
 
-        private void DownloadCommandExecute(string s)
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                try
-                {
-                    Clipboard.SetText(s);
-                    Clipboard.Flush();
-                    Stats.TrackAction(Stats.TrackActivity.Download);
-                    return;
-                }
-                catch
-                {
-                    //nah
-                }
-                Thread.Sleep(10);
-            }
-            MessageBox.Show("Couldn't Copy link to clipboard.\n" + s);
-        }
 
         private Accent _currentAccent;
 
@@ -227,9 +207,9 @@ namespace SjUpdater
         public ICommand SettingsCommand { get; private set; }
         public ICommand EpisodeClickedCommand { get; private set; }
         public ICommand ShowClickedCommand { get; private set; }
-        public ICommand DownloadCommand { get; private set; }
         public ICommand IconClickedCommand { get; private set; }
         public ICommand TerminateCommand { get; private set; }
+
 
         private int CurrentPage()
         {
@@ -316,12 +296,12 @@ namespace SjUpdater
             p.Start();
             Stats.TrackAction(Stats.TrackActivity.Browse, "Home");
         }
-
         private void ShowDelete(object sender, RoutedEventArgs e)
         {
             _setti.TvShows.Remove(((ShowViewModel) ShowGrid.DataContext).Show);
             SwitchPage(0);
         }
+
 
         private void EpisodeDataBack(object sender, RoutedEventArgs e)
         {
@@ -498,6 +478,13 @@ namespace SjUpdater
             cmd.StartInfo = psi;
             cmd.Start();
             Terminate(null);
+        }
+
+        private void MarkAllContextMenuButtonClicked(object sender, RoutedEventArgs e)
+        {
+            var em = (e.Source as FrameworkElement);
+            em.ContextMenu.PlacementTarget = em;
+            em.ContextMenu.IsOpen = true;
         }
     }
 }
