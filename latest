@@ -1,15 +1,21 @@
 #filename:md5hash
 
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
-MahApps.Metro.dll:2b8a793bcdd3407827d6bfe1c8f9ff33
+MahApps.Metro.dll:7f2f4a5c703f04d72de28066ec33c0fd
 MahApps.Metro.Resources.dll:b093dfedc9ab46ecce0f1bd16091323f
 RestSharp.dll:33d116ac4b9b681570b805412f242eed
-SjUpdater.exe:fbd68201196c136e7e3ad74859b52ef8
+SjUpdater.exe:e84324ef0d3d70b90c35d98e661dad09
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
 System.Windows.Interactivity.dll:3ab57a33a6e3a1476695d5a6e856c06a
 
 
+
 [###CHANGELOG###]
+v0.16 (2014-09-20)
+- Episodes can now be marked as "Downloaded" and "Watched"
+- Fixed "New-Episode" not showing up when the first episode of a show is released
+- Minor other bugfixes and improvements
+
 v0.15.6 (2014-09-10)
 - Added Favicon for Hosters (that's only the start of a new feature)
 - Fixed "New-Episode" Reset
