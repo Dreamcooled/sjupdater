@@ -121,14 +121,12 @@ namespace SjUpdater.Model
             SeasonData currentSeasonData = null;
             int seasonNr = -1;
 
-            ObservableCollection<FavSeasonData> oldSeasons = null;
+            ObservableCollection<FavSeasonData> newSeasons = new ObservableCollection<FavSeasonData>();
 
             reset = reset || _isNewShow;
-            if (reset)
+            if (!reset)
             {
-                //start from scratch?
-                oldSeasons = new ObservableCollection<FavSeasonData>(Seasons);
-                Seasons.Clear();
+                newSeasons = Seasons;
             }
 
             UploadData currentUpload = null;
@@ -155,7 +153,7 @@ namespace SjUpdater.Model
 
                 if (currentFavSeason == null || currentFavSeason.Number != seasonNr)
                 {
-                    currentFavSeason = Seasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
+                    currentFavSeason = newSeasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
                                        new FavSeasonData() {Number = seasonNr,Show=this};
                 }
 
@@ -242,9 +240,9 @@ namespace SjUpdater.Model
                 }
 
                 //At This point we're sure we want the episode
-                if (!Seasons.Contains(currentFavSeason)) //season not yet added?
+                if (!newSeasons.Contains(currentFavSeason)) //season not yet added?
                 {
-                    Seasons.Add(currentFavSeason);
+                    newSeasons.Add(currentFavSeason);
                 }
 
                 FavEpisodeData currentFavEpisode = null;
@@ -293,9 +291,9 @@ namespace SjUpdater.Model
                     }
                     currentFavSeason.Episodes.Add(currentFavEpisode);
     
-                    if (oldSeasons != null && currentFavSeason.Number!=-1 && currentFavEpisode.Number!=-1) //old data possible
+                    if ( currentFavSeason.Number!=-1 && currentFavEpisode.Number!=-1) //old data possible
                     {
-                        var oldSeason = oldSeasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
+                        var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
                         if (oldSeason != null)
                         {
                             var oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
@@ -331,6 +329,17 @@ namespace SjUpdater.Model
                 }
                 
             }
+
+            if (reset)
+            {
+                Seasons.Clear();
+                foreach (var season in newSeasons)
+                {
+                    Seasons.Add(season);
+                }
+            }
+
+
             RecalcNumbers();
             _mutexFilter.ReleaseMutex();
 

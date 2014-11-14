@@ -10,7 +10,7 @@
                       xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
                       x:Class="SjUpdater.MainWindow"
                       Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True" MinWidth="800" MinHeight="600"
-                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" Loaded="Window_Loaded" >
+                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" >
     <controls:MetroWindow.WindowCommands>
         <controls:WindowCommands>
             <Button Command="{Binding SettingsCommand, ElementName=Window}" >
@@ -288,6 +288,15 @@
                         <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
                             <Rectangle.OpacityMask>
                                 <VisualBrush Visual="{StaticResource appbar_filter}" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Button>
+                    <Button Width="40" VerticalAlignment="Center" Click="CleanShow" ToolTip="Remove Downloads which were removed"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_clean}" Stretch="Uniform" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button>

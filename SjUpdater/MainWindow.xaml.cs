@@ -2,6 +2,7 @@
 using System.Reflection;
 using Amib.Threading;
 using MahApps.Metro;
+using MahApps.Metro.Controls.Dialogs;
 using SjUpdater.Model;
 using SjUpdater.Updater;
 using SjUpdater.Utils;
@@ -296,10 +297,21 @@ namespace SjUpdater
             p.Start();
             Stats.TrackAction(Stats.TrackActivity.Browse, "Home");
         }
-        private void ShowDelete(object sender, RoutedEventArgs e)
+        private async void ShowDelete(object sender, RoutedEventArgs e)
         {
-            _setti.TvShows.Remove(((ShowViewModel) ShowGrid.DataContext).Show);
-            SwitchPage(0);
+            var res = await this.ShowMessageAsync("Remove Show?", "Do you really want to remove this show from your favorites?",
+                MessageDialogStyle.AffirmativeAndNegative,new MetroDialogSettings{AffirmativeButtonText = "Yes", NegativeButtonText = "No",AnimateShow = false,AnimateHide = false});
+            if (res == MessageDialogResult.Affirmative)
+            {
+                _setti.TvShows.Remove(((ShowViewModel) ShowGrid.DataContext).Show);
+                SwitchPage(0);
+            }
+        }
+
+        private void CleanShow(object sender, RoutedEventArgs e)
+        {
+            var s = ((ShowViewModel) ShowGrid.DataContext).Show;
+            StaticInstance.ThreadPool.QueueWorkItem(() => s.ApplyFilter(), true, ThreadPriority.AboveNormal);
         }
 
 
@@ -374,7 +386,7 @@ namespace SjUpdater
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
-            if (!_forceClose && _setti.MinimizeToTray)
+            if (!_forceClose && _setti.MinimizeToTray && !Debugger.IsAttached)
             {
                 e.Cancel = true;
                 Hide();
@@ -450,10 +462,6 @@ namespace SjUpdater
                                                                                 {"5 m", 1000 * 60 * 5}
                                                                             };
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void ChangeLogButtonClicked(object sender, RoutedEventArgs e)
         {

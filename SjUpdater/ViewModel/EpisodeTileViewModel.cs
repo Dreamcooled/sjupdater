@@ -196,8 +196,9 @@ namespace SjUpdater.ViewModel
             {
                 var lisFormats = new List<string>();
                 var lisFormatsComp = new List<string>();
-                foreach (var downloads in _favEpisodeData.Downloads)
+                for (int i = 0; i < _favEpisodeData.Downloads.Count; i++) //because collection might change in another thread, we have to use for instead of foreach
                 {
+                    var downloads = _favEpisodeData.Downloads[i];
                     string f = downloads.Upload.Format;
                     if (String.IsNullOrWhiteSpace(f))
                         continue;
