@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using Amib.Threading;
 using MahApps.Metro;
@@ -32,13 +33,16 @@ namespace SjUpdater
         private readonly UpdateWindow _updater;
         private readonly Timer updateTimer;
 
+        private readonly ObservableCollection<object> _selectedEpisodeTreeItems = new ObservableCollection<object>();
+
+  
+
         public MainWindow()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.Current.SessionEnding += Current_SessionEnding;
 
             //Commands
-            EpisodeClickedCommand = new SimpleCommand<object, EpisodeViewModel>(OnEpisodeViewClicked);
             ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
             SettingsCommand = new SimpleCommand<object, object>(SettingsClicked);
             IconClickedCommand = new SimpleCommand<object, object>(IconClicked);
@@ -67,6 +71,11 @@ namespace SjUpdater
             //Initialize view
             _viewModel = new MainWindowViewModel(_setti.TvShows);
             ShowsPanorama.ItemsSource = _viewModel.PanoramaItems;
+
+            _selectedEpisodeTreeItems.CollectionChanged += _selectedEpisodeTreeItems_CollectionChanged;
+
+            TreeViewExtensions.SetSelectedItems(ShowTreeView, _selectedEpisodeTreeItems);
+
             SwitchPage(0);
 
             //Autoupdate timer
@@ -95,6 +104,8 @@ namespace SjUpdater
                 updateTimer.Start();
             }
         }
+
+
 
         private void t_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -206,7 +217,6 @@ namespace SjUpdater
 
         public ICommand AddShowCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }
-        public ICommand EpisodeClickedCommand { get; private set; }
         public ICommand ShowClickedCommand { get; private set; }
         public ICommand IconClickedCommand { get; private set; }
         public ICommand TerminateCommand { get; private set; }
@@ -214,13 +224,13 @@ namespace SjUpdater
 
         private int CurrentPage()
         {
-            return TabControl.SelectedIndex;
+            return MainTabControl.SelectedIndex;
         }
 
         private void SwitchPage(int page)
         {
-            _lastpage = TabControl.SelectedIndex;
-            TabControl.SelectedIndex = page;
+            _lastpage = MainTabControl.SelectedIndex;
+            MainTabControl.SelectedIndex = page;
             AddShowFlyout.IsOpen = false;
             FilterFlyout.IsOpen = false;
         }
@@ -257,13 +267,6 @@ namespace SjUpdater
             }
         }
 
-        private void OnEpisodeViewClicked(EpisodeViewModel episodeView)
-        {
-            EpisodeGrid.DataContext = episodeView;
-            episodeView.Episode.NewEpisode = false;
-            episodeView.Episode.NewUpdate = false;
-            SwitchPage(2);
-        }
 
         private void on_ShowViewClicked(object sender, ShowViewModel showView)
         {
@@ -274,6 +277,7 @@ namespace SjUpdater
 
         private void OnShowViewClicked(ShowViewModel showView)
         {
+            _selectedEpisodeTreeItems.Clear();
             showView.Show.NewEpisodes = false;
             ShowGrid.DataContext = showView;
             FilterFlyout.DataContext = showView;
@@ -308,6 +312,29 @@ namespace SjUpdater
             }
         }
 
+        void _selectedEpisodeTreeItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (_selectedEpisodeTreeItems.Count == 1 && _selectedEpisodeTreeItems.First() is SeasonViewModel)
+            {
+                EpisodeTabControl.SelectedIndex = 1;
+                EpisodeTabControl_Season.DataContext = _selectedEpisodeTreeItems.First();
+            }
+            else if (_selectedEpisodeTreeItems.Count == 1 && _selectedEpisodeTreeItems.First() is EpisodeViewModel)
+            {
+                EpisodeTabControl.SelectedIndex = 2;
+                EpisodeTabControl_Episode.DataContext = _selectedEpisodeTreeItems.First();
+            }
+            else if (!_selectedEpisodeTreeItems.Any())
+            {
+                EpisodeTabControl.SelectedIndex = 0;
+                EpisodeTabControl_Episode.DataContext = _selectedEpisodeTreeItems;
+            }
+            else
+            {
+                EpisodeTabControl.SelectedIndex = 3;
+            }
+        }
+
         private void CleanShow(object sender, RoutedEventArgs e)
         {
             var s = ((ShowViewModel) ShowGrid.DataContext).Show;
@@ -324,6 +351,7 @@ namespace SjUpdater
         {
             SwitchPage(0);
         }
+
 
         private void NavBack(object sender, ExecutedRoutedEventArgs e)
         {
@@ -493,6 +521,21 @@ namespace SjUpdater
             var em = (e.Source as FrameworkElement);
             em.ContextMenu.PlacementTarget = em;
             em.ContextMenu.IsOpen = true;
+        }
+
+        private void ClearEpisodeSelection(object sender, RoutedEventArgs e)
+        {
+            TreeViewExtensions.ClearSelection(ShowTreeView);
+        }
+
+        private void EpisodeShowAllDownloads(object sender, RoutedEventArgs e)
+        {
+            EpisodePopup.IsOpen = true;
+        }
+
+        private void EpisodeCloseAllDownloads(object sender, RoutedEventArgs e)
+        {
+            EpisodePopup.IsOpen = false;
         }
     }
 }

@@ -136,7 +136,7 @@
     <controls:MetroWindow.CommandBindings>
         <CommandBinding Command="BrowseBack" Executed="NavBack"/>
     </controls:MetroWindow.CommandBindings>
-    <TabControl x:Name="TabControl">
+    <TabControl x:Name="MainTabControl">
         <TabControl.Template>
             <ControlTemplate TargetType="TabControl">
                 <ContentPresenter Content="{TemplateBinding SelectedContent}"/>
@@ -270,7 +270,16 @@
         </TabItem>
         <TabItem Header="ShowGrid">
             <Grid x:Name="ShowGrid">
-                <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.6*" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="0.4*" MaxWidth="600" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Button Width="40" VerticalAlignment="Center" Click="EpisodesBack"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
@@ -335,242 +344,430 @@
                         </Rectangle>
                     </Button>
                 </StackPanel>
-                <controls:Panorama x:Name="Panorama" UseSnapBackScrolling="False" Margin="10,55,10,10"
-                               ItemsSource="{Binding PanoramaItems}">
-                    <controls:Panorama.Resources>
-                        <DataTemplate DataType="{x:Type viewModel:EpisodeTileViewModel}">
-                            <controls:Tile Padding="0" Width="120" Height="120" x:Name="tile"
-                                       Background="{Binding Background}"
-                                       Command="{Binding EpisodeClickedCommand, ElementName=Window}"
-                                       CommandParameter="{Binding EpisodeViewModel}">
 
-                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Border Grid.RowSpan="6"  Visibility="{Binding NewEpisodeVisible}" BorderThickness="1" Background="Transparent" BorderBrush="LightGray"/>
-
-                                    <Image Grid.Row="0" Source="{Binding Thumbnail.ImageSource}" Stretch="UniformToFill"
-                                       Grid.RowSpan="6" Opacity="{Binding ImageOpacity}" Visibility="{Binding BackgroundImageVisibility}"/>
-
-                                    
-                                    <!---Border Grid.RowSpan="4" Background="#A0010101" /-->
-
-
-                                
-                                    <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" Foreground="{Binding Foreground}"
-                                        Margin="5,0,0,0" FontSize="20" />
-                                    <TextBlock Grid.Row="1" Text="{Binding Languages}" Foreground="{Binding Foreground}" FontSize="10"
-                                           Margin="5,0,0,0" />
-                                    <TextBlock Grid.Row="2" Text="{Binding Formats}" Foreground="{Binding Foreground}" FontSize="10"
-                                           Margin="5,0,0,0" />
-                                    <TextBlock Grid.Row="3"
-                                            Margin="5,0,0,0"
-                                             Text="New Episode!"
-                                            Visibility="{Binding NewEpisodeVisible}"
-                                            Foreground="{Binding Foreground}" FontWeight="Bold">
-                                    </TextBlock>
-                                    <TextBlock Grid.Row="3"
-                                            Margin="5,0,0,0"
-                                             Text="Update!"
-                                            Visibility="{Binding NewUpdateVisible}"
-                                            Foreground="{Binding Foreground}" FontWeight="Bold">
-                                    </TextBlock>
-                                    
-                                    <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,5">
-                                        <Rectangle Width="16" Height="16" Visibility="{Binding DownloadedCheckVisibility}">
-                                            <Rectangle.Fill>
-                                                <VisualBrush Visual="{StaticResource appbar_check}" />
-                                            </Rectangle.Fill>
-                                        </Rectangle>
-                                        <Rectangle Width="16" Height="16"  Visibility="{Binding WatchedCheckVisibility}">
-                                            <Rectangle.Fill>
-                                                <VisualBrush Visual="{StaticResource appbar_check}" />
-                                            </Rectangle.Fill>
-                                        </Rectangle>
-                                    </StackPanel>
-
-                                </Grid>
-
-                            </controls:Tile>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding IsDoubleWidth}" Value="True">
-                                    <Setter TargetName="tile" Property="Width" Value="248" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                        <Style TargetType="{x:Type controls:Tile}">
-                            <Setter Property="Width" Value="140" />
-                            <Setter Property="Height" Value="140" />
-                            <Setter Property="Margin" Value="3" />
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                            <Setter Property="HorizontalContentAlignment" Value="Center" />
-                            <Setter Property="VerticalContentAlignment" Value="Center" />
-                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                <TreeView Grid.Row="1" Grid.Column="0" Grid.IsSharedSizeScope="True" utils:TreeViewExtensions.EnableMultiSelect="true" ItemsSource="{Binding Seasons}" x:Name="ShowTreeView">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="IsExpanded" Value="True"/>
                             <Setter Property="Template">
                                 <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
-                                        <Grid Background="{TemplateBinding Background}">
-                                            <ContentPresenter RecognizesAccessKey="True" Margin="5" />
-                                        </Grid>
+                                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                                        <StackPanel>
+                                            <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                MinHeight="{TemplateBinding MinHeight}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                                <Grid Margin="{Binding Converter={StaticResource LengthConverter}, RelativeSource={x:Static RelativeSource.TemplatedParent}}"
+                                  VerticalAlignment="Stretch">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="19" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <ToggleButton x:Name="Expander"
+                                              Style="{StaticResource ExpandCollapseToggleStyle}"
+                                              IsChecked="{Binding Path=IsExpanded, RelativeSource={x:Static RelativeSource.TemplatedParent}, Mode=TwoWay}"
+                                              ClickMode="Press" />
+
+                                                    <ContentPresenter x:Name="PART_Header"
+                                                  Grid.Column="1"
+                                                  ContentSource="Header"
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                </Grid>
+                                            </Border>
+                                            <ItemsPresenter x:Name="ItemsHost">
+                                                <ItemsPresenter.LayoutTransform>
+                                                    <ScaleTransform ScaleY="1" />
+                                                </ItemsPresenter.LayoutTransform>
+                                            </ItemsPresenter>
+                                        </StackPanel>
                                         <ControlTemplate.Triggers>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="RenderTransform">
-                                                    <Setter.Value>
-                                                        <ScaleTransform ScaleX="0.98"
-                                                                    ScaleY="0.98"
-                                                                    CenterX="0.5"
-                                                                    CenterY="0.5" />
-                                                    </Setter.Value>
-                                                </Setter>
+                                            <Trigger Property="IsExpanded"
+                                 Value="False">
+                                                <Setter TargetName="ItemsHost"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
                                             </Trigger>
+
+                                            <Trigger Property="HasItems"
+                                 Value="False">
+                                                <Setter TargetName="Expander"
+                                    Property="Visibility"
+                                    Value="Hidden" />
+                                            </Trigger>
+
+                                            <Trigger SourceName="Border"
+                                 Property="IsMouseOver"
+                                 Value="True">
+                                                <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource AccentColorBrush3}" />
+                                                <Setter Property="Foreground"
+                                    Value="{DynamicResource BlackColorBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="utils:TreeViewExtensions.IsSelected"
+                                 Value="True">
+                                                <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource AccentColorBrush}" />
+                                                <Setter Property="Foreground"
+                                    Value="{DynamicResource AccentSelectedColorBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="utils:TreeViewExtensions.IsSelected"
+                                 Value="{x:Null}">
+                                                <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource AccentColorBrush4}" />
+                                                <Setter Property="Foreground"
+                                    Value="{DynamicResource AccentSelectedColorBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled"
+                                 Value="False">
+                                                <Setter Property="Foreground"
+                                    Value="{DynamicResource GrayBrush7}" />
+                                            </Trigger>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="IsEnabled"
+                                           Value="False" />
+                                                    <Condition Property="utils:TreeViewExtensions.IsSelected"
+                                           Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <MultiTrigger.Setters>
+                                                    <Setter TargetName="Border"
+                                        Property="Background"
+                                        Value="{DynamicResource GrayBrush7}" />
+                                                    <Setter Property="Foreground"
+                                        Value="{DynamicResource AccentSelectedColorBrush}" />
+                                                </MultiTrigger.Setters>
+                                            </MultiTrigger>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="utils:TreeViewExtensions.IsSelected"
+                                           Value="True" />
+                                                    <Condition Property="Selector.IsSelectionActive"
+                                           Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource AccentColorBrush2}" />
+                                            </MultiTrigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
                         </Style>
-                    </controls:Panorama.Resources>
-                </controls:Panorama>
-            </Grid>
-        </TabItem>
-        <TabItem Header="EpisodeGrid">
-            <Grid x:Name="EpisodeGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Button Width="40" VerticalAlignment="Center" Click="EpisodeDataBack"
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type viewModel:SeasonViewModel}" ItemsSource="{Binding Episodes}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Label FontSize="18" Content="{Binding Name}" />
+                                <Label Grid.Column="1" Content="{Binding EpisodeCount}" Margin="10,0" VerticalAlignment="Center"/>
+                            </Grid>
+                        </HierarchicalDataTemplate>
+
+                        <DataTemplate DataType="{x:Type viewModel:EpisodeViewModel}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="a"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="b"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="c"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{Binding Number}" Grid.Column="0" Margin="-20,0,0,0" Foreground="{DynamicResource DisabledMenuItemForeground}" />
+                                <Label Content="{Binding Title}" Grid.Column="1" />
+                                
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <Label 
+                                            Margin="5,0,0,0"
+                                             Content ="New Episode!"
+                                            Visibility="{Binding NewEpisodeVisible}"
+                                            Foreground="LimeGreen" FontWeight="Bold">
+                                    </Label>
+                                    <Label
+                                            Margin="5,0,0,0"
+                                             Content="Update!"
+                                            Visibility="{Binding NewUpdateVisible}"
+                                            Foreground="LimeGreen" FontWeight="Bold">
+                                    </Label>
+                                    
+                                </StackPanel>
+                                
+                                <Label Content="{Binding Formats}" Grid.Column="3" Foreground="{DynamicResource DisabledMenuItemForeground}"/>
+                                <Label Content="{Binding Languages}" Grid.Column="4"  Margin="0,0,10,0" Foreground="{DynamicResource DisabledMenuItemForeground}" />
+                            </Grid>
+
+                        </DataTemplate>
+
+                    </TreeView.Resources>
+                </TreeView>
+
+                <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Width="5" HorizontalAlignment="Stretch" />
+                <Border Background="{DynamicResource AccentColorBrush4}" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
+                    <TabControl x:Name="EpisodeTabControl" SelectedIndex="0">
+                        <TabControl.Template>
+                            <ControlTemplate TargetType="TabControl">
+                                <ContentPresenter Content="{TemplateBinding SelectedContent}"/>
+                            </ControlTemplate>
+                        </TabControl.Template>
+                        <TabItem Header="None">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="200" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Image Source="{Binding Cover.ImageSource}" VerticalAlignment="Top" Stretch="Uniform" />
+
+                                <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Visible">
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding Description}"/>
+                                   
+                                </ScrollViewer>
+                        
+                            </Grid>
+
+                        </TabItem>
+                        <TabItem Header="Season"  x:Name="EpisodeTabControl_Season">
+                            <Grid>
+                            <Label FontSize="24">Season</Label>
+                            <Button Width="40" VerticalAlignment="Top" HorizontalAlignment="Right" Click="ClearEpisodeSelection" ToolTip="Clear Selection"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
-                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
-                            <Rectangle.OpacityMask>
-                                <VisualBrush Visual="{StaticResource appbar_arrow_left}" Stretch="Uniform" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
-                    </Button>
-                    <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
-                       VerticalAlignment="Center" />
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,0,0" Visibility="{Binding MarkStuffVisibility}">
-                        <Rectangle Width="24" Height="24" Visibility="{Binding DownloadedCheckVisibility}" ToolTip="Downloaded" Fill="{DynamicResource LabelTextBrush}">
-                            <Rectangle.OpacityMask>
-                                <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
-                        <Rectangle Width="24" Height="24"  Visibility="{Binding WatchedCheckVisibility}" ToolTip="Watched" Fill="{DynamicResource LabelTextBrush}">
-                            <Rectangle.OpacityMask>
-                                <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
-                    </StackPanel>
-                </StackPanel>
-                <Image Margin="10" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="{Binding Thumbnail.ImageSource}"
-                   Stretch="UniformToFill" Height="105" />
-                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" >
-                    <Button Content="Show Review" Margin="10,10,10,10" Command="{Binding ReviewCommand}" />
-                    <Button Content="{Binding ButtonStateChangeText}"  Margin="10,10,10,10" Command="{Binding StateChangeCommand }" Visibility="{Binding MarkStuffVisibility}"/>
-                </StackPanel>
-              
-                <ListView x:Name="EpisodeDataList" Margin="10,10,10,10" ItemsSource="{Binding Downloads}" Grid.Column="0"
-                      Grid.Row="2" Grid.ColumnSpan="2">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Fav" Width="30" >
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox  ToolTip="Favorite/Unfavorite this Release" IsChecked="{Binding Upload.Favorized}">
-                                            <CheckBox.Style>
-                                                <Style TargetType="CheckBox">
-                                                    <Setter Property="Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate TargetType="{x:Type CheckBox}">
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <Rectangle  x:Name="rect" Fill="{DynamicResource LabelTextBrush}" Width="17" Height="17" Opacity="0.2">
-                                                                        <Rectangle.Style>
-                                                                            <Style TargetType="Rectangle">
-                                                                                <Style.Triggers>
-                                                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                                                        <Setter Property="OpacityMask">
-                                                                                            <Setter.Value>
-                                                                                                <VisualBrush Visual="{StaticResource appbar_star_invincible}" Stretch="Uniform" />
-                                                                                            </Setter.Value>
-                                                                                        </Setter>
-                                                                                    </Trigger>
-                                                                                </Style.Triggers>
-                                                                                <Setter Property="OpacityMask">
-                                                                                    <Setter.Value>
-                                                                                        <VisualBrush Visual="{StaticResource appbar_star}" Stretch="Uniform" />
-                                                                                    </Setter.Value>
-                                                                                </Setter>
-                                                                            </Style>
-                                                                        </Rectangle.Style>
-                                                                    </Rectangle>
-                                                                    <ContentPresenter VerticalAlignment="Center" Margin="10,0,0,0" />
-                                                                </StackPanel>
+                                <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Visual="{StaticResource appbar_list_check}" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </Button>
+                            </Grid>
 
-                                                                <ControlTemplate.Triggers>
-                                                                    <Trigger Property="IsChecked" Value="true">
-                                                                        <Setter TargetName="rect" Property="Opacity" Value="1" />
-                                                                    </Trigger>
-                                                                </ControlTemplate.Triggers>
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Style>
-                                            </CheckBox.Style>
-                                        </CheckBox>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                            <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
-                            <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                            <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
-                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
-                            <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
-                            <GridViewColumn Header="Links (Copy2Clipboard)">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ItemsControl ItemsSource="{Binding Links}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal" />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Button Margin="4" Padding="4,0" 
-                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeGrid}" ToolTip="{Binding Key}"
+                        </TabItem>
+                        <TabItem Header="Episode" x:Name="EpisodeTabControl_Episode">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35" />
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="50" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" MinHeight="200"/>
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontSize="24" Text="{Binding Title }" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}" />
+                                <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Width="40" VerticalAlignment="Top"  Click="ClearEpisodeSelection" ToolTip="Clear Selection"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                                        <Rectangle.OpacityMask>
+                                            <VisualBrush Visual="{StaticResource appbar_list_check}" Stretch="Uniform" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                </Button>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" VerticalAlignment="Top">
+                                    <Rectangle Width="16" Height="16" Visibility="{Binding DownloadedCheckVisibility}" ToolTip="Downloaded" Fill="{DynamicResource LabelTextBrush}">
+                                        <Rectangle.OpacityMask>
+                                            <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                    <Rectangle Width="16" Height="16"  Visibility="{Binding WatchedCheckVisibility}" ToolTip="Watched" Fill="{DynamicResource LabelTextBrush}">
+                                        <Rectangle.OpacityMask>
+                                            <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Top" >
+                                    <Button Content="Show Review"  Command="{Binding ReviewCommand}" Margin="0,0,5,0"  />
+                                    <Button Content="{Binding ButtonStateChangeText}"  Command="{Binding StateChangeCommand }" Visibility="{Binding MarkStuffVisibility}"/>
+                                </StackPanel>
+                                <Image Grid.Row="0" Grid.RowSpan="3" Margin="10" Grid.Column="0" Source="{Binding Thumbnail.ImageSource}" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Uniform" />
+                                
+                                <Separator Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="3" Margin="10,0"/>
+                                <Label Grid.Row="4" Grid.Column="0"  Grid.ColumnSpan="3" FontSize="18" Margin="5,0,0,0">Favorized Uploads</Label>
+                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Show all" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
+                                <Popup Grid.Row="4" Grid.Column="1" IsOpen="{Binding IsChecked, ElementName=Btn}" StaysOpen="False" x:Name="EpisodePopup" 
+                                       PlacementTarget="{Binding ElementName=EpisodeShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
+                                    <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
+                                            <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                            <Label FontSize="18" Margin="10,0,0,0" >All Uploads</Label>
+                                            <Button  Grid.Row="0" Margin="20,1,9,1" Width="22"  Height="22" Style="{DynamicResource MetroWindowButtonStyle}" HorizontalAlignment="Right" Click="EpisodeCloseAllDownloads">
+                                                <Path Data="F1M0,0L2,0 5,3 8,0 10,0 6,4 10,8 8,8 5,5 2,8 0,8 4,4 0,0z"
+                                          SnapsToDevicePixels="True"
+                                          Fill="White" HorizontalAlignment="Right"/>
+                                            </Button>
+     
+                                        <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding Downloads}">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn Header="Fav" Width="30" >
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox  ToolTip="Favorite/Unfavorite this Release" IsChecked="{Binding Upload.Favorized}">
+                                                                    <CheckBox.Style>
+                                                                        <Style TargetType="CheckBox">
+                                                                            <Setter Property="Template">
+                                                                                <Setter.Value>
+                                                                                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                                                                                        <StackPanel Orientation="Horizontal">
+                                                                                            <Rectangle  x:Name="rect" Fill="{DynamicResource LabelTextBrush}" Width="17" Height="17" Opacity="0.2">
+                                                                                                <Rectangle.Style>
+                                                                                                    <Style TargetType="Rectangle">
+                                                                                                        <Style.Triggers>
+                                                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                                                <Setter Property="OpacityMask">
+                                                                                                                    <Setter.Value>
+                                                                                                                        <VisualBrush Visual="{StaticResource appbar_star_invincible}" Stretch="Uniform" />
+                                                                                                                    </Setter.Value>
+                                                                                                                </Setter>
+                                                                                                            </Trigger>
+                                                                                                        </Style.Triggers>
+                                                                                                        <Setter Property="OpacityMask">
+                                                                                                            <Setter.Value>
+                                                                                                                <VisualBrush Visual="{StaticResource appbar_star}" Stretch="Uniform" />
+                                                                                                            </Setter.Value>
+                                                                                                        </Setter>
+                                                                                                    </Style>
+                                                                                                </Rectangle.Style>
+                                                                                            </Rectangle>
+                                                                                            <ContentPresenter VerticalAlignment="Center" Margin="10,0,0,0" />
+                                                                                        </StackPanel>
+
+                                                                                        <ControlTemplate.Triggers>
+                                                                                            <Trigger Property="IsChecked" Value="true">
+                                                                                                <Setter TargetName="rect" Property="Opacity" Value="1" />
+                                                                                            </Trigger>
+                                                                                        </ControlTemplate.Triggers>
+                                                                                    </ControlTemplate>
+                                                                                </Setter.Value>
+                                                                            </Setter>
+                                                                        </Style>
+                                                                    </CheckBox.Style>
+                                                                </CheckBox>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
+                                                    <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
+                                                    <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
+                                                    <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
+                                                    <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
+                                                    <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
+                                                    <GridViewColumn Header="Links (Copy2Clipboard)">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ItemsControl ItemsSource="{Binding Links}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <StackPanel Orientation="Horizontal" />
+                                                                        </ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Button Margin="4" Padding="4,0" 
+                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Episode}" ToolTip="{Binding Key}"
                                                         CommandParameter="{Binding Value}" >
-                                                        <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
-                                                            <ContentPresenter.ContentTemplate>
+                                                                                <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
+                                                                                    <ContentPresenter.ContentTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                                                        </DataTemplate>
+                                                                                    </ContentPresenter.ContentTemplate>
+                                                                                </ContentPresenter>
+                                                                            </Button>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                    </Grid>
+                                    </Border> 
+                                </Popup>
+
+                                <ListView  Grid.Row="5" Grid.Column="0"  Grid.ColumnSpan="3" Margin="10,0,10,10" ItemsSource="{Binding FavorizedUploads}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListView.Resources>
+                                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Style>
+                                    </ListView.Resources>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Links (Copy2Clipboard)">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ItemsControl ItemsSource="{Binding Links}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                                    <Button Margin="4" Padding="4,0" 
+                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Episode}" ToolTip="{Binding Key}"
+                                                        CommandParameter="{Binding Value}" >
+                                                                        <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
+                                                                            <ContentPresenter.ContentTemplate>
+                                                                                <DataTemplate>
+                                                                                    <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                                                </DataTemplate>
+                                                                            </ContentPresenter.ContentTemplate>
+                                                                        </ContentPresenter>
+                                                                    </Button>
                                                                 </DataTemplate>
-                                                            </ContentPresenter.ContentTemplate>
-                                                        </ContentPresenter>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
+                                            <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
+                                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+
+
+                        </TabItem>
+                        <TabItem Header="Multi"  x:Name="EpisodeTabControl_Multi">
+                            <Grid>
+                                <Label FontSize="24">Multi</Label>
+                                <Button Width="40" VerticalAlignment="Top" HorizontalAlignment="Right" Click="ClearEpisodeSelection" ToolTip="Clear Selection"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                                <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Visual="{StaticResource appbar_list_check}" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </Button>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+
+                </Border>
             </Grid>
         </TabItem>
         <TabItem Header="SettingsGrid">

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,19 +13,14 @@ using SjUpdater.Utils;
 
 namespace SjUpdater.ViewModel
 {
-    public class SeasonPanoramaViewModel : PanoramaGroup
+    public class SeasonViewModel : PropertyChangedImpl
     {
-        private readonly ObservableCollection<object> _lisTiles;
+        private readonly ObservableCollection<EpisodeViewModel> _lisEpisodes;
         private readonly FavSeasonData _season;
         private readonly Dispatcher _dispatcher;
-        private static readonly Comparer<object> EpisodeComparer =
-           Comparer<object>.Create(delegate(object o1, object o2)
+        private static readonly Comparer<EpisodeViewModel> EpisodeComparer =
+           Comparer<EpisodeViewModel>.Create(delegate(EpisodeViewModel m1, EpisodeViewModel m2)
            {
-               if (!(o1 is EpisodeTileViewModel)) return 1;
-               if (!(o2 is EpisodeTileViewModel)) return -1;
-               var m1 = o1 as EpisodeTileViewModel;
-               var m2 = o2 as EpisodeTileViewModel;
-
                if (m1.Episode.Number == m2.Episode.Number) return 0;
                if (m1.Episode.Number == -1) return 1;
                if (m2.Episode.Number == -1) return -1;
@@ -41,51 +37,49 @@ namespace SjUpdater.ViewModel
                }
 
            });
-        public SeasonPanoramaViewModel(FavSeasonData season) :base((season.Number==-1)?"Others":("Season "+season.Number))
+        public SeasonViewModel(FavSeasonData season)
         {
             _season = season;
             _dispatcher = Dispatcher.CurrentDispatcher;
 
             season.Episodes.CollectionChanged+=update_source ;
 
-            _lisTiles = new ObservableCollection<object>();
-            SetSource(_lisTiles);
+            _lisEpisodes = new ObservableCollection<EpisodeViewModel>();
+           
             foreach (FavEpisodeData favEpisodeData in season.Episodes)
             {
-                var x = new EpisodeTileViewModel(favEpisodeData);//, _openShowCommand);
-                _lisTiles.Add(x);
+                if(favEpisodeData.Number==-1) continue;
+                var x = new EpisodeViewModel(favEpisodeData);
+                _lisEpisodes.Add(x);
             }
 
-
-
-            /* var t = new Tile();
-             t.Content = new TextBlock()
-             {
-                 Text = "*",
-                 FontSize = 180,
-                 Foreground = Brushes.White,
-                 HorizontalAlignment = HorizontalAlignment.Center,
-                 VerticalAlignment = VerticalAlignment.Center,
-                 Padding = new Thickness(0),
-                 Margin = new Thickness(0, -40, 0, 0)
-             };
-             t.Width = 120;
-             t.Height = 120;
-             * _lisTiles.Add(t);
-              */
-            /* Binding b = new Binding("AddShowCommand");
-             b.ElementName = "Window";
-             t.SetBinding(ButtonBase.CommandProperty, b);*/
-
-            
-            _lisTiles.Sort(EpisodeComparer);
-
-
+            _lisEpisodes.Sort(EpisodeComparer);
 
         }
 
+        public String Name
+        {
+            get { return ((_season.Number == -1) ? "Others" : ("Season " + _season.Number)); }
+        }
+
+
+
         public FavSeasonData Season {
             get { return _season; }
+        }
+
+        public ObservableCollection<EpisodeViewModel> Episodes
+        {
+            get { return _lisEpisodes; }
+        }
+
+        public String EpisodeCount
+        {
+            get
+            {
+                int c= _season.Episodes.Count(episode => episode.Number != -1);
+                return c + " Episodes";
+            }
         }
 
 
@@ -98,18 +92,20 @@ namespace SjUpdater.ViewModel
                     case NotifyCollectionChangedAction.Add:
                         foreach (var newItem in e.NewItems)
                         {
-                            _lisTiles.Add(new EpisodeTileViewModel(newItem as FavEpisodeData));//,_openShowCommand));
+                            var favEpisodeData = newItem as FavEpisodeData;
+                            if (favEpisodeData.Number == -1) continue;
+                            _lisEpisodes.Add(new EpisodeViewModel(favEpisodeData));
                         }
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (var oldItem in e.OldItems)
                         {
                             var o = oldItem as FavShowData;
-                            for (int i = _lisTiles.Count - 2; i >= 0; i--)
+                            for (int i = _lisEpisodes.Count - 2; i >= 0; i--)
                             {
-                                if (((EpisodeTileViewModel)_lisTiles[i]).Episode == oldItem)
+                                if (_lisEpisodes[i].Episode == oldItem)
                                 {
-                                    _lisTiles.RemoveAt(i);
+                                    _lisEpisodes.RemoveAt(i);
                                 }
                             }
                         }
@@ -118,7 +114,7 @@ namespace SjUpdater.ViewModel
                         throw new InvalidOperationException(e.Action.ToString());
 
                 }
-                _lisTiles.Sort(EpisodeComparer);
+                _lisEpisodes.Sort(EpisodeComparer);
                 
             });
            

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -14,12 +15,14 @@ namespace SjUpdater.ViewModel
     public class ShowViewModel :  PropertyChangedImpl
     {
         private readonly FavShowData _show;
-        private readonly ObservableCollection<SeasonPanoramaViewModel> _lisSeasons;
+        private readonly ObservableCollection<SeasonViewModel> _lisSeasons;
         private readonly Dispatcher _dispatcher;
-        private Visibility _backgroundImageVisibility;
+        private CachedBitmap _bitmap;
+        private String _description;
 
-        private static readonly Comparer<SeasonPanoramaViewModel> SeasonComparer = 
-            Comparer<SeasonPanoramaViewModel>.Create( delegate(SeasonPanoramaViewModel m1, SeasonPanoramaViewModel m2)
+
+        private static readonly Comparer<SeasonViewModel> SeasonComparer = 
+            Comparer<SeasonViewModel>.Create( delegate(SeasonViewModel m1, SeasonViewModel m2)
             {
                 if (m1.Season.Number == m2.Season.Number) return 0;
                 if (m1.Season.Number == -1) return 1;
@@ -42,16 +45,20 @@ namespace SjUpdater.ViewModel
             _dispatcher = Dispatcher.CurrentDispatcher;
             show.Seasons.CollectionChanged += update_source;
 
-            _lisSeasons = new ObservableCollection<SeasonPanoramaViewModel>();
+            _lisSeasons = new ObservableCollection<SeasonViewModel>();
+
+            Cover = !String.IsNullOrWhiteSpace(_show.Cover) ? new CachedBitmap(_show.Cover) : null;
+            Description = (_show.Seasons.Any(s => s.Episodes.Any(e => e.Downloads.Any()))) ?
+                _show.Seasons.First(s => s.Episodes.Any(e => e.Downloads.Any())).Episodes.First(e => e.Downloads.Any()).Downloads.First().Upload.Season.Description : "";
 
             foreach (FavSeasonData favSeasonData in show.Seasons)
             {
-                var x = new SeasonPanoramaViewModel(favSeasonData);//, _openShowCommand);
+                if(favSeasonData.Number==-1) continue;
+                var x = new SeasonViewModel(favSeasonData);
                 _lisSeasons.Add(x);
             }
             _lisSeasons.Sort(SeasonComparer);
 
-            _backgroundImageVisibility = Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Hidden;
 
             UnmarkAllCommand = new SimpleCommand<object, object>(o =>
             {
@@ -115,7 +122,9 @@ namespace SjUpdater.ViewModel
                     case NotifyCollectionChangedAction.Add:
                         foreach (var newItem in e.NewItems)
                         {
-                            _lisSeasons.Add(new SeasonPanoramaViewModel(newItem as FavSeasonData));//,_openShowCommand));
+                            var favSeasonData = newItem as FavSeasonData;
+                            if(favSeasonData.Number!=-1)
+                            _lisSeasons.Add(new SeasonViewModel(favSeasonData));
                         }
                         break;
                     case NotifyCollectionChangedAction.Remove:
@@ -127,6 +136,7 @@ namespace SjUpdater.ViewModel
                                 if (_lisSeasons[i].Season == oldItem)
                                 {
                                     _lisSeasons.RemoveAt(i);
+                                    break;
                                 }
                             }
                         }
@@ -135,7 +145,8 @@ namespace SjUpdater.ViewModel
                         _lisSeasons.Clear();
                         foreach (FavSeasonData favSeasonData in _show.Seasons)
                         {
-                            var x = new SeasonPanoramaViewModel(favSeasonData);//, _openShowCommand);
+                             if(favSeasonData.Number==-1) continue;
+                            var x = new SeasonViewModel(favSeasonData);
                             _lisSeasons.Add(x);
                         }
                         break;
@@ -150,7 +161,7 @@ namespace SjUpdater.ViewModel
         }
 
 
-        public ObservableCollection<SeasonPanoramaViewModel> PanoramaItems
+        public ObservableCollection<SeasonViewModel> Seasons
         {
             get { return _lisSeasons; }
         }
@@ -162,6 +173,31 @@ namespace SjUpdater.ViewModel
                 return _show.Name;
             }
         }
+
+        public CachedBitmap Cover
+        {
+            get { return _bitmap; }
+
+            private set
+            {
+                _bitmap = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public String Description
+        {
+            get { return _description; }
+
+            private set
+            {
+                _description = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
 
         public String FilterName
         {
@@ -253,20 +289,8 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public Visibility BackgroundImageVisibility
-        {
-            get
-            {
-                return _backgroundImageVisibility;
-            }
-            set
-            {
-                if (_backgroundImageVisibility != value)
-                {
-                    _backgroundImageVisibility = value;
-                }
-            }
-        }
+
+  
 
         public FavShowData Show { get { return _show; } }
 

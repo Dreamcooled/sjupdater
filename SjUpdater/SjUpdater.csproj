@@ -143,12 +143,12 @@
     <Compile Include="Utils\StringToFaviconConverter.cs" />
     <Compile Include="Utils\ThreadPool.cs" />
     <Compile Include="Utils\timehelper.cs" />
+    <Compile Include="Utils\TreeViewExtensions.cs" />
     <Compile Include="Utils\UploadCache.cs" />
-    <Compile Include="ViewModel\EpisodeTileViewModel.cs" />
     <Compile Include="ViewModel\EpisodeViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\OverviewPanormaViewModel.cs" />
-    <Compile Include="ViewModel\SeasonPanoramaViewModel.cs" />
+    <Compile Include="ViewModel\SeasonViewModel.cs" />
     <Compile Include="ViewModel\ShowTileViewModel.cs" />
     <Compile Include="ViewModel\ShowViewModel.cs" />
     <Compile Include="XML\CustomXmlAttributes.cs" />

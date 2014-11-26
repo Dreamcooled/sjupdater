@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
+using MahApps.Metro.Converters;
 using SjUpdater.Model;
 using SjUpdater.Utils;
 
@@ -11,25 +16,54 @@ namespace SjUpdater.ViewModel
 {
     public class EpisodeViewModel : PropertyChangedImpl
     {
-        private readonly FavEpisodeData _episode;
+        private readonly FavEpisodeData _favEpisodeData;
+        private CachedBitmap _thumbnail;
+        private readonly Dispatcher _dispatcher;
+        private Visibility _newEpisodeVisible;
+        private Visibility _newUpdateVisible;
+        private Visibility _downloadedCheckVisible;
+        private Visibility _watchedCheckVisible;
 
         public EpisodeViewModel(FavEpisodeData favEpisodeData)
         {
-            _episode = favEpisodeData;
-            _episode.PropertyChanged += _episode_PropertyChanged;
-            ReviewCommand = new SimpleCommand<object, object>(b => (_episode.ReviewInfoReview != null), delegate
+            _favEpisodeData = favEpisodeData;
+            Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
+            NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
+            NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
+            DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
+            WatchedCheckVisibility = (_favEpisodeData.Watched) ? Visibility.Visible : Visibility.Collapsed;
+            _dispatcher = Dispatcher.CurrentDispatcher;
+            favEpisodeData.PropertyChanged += favEpisodeData_PropertyChanged;
+
+            ReviewCommand = new SimpleCommand<object, object>(b => (_favEpisodeData.ReviewInfoReview != null), delegate
             {
                 var p = new Process();
-                p.StartInfo.FileName = _episode.ReviewInfoReview.ReviewUrl;
+                p.StartInfo.FileName = _favEpisodeData.ReviewInfoReview.ReviewUrl;
                 p.Start();
                 Stats.TrackAction(Stats.TrackActivity.Review);
             });
 
+            StateChangeCommand = new SimpleCommand<object, object>(o =>
+            {
+                if (!_favEpisodeData.Downloaded && !_favEpisodeData.Watched)
+                {
+                    _favEpisodeData.Downloaded = true;
+                    return;
+                }
+                if (_favEpisodeData.Downloaded && !_favEpisodeData.Watched)
+                {
+                    _favEpisodeData.Watched = true;
+                    return;
+                }
+                _favEpisodeData.Downloaded = false;
+                _favEpisodeData.Watched = false;
+            });
+
             DownloadCommand = new SimpleCommand<object, String>(s =>
             {
-                if (_episode.Number != -1 && _episode.Season.Number != -1)
+                if (_favEpisodeData.Number != -1 && _favEpisodeData.Season.Number != -1)
                 {
-                    _episode.Downloaded = true;
+                    _favEpisodeData.Downloaded = true;
                 }
                 for (int i = 0; i < 10; i++)
                 {
@@ -49,75 +83,96 @@ namespace SjUpdater.ViewModel
                 MessageBox.Show("Couldn't Copy link to clipboard.\n" + s);
             });
 
-            StateChangeCommand = new SimpleCommand<object, object>(o =>
-            {
-                if (!_episode.Downloaded && !_episode.Watched)
-                {
-                    _episode.Downloaded = true;
-                    return;
-                }
-                if (_episode.Downloaded && !_episode.Watched)
-                {
-                    _episode.Watched = true;
-                    return;
-                }
-                _episode.Downloaded = false;
-                _episode.Watched = false;
-            });
-
         }
 
-        void _episode_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        void favEpisodeData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Downloaded")
+            if (e.PropertyName == "ReviewInfoReview")
             {
-                OnPropertyChanged("DownloadedCheckVisibility");
+                _dispatcher.Invoke(delegate
+                {
+                    Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
+                });
+
+            } else if (e.PropertyName == "NewEpisode" || e.PropertyName=="NewUpdate")
+            {
+                NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
+                NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else if (e.PropertyName == "Downloaded")
+            {
+                DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
+                OnPropertyChanged("ButtonStateChangeText");
             }
             else if (e.PropertyName == "Watched")
             {
-                OnPropertyChanged("WatchedCheckVisibility");
-            }
-            if (e.PropertyName == "Downloaded" || e.PropertyName == "Watched")
-            {
+                WatchedCheckVisibility = (_favEpisodeData.Watched) ? Visibility.Visible : Visibility.Collapsed;
                 OnPropertyChanged("ButtonStateChangeText");
             }
+
         }
-     
 
         public ICommand DownloadCommand { get; private set; }
+
+        public FavEpisodeData Episode { get { return _favEpisodeData; } }
+
 
         public CachedBitmap Thumbnail
         {
             get
             {
-                if (_episode.ReviewInfoReview == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return new CachedBitmap(_episode.ReviewInfoReview.Thumbnail);
-                }
+                return _thumbnail;
+            }
+            private set
+            {
+                _thumbnail = value; 
+                OnPropertyChanged();
             }
         }
 
-        public Visibility MarkStuffVisibility
+        public Visibility NewEpisodeVisible
         {
-            get { return (_episode.Number!=-1 && _episode.Season.Number!=-1 )? Visibility.Visible : Visibility.Collapsed; }
+            get { return _newEpisodeVisible; }
 
+            private set
+            {
+                _newEpisodeVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility NewUpdateVisible
+        {
+            get { return _newUpdateVisible; }
+
+            private set
+            {
+                _newUpdateVisible = value;
+                OnPropertyChanged();
+            }
         }
 
 
         public Visibility DownloadedCheckVisibility
         {
-            get { return _episode.Downloaded?Visibility.Visible : Visibility.Collapsed; }
+            get { return _downloadedCheckVisible; }
 
+            private set
+            {
+                _downloadedCheckVisible = value;
+                OnPropertyChanged();
+            }
         }
 
         public Visibility WatchedCheckVisibility
         {
-            get { return _episode.Watched ? Visibility.Visible : Visibility.Collapsed; }
+            get { return _watchedCheckVisible; }
 
+            private set
+            {
+                _watchedCheckVisible = value;
+                OnPropertyChanged();
+            }
         }
 
         public ICommand ReviewCommand { get; private set; }
@@ -127,15 +182,15 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-                if (!_episode.Downloaded && !_episode.Watched)
+                if (!_favEpisodeData.Downloaded && !_favEpisodeData.Watched)
                 {
                     return "Mark as Downloaded";
                 }
-                if (_episode.Downloaded && !_episode.Watched)
+                if (_favEpisodeData.Downloaded && !_favEpisodeData.Watched)
                 {
                     return "Mark as Watched";
                 }
-                 return "Unmark";
+                return "Unmark";
             }
         }
 
@@ -144,32 +199,75 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-                String s = _episode.Season.Show.Name+ " ";
-                if (_episode.Season.Number != -1)
+
+                if (_favEpisodeData.ReviewInfoReview != null)
                 {
-                    s += "Season " + _episode.Season.Number + " ";
-                    if (_episode.Number != -1)
-                    {
-                        s += "Episode " + _episode.Number;
-                        if (_episode.ReviewInfoReview != null)
-                        {
-                            s += " - "+_episode.ReviewInfoReview.Name;
-                        }
-                    }
+                    return _favEpisodeData.ReviewInfoReview.Name;
                 }
-                
-                return s;
+
+                return "Episode " + _favEpisodeData.Number;
+               
             }
         }
 
-        public FavEpisodeData Episode
+        public int Number
         {
-            get { return _episode; }
+            get { return _favEpisodeData.Number; }
+        }
+
+        public string Languages
+        {
+            get
+            {
+                UploadLanguage langs = _favEpisodeData.Downloads.Aggregate<DownloadData, UploadLanguage>(0, (current, download) => current | download.Upload.Language);
+
+                switch (langs)
+                {
+                    case UploadLanguage.English:
+                        return "English";
+                    case UploadLanguage.German:
+                        return "German";
+                    case UploadLanguage.Any:
+                        return "German,English";
+                }
+                return "";
+
+            }
+        }
+
+        public string Formats
+        {
+
+            get
+            {
+                var lisFormats = new List<string>();
+                var lisFormatsComp = new List<string>();
+                for (int i = 0; i < _favEpisodeData.Downloads.Count; i++) //because collection might change in another thread, we have to use for instead of foreach
+                {
+                    var downloads = _favEpisodeData.Downloads[i];
+                    string f = downloads.Upload.Format;
+                    if (String.IsNullOrWhiteSpace(f))
+                        continue;
+                    if (!lisFormatsComp.Contains(f.ToLower()))
+                    {
+                        lisFormats.Add(f);
+                        lisFormatsComp.Add(f.ToLower());
+                    }
+                }
+
+                return string.Join(",", lisFormats);
+
+            }
+        }
+
+        public List<DownloadData> FavorizedUploads
+        {
+            get { return _favEpisodeData.Downloads.Where(d => d.Upload.Favorized).OrderByDescending(d => d.Upload.Size).ToList(); }
         }
 
         public ObservableCollection<DownloadData> Downloads
         {
-            get { return _episode.Downloads; }
+            get { return _favEpisodeData.Downloads; }
         }
     }
 }
