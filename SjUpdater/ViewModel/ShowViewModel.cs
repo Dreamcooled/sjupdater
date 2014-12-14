@@ -229,26 +229,6 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public bool FilterNonSeason
-        {
-            get { return _show.FilterShowNonSeason.GetValueOrDefault(); }
-            set
-            {
-                _show.FilterShowNonSeason = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool FilterNonEpisode
-        {
-            get { return _show.FilterShowNonEpisode.GetValueOrDefault(); }
-            set
-            {
-                _show.FilterShowNonEpisode = value;
-                OnPropertyChanged();
-            }
-        }
-
         public String FilterSize
         {
             get { return _show.FilterSize; }

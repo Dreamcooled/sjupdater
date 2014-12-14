@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using MahApps.Metro.Controls;
@@ -42,18 +44,45 @@ namespace SjUpdater.ViewModel
             _season = season;
             _dispatcher = Dispatcher.CurrentDispatcher;
 
+
+            DownloadCommand = new SimpleCommand<object, String>(s =>
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        Clipboard.SetText(s);
+                        Clipboard.Flush();
+                        Stats.TrackAction(Stats.TrackActivity.Download);
+                        return;
+                    }
+                    catch
+                    {
+                        //nah
+                    }
+                    Thread.Sleep(10);
+                }
+                MessageBox.Show("Couldn't Copy link to clipboard.\n" + s);
+            });
+
             season.Episodes.CollectionChanged+=update_source ;
 
             _lisEpisodes = new ObservableCollection<EpisodeViewModel>();
            
             foreach (FavEpisodeData favEpisodeData in season.Episodes)
             {
-                if(favEpisodeData.Number==-1) continue;
+                if (favEpisodeData.Number == -1)
+                {
+                    NonEpisodes = favEpisodeData.Downloads;
+                    continue;
+                }
                 var x = new EpisodeViewModel(favEpisodeData);
                 _lisEpisodes.Add(x);
             }
 
             _lisEpisodes.Sort(EpisodeComparer);
+
+
 
         }
 
@@ -63,6 +92,8 @@ namespace SjUpdater.ViewModel
         }
 
 
+
+        public ICommand DownloadCommand { get; private set; }
 
         public FavSeasonData Season {
             get { return _season; }
@@ -77,10 +108,33 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-                int c= _season.Episodes.Count(episode => episode.Number != -1);
-                return c + " Episodes";
+                
+                int e= _season.Episodes.Count(episode => episode.Number != -1);
+                int n = (_season.Episodes.Any(episode => episode.Number == -1))?_season.Episodes.First(episode => episode.Number == -1).Downloads.Count : 0;
+                if(e>0 && n==0)
+                    return e + " Episodes";
+                if (n > 0 && e == 0)
+                    return n + " Others";
+                return e + " Episodes + " + n+ " Others";
             }
         }
+
+        public ObservableCollection<DownloadData> NonEpisodes
+        {
+            get; private set;
+        }
+
+
+         public CachedBitmap Cover
+        {
+             get
+             {
+                 //TODO: fix
+                 String url = _season.Episodes.First().Downloads.First().Upload.Season.CoverUrl;
+                 return new CachedBitmap(url);
+             }
+        }
+
 
 
         private void update_source(object sender, NotifyCollectionChangedEventArgs e)

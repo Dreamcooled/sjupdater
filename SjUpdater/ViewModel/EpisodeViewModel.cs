@@ -17,7 +17,7 @@ namespace SjUpdater.ViewModel
     public class EpisodeViewModel : PropertyChangedImpl
     {
         private readonly FavEpisodeData _favEpisodeData;
-        private CachedBitmap _thumbnail;
+        private CachedBitmap _photo;
         private readonly Dispatcher _dispatcher;
         private Visibility _newEpisodeVisible;
         private Visibility _newUpdateVisible;
@@ -27,7 +27,7 @@ namespace SjUpdater.ViewModel
         public EpisodeViewModel(FavEpisodeData favEpisodeData)
         {
             _favEpisodeData = favEpisodeData;
-            Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
+            Photo = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Photo);
             NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
             NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
             DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
@@ -91,7 +91,7 @@ namespace SjUpdater.ViewModel
             {
                 _dispatcher.Invoke(delegate
                 {
-                    Thumbnail = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Thumbnail);
+                    Photo = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Photo);
                 });
 
             } else if (e.PropertyName == "NewEpisode" || e.PropertyName=="NewUpdate")
@@ -117,15 +117,15 @@ namespace SjUpdater.ViewModel
         public FavEpisodeData Episode { get { return _favEpisodeData; } }
 
 
-        public CachedBitmap Thumbnail
+        public CachedBitmap Photo
         {
             get
             {
-                return _thumbnail;
+                return _photo;
             }
             private set
             {
-                _thumbnail = value; 
+                _photo = value; 
                 OnPropertyChanged();
             }
         }

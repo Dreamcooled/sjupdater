@@ -32,7 +32,7 @@ namespace SjUpdater.ViewModel
             SetSource(_lisTiles);
             foreach (FavShowData favShowData in _shows)
             {
-                var x = new ShowTileViewModel(favShowData);//, _openShowCommand);
+                var x = new ShowTileViewModel(favShowData);
                 _lisTiles.Add(x);
             }
             if (Settings.Instance.SortShowsAlphabetically)
@@ -47,7 +47,7 @@ namespace SjUpdater.ViewModel
                 case NotifyCollectionChangedAction.Add:
                     foreach (var newItem in e.NewItems)
                     {
-                        _lisTiles.Insert(_lisTiles.Count,new ShowTileViewModel(newItem as FavShowData));//,_openShowCommand));
+                        _lisTiles.Insert(_lisTiles.Count,new ShowTileViewModel(newItem as FavShowData));
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:

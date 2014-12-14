@@ -167,8 +167,6 @@ namespace SjUpdater
         public UploadLanguage FilterLanguage { get; set; }
         public String FilterName{ get; set; }
         public String FilterHoster { get; set; }
-        public bool FilterShowNonSeason { get; set; }
-        public bool FilterShowNonEpisode { get; set; }
         public String FilterFormat { get; set; }
         public String FilterUploader { get; set; }
         public String FilterSize { get; set; }
@@ -187,8 +185,6 @@ namespace SjUpdater
             ShowNotifications = true;
             NotificationTimeout = 10000; //10 seconds
             FilterLanguage = UploadLanguage.Any;
-            FilterShowNonEpisode = true;
-            FilterShowNonSeason = true;
             MarkSubbedAsGerman = false;
             NoPersonalData = false;
             EnableImages = true;

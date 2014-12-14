@@ -104,33 +104,42 @@ namespace SjUpdater
             }
             String url = SjDeUrl + "/reviews/";
 
-            HttpWebRequest request = WebRequest.CreateHttp(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            request.Method = "GET";
-            request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64)";
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-            StreamReader responseReader = new StreamReader(response.GetResponseStream());
-            string responseContent = responseReader.ReadToEnd();
-            responseReader.Close();
-            response.Close();
-       
-
-            Regex r = new Regex( "<div[^>]+class\\s*=\\s*\"serienreviewliste\"[^>]*>\\s*<a[^>]+href\\s*=\\s*\"([^\"]+)\"[^>]*>\\s*<img[^>]+src\\s*=\\s*\"([^\"]+)\"[^>]*>\\s*</a>\\s*<a[^>]+>\\s*([^<]+?)\\s*</a>\\s*\\((\\d+)\\D(\\d+)\\)");
-            MatchCollection mc = r.Matches(responseContent);
-            foreach (Match match in mc)
+            try
             {
-                int seasonNr= int.Parse(match.Groups[4].Value);
-                int episodeNr = int.Parse(match.Groups[5].Value);
-                if (seasonNr == season && episodeNr == episode)
+                HttpWebRequest request = WebRequest.CreateHttp(url);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.Method = "GET";
+                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64)";
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                StreamReader responseReader = new StreamReader(response.GetResponseStream());
+                string responseContent = responseReader.ReadToEnd();
+                responseReader.Close();
+                response.Close();
+
+                Regex r = new Regex( "<div[^>]+class\\s*=\\s*\"serienreviewliste\"[^>]*>\\s*<a[^>]+href\\s*=\\s*\"([^\"]+)\"[^>]*>\\s*<img[^>]+src\\s*=\\s*\"([^\"]+)\"[^>]*>\\s*</a>\\s*<a[^>]+>\\s*([^<]+?)\\s*</a>\\s*\\((\\d+)\\D(\\d+)\\)");
+                MatchCollection mc = r.Matches(responseContent);
+                foreach (Match match in mc)
                 {
-                    var ret = new SjDeReview();
-                    ret.Name = match.Groups[3].Value;
-                    ret.ReviewUrl = "http://www.serienjunkies.de" + match.Groups[1].Value;
-                    ret.Thumbnail = match.Groups[2].Value;
-                    return ret;
+                    int seasonNr= int.Parse(match.Groups[4].Value);
+                    int episodeNr = int.Parse(match.Groups[5].Value);
+                    if (seasonNr == season && episodeNr == episode)
+                    {
+                        var ret = new SjDeReview();
+                        ret.Name = match.Groups[3].Value;
+                        ret.ReviewUrl = "http://www.serienjunkies.de" + match.Groups[1].Value;
+                        ret.Thumbnail = match.Groups[2].Value;
+                        ret.Photo = ret.Thumbnail.Replace("/p/", "/");
+                        return ret;
+                    }
                 }
+                return null;
+
             }
-            return null;
+            catch (Exception)
+            {
+                return null;
+            }
+            
         }
 
         public static List<KeyValuePair<String, String>> SearchSjOrg(string Title)

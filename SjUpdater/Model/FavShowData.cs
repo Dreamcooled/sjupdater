@@ -146,11 +146,6 @@ namespace SjUpdater.Model
                     }
                 }
 
-                if (seasonNr == -1 && !FilterShowNonSeason.GetValueOrDefault()) //Filter: NonSeason Stuff
-                {
-                    continue;
-                }
-
                 if (currentFavSeason == null || currentFavSeason.Number != seasonNr)
                 {
                     currentFavSeason = newSeasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
@@ -232,11 +227,6 @@ namespace SjUpdater.Model
                     {
                         int.TryParse(mts[0].Groups[1].Value, out episodeNr);
                     }
-
-                    if (episodeNr == -1 && !FilterShowNonEpisode.GetValueOrDefault()) //Filter: NonEpisode Stuff
-                    {
-                        continue;
-                    }
                 }
 
                 //At This point we're sure we want the episode
@@ -301,7 +291,7 @@ namespace SjUpdater.Model
                             {
                                 currentFavEpisode.Watched = oldEpisode.Watched;
                                 currentFavEpisode.Downloaded = oldEpisode.Downloaded;
-                                currentFavEpisode.ReviewInfoReview = oldEpisode.ReviewInfoReview;
+                                //currentFavEpisode.ReviewInfoReview = oldEpisode.ReviewInfoReview;
                             }
                         }
                     }
@@ -529,38 +519,6 @@ namespace SjUpdater.Model
             {
                 if (value == _filterHoster) return;
                 _filterHoster = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool? FilterShowNonSeason
-        {
-            get
-            {
-                if (!_filterShowNonSeason.HasValue)
-                    return Settings.Instance.FilterShowNonSeason;
-                return _filterShowNonSeason;
-            }
-            set
-            {
-                if (value == _filterShowNonSeason) return;
-                _filterShowNonSeason = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool? FilterShowNonEpisode
-        {
-            get
-            {
-                if (!_filterShowNonEpisode.HasValue)
-                    return Settings.Instance.FilterShowNonEpisode;
-                return _filterShowNonEpisode;
-            }
-            set
-            {
-                if (value == _filterShowNonEpisode) return;
-                _filterShowNonEpisode = value;
                 OnPropertyChanged();
             }
         }

@@ -11,5 +11,6 @@ namespace SjUpdater.Model
         public String Thumbnail { get; set; }
         public String Name { get; set; }
         public String ReviewUrl { get; set; }
+        public string Photo { get; set; }
     }
 }

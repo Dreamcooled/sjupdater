@@ -8,11 +8,6 @@ namespace SjUpdater.ViewModel
 {
     public class ShowTileViewModel : PropertyChangedImpl
     {
-       // private readonly SimpleCommand<object, ShowViewModel> _clickedCommandDest;
-      //  private readonly ICommand _clickedCommand;
-
-
-
         private readonly FavShowData _show;
         private  CachedBitmap _bitmap;
         private String _title;
@@ -22,20 +17,12 @@ namespace SjUpdater.ViewModel
         private readonly ShowViewModel _showViewModel;
         private readonly Dispatcher _dispatcher;
 
-        public ShowTileViewModel(FavShowData show)//,  SimpleCommand<object, ShowViewModel> clickedCommand )
+        public ShowTileViewModel(FavShowData show)
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
             _show = show;
-           // _clickedCommandDest = clickedCommand;
             _showViewModel  = new ShowViewModel(_show);
-         /*   _clickedCommand = new SimpleCommand<object, object>(o =>
-            {
-                if (_showViewModel == null)
-                {
-                    _showViewModel = new ShowViewModel(_show);
-                }
-                _clickedCommandDest.Execute(_showViewModel);
-            });*/
+        
 
             Title= _show.Name;
             IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
@@ -92,11 +79,6 @@ namespace SjUpdater.ViewModel
         {
             get { return _showViewModel; }
         }
-        /* public ICommand ClickedCommand
-        {
-            get { return _clickedCommand; }
-        }*/
-
 
         public string NumberText
         {

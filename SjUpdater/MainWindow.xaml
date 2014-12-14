@@ -69,8 +69,6 @@
                              IsOpenChanged="FilterFlyout_OnIsOpenChanged" Theme="Adapt">
                 <Grid Margin="25" Width="250">
                     <StackPanel Orientation="Vertical">
-                        <CheckBox Content="Show Non-Season Stuff" IsChecked="{Binding FilterNonSeason}" />
-                        <CheckBox Content="Show Non-Episodes" IsChecked="{Binding FilterNonEpisode}" />
                         <Label Content="Regex Name:"/>
                         <TextBox controls:TextboxHelper.Watermark="e.g. .*-TVS$"
                                  controls:TextboxHelper.ClearTextButton="True">
@@ -483,6 +481,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="b"/>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="c"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="d" />
                                 </Grid.ColumnDefinitions>
                                 <Label Content="{Binding Number}" Grid.Column="0" Margin="-20,0,0,0" Foreground="{DynamicResource DisabledMenuItemForeground}" />
                                 <Label Content="{Binding Title}" Grid.Column="1" />
@@ -500,11 +499,22 @@
                                             Visibility="{Binding NewUpdateVisible}"
                                             Foreground="LimeGreen" FontWeight="Bold">
                                     </Label>
-                                    
                                 </StackPanel>
                                 
                                 <Label Content="{Binding Formats}" Grid.Column="3" Foreground="{DynamicResource DisabledMenuItemForeground}"/>
                                 <Label Content="{Binding Languages}" Grid.Column="4"  Margin="0,0,10,0" Foreground="{DynamicResource DisabledMenuItemForeground}" />
+                                <StackPanel Grid.Column="5" Orientation="Horizontal"  Margin="0,0,10,0">
+                                    <Rectangle Width="16" Height="16" Visibility="{Binding DownloadedCheckVisibility}" ToolTip="Downloaded" Fill="{DynamicResource DisabledMenuItemForeground}">
+                                        <Rectangle.OpacityMask>
+                                            <VisualBrush Visual="{StaticResource appbar_disk}" Stretch="Fill" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                    <Rectangle Width="26" Height="16"  Visibility="{Binding WatchedCheckVisibility}" ToolTip="Watched" Fill="{DynamicResource DisabledMenuItemForeground}" Margin="5,0,0,0">
+                                        <Rectangle.OpacityMask>
+                                            <VisualBrush Visual="{StaticResource appbar_eye}" Stretch="Fill" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                </StackPanel>
                             </Grid>
 
                         </DataTemplate>
@@ -539,37 +549,20 @@
                         </TabItem>
                         <TabItem Header="Season"  x:Name="EpisodeTabControl_Season">
                             <Grid>
-                            <Label FontSize="24">Season</Label>
-                            <Button Width="40" VerticalAlignment="Top" HorizontalAlignment="Right" Click="ClearEpisodeSelection" ToolTip="Clear Selection"
-                        Height="40"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                                <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
-                                    <Rectangle.OpacityMask>
-                                        <VisualBrush Visual="{StaticResource appbar_list_check}" Stretch="Uniform" />
-                                    </Rectangle.OpacityMask>
-                                </Rectangle>
-                            </Button>
-                            </Grid>
-
-                        </TabItem>
-                        <TabItem Header="Episode" x:Name="EpisodeTabControl_Episode">
-                            <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="35" />
-                                    <RowDefinition Height="25" />
-                                    <RowDefinition Height="50" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="0" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" MinHeight="200"/>
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="1" FontSize="24" Text="{Binding Title }" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}" />
-                                <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Width="40" VerticalAlignment="Top"  Click="ClearEpisodeSelection" ToolTip="Clear Selection"
+                                <TextBlock Grid.Row="0" Grid.Column="0"  FontSize="24" Text="{Binding Name }" Margin="10,0,0,0"/>
+                                <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Width="40" VerticalAlignment="Top"  HorizontalAlignment="Right"  Click="ClearEpisodeSelection" ToolTip="Clear Selection"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
                                     <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
@@ -578,28 +571,180 @@
                                         </Rectangle.OpacityMask>
                                     </Rectangle>
                                 </Button>
-                                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" VerticalAlignment="Top">
-                                    <Rectangle Width="16" Height="16" Visibility="{Binding DownloadedCheckVisibility}" ToolTip="Downloaded" Fill="{DynamicResource LabelTextBrush}">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-                                    <Rectangle Width="16" Height="16"  Visibility="{Binding WatchedCheckVisibility}" ToolTip="Watched" Fill="{DynamicResource LabelTextBrush}">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Top" >
-                                    <Button Content="Show Review"  Command="{Binding ReviewCommand}" Margin="0,0,5,0"  />
-                                    <Button Content="{Binding ButtonStateChangeText}"  Command="{Binding StateChangeCommand }" Visibility="{Binding MarkStuffVisibility}"/>
-                                </StackPanel>
-                                <Image Grid.Row="0" Grid.RowSpan="3" Margin="10" Grid.Column="0" Source="{Binding Thumbnail.ImageSource}" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Uniform" />
                                 
-                                <Separator Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="3" Margin="10,0"/>
-                                <Label Grid.Row="4" Grid.Column="0"  Grid.ColumnSpan="3" FontSize="18" Margin="5,0,0,0">Favorized Uploads</Label>
-                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Show all" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
-                                <Popup Grid.Row="4" Grid.Column="1" IsOpen="{Binding IsChecked, ElementName=Btn}" StaysOpen="False" x:Name="EpisodePopup" 
+                
+                                <!--<Image Grid.Row="1" Margin="10" Grid.Column="0" Source="{Binding Cover.ImageSource}" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Uniform" />-->
+
+                                <Separator Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="2" Margin="10,0"/>
+                                <Label Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="2" FontSize="18" Margin="5,0,0,0">Non-Episodes &amp; Packs</Label>
+                                <Button HorizontalAlignment="Right" Grid.Row="3" Grid.Column="1"  Content="Show all" Margin="10,5" Click="SeasonShowAllDownloads" x:Name="SeasonShowAllDownloadsButton"/>
+                                <Popup Grid.Row="3" Grid.Column="1" StaysOpen="False" x:Name="SeasonPopup" 
+                                       PlacementTarget="{Binding ElementName=SeasonShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
+                                    <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Label FontSize="18" Margin="10,0,0,0" >Non-Episodes &amp; Packs</Label>
+                                            <Button  Grid.Row="0" Margin="20,1,9,1" Width="22"  Height="22" Style="{DynamicResource MetroWindowButtonStyle}" HorizontalAlignment="Right" Click="SeasonCloseAllDownloads">
+                                                <Path Data="F1M0,0L2,0 5,3 8,0 10,0 6,4 10,8 8,8 5,5 2,8 0,8 4,4 0,0z"
+                                          SnapsToDevicePixels="True"
+                                          Fill="White" HorizontalAlignment="Right"/>
+                                            </Button>
+
+                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding NonEpisodes}">
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
+                                                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
+                                                        <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
+                                                        <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
+                                                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
+                                                        <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
+                                                        <GridViewColumn Header="Links (Copy2Clipboard)">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <ItemsControl ItemsSource="{Binding Links}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <StackPanel Orientation="Horizontal" />
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <Button Margin="4" Padding="4,0" 
+                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}" ToolTip="{Binding Key}"
+                                                        CommandParameter="{Binding Value}" >
+                                                                                    <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
+                                                                                        <ContentPresenter.ContentTemplate>
+                                                                                            <DataTemplate>
+                                                                                                <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                                                            </DataTemplate>
+                                                                                        </ContentPresenter.ContentTemplate>
+                                                                                    </ContentPresenter>
+                                                                                </Button>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
+                                        </Grid>
+                                    </Border>
+                                </Popup>
+                                <ListView Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Margin="10,0,10,10" ItemsSource="{Binding NonEpisodes}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListView.Resources>
+                                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Style>
+                                    </ListView.Resources>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Links (Copy2Clipboard)">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ItemsControl ItemsSource="{Binding Links}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Button Margin="4" Padding="4,0" 
+                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}" ToolTip="{Binding Key}"
+                                                        CommandParameter="{Binding Value}" >
+                                                                        <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
+                                                                            <ContentPresenter.ContentTemplate>
+                                                                                <DataTemplate>
+                                                                                    <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                                                </DataTemplate>
+                                                                            </ContentPresenter.ContentTemplate>
+                                                                        </ContentPresenter>
+                                                                    </Button>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
+                                            <GridViewColumn Header="Title" > 
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+
+
+
+                            </Grid>
+
+                        </TabItem>
+                        <TabItem Header="Episode" x:Name="EpisodeTabControl_Episode">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" /> <!-- Title /Button -->
+                                    <RowDefinition Height="Auto" /> <!-- Image -->
+                                    <RowDefinition Height="Auto" /> <!-- More buttons -->
+                                    <RowDefinition Height="Auto" /> <!-- Separator -->
+                                    <RowDefinition Height="Auto" /> <!-- Title of list -->
+                                    <RowDefinition Height="Auto" MinHeight="200"/> <!-- List -->
+                                    <RowDefinition Height="*" /> <!-- Rest -->
+                                </Grid.RowDefinitions>
+                                
+                                <Grid Grid.Row="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" MinWidth="0" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontSize="24" Text="{Binding Title }" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <Rectangle Width="16" Height="16" Visibility="{Binding DownloadedCheckVisibility}" ToolTip="Downloaded" Fill="{DynamicResource LabelTextBrush}"  Margin="10,0,0,0">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Visual="{StaticResource appbar_disk}" Stretch="Fill" />
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                        <Rectangle Width="26" Height="16" Visibility="{Binding WatchedCheckVisibility}" ToolTip="Watched" Fill="{DynamicResource LabelTextBrush}" Margin="5,0,0,0">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Visual="{StaticResource appbar_eye}" Stretch="Fill" />
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <Button Grid.Column="3" Width="40" VerticalAlignment="Top"  Click="ClearEpisodeSelection" ToolTip="Clear Selection"
+                        Height="40"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                                        <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Visual="{StaticResource appbar_list_check}" Stretch="Uniform" />
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </Button>
+                                </Grid>
+                               
+
+                                <Image Grid.Row="1"  Margin="10,5" Source="{Binding Photo.ImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="Uniform" />
+
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" VerticalAlignment="Top"  Margin="10,5,0,5">
+                                    <Button Content="Show Review"  Command="{Binding ReviewCommand}" Margin="0,0,5,0"  />
+                                    <Button Content="{Binding ButtonStateChangeText}"  Command="{Binding StateChangeCommand }" />
+                                </StackPanel>
+                                 
+                                <Separator Grid.Row="3" Margin="10,5,10,0"/>
+                                <Label Grid.Row="4" FontSize="18" Margin="5,0,0,0">Favorized Uploads</Label>
+                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Show all" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
+                                <Popup Grid.Row="4" StaysOpen="False" x:Name="EpisodePopup" 
                                        PlacementTarget="{Binding ElementName=EpisodeShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
                                     <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
                                             <Grid>
@@ -705,7 +850,7 @@
                                     </Border> 
                                 </Popup>
 
-                                <ListView  Grid.Row="5" Grid.Column="0"  Grid.ColumnSpan="3" Margin="10,0,10,10" ItemsSource="{Binding FavorizedUploads}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView  Grid.Row="5" Margin="10,0,10,10" ItemsSource="{Binding FavorizedUploads}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type GridViewColumnHeader}">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -907,15 +1052,11 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <CheckBox Grid.Row="0" Grid.Column="0" Content="Show Non-Season Stuff" IsChecked="{Binding FilterShowNonSeason}"  Margin="0,5,0,0"/>
-                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Show Non-Episodes" IsChecked="{Binding FilterShowNonEpisode}"  Margin="0,5,0,0"/>
-                        <Label Grid.Row="2" Grid.Column="0" Content="Regex Name:"/>
-                        <TextBox Grid.Row="3" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. .*-TVS$"
+                        <Label Grid.Row="0" Grid.Column="0" Content="Regex Name:"/>
+                        <TextBox Grid.Row="1" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. .*-TVS$"
                              controls:TextboxHelper.ClearTextButton="True">
                             <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
@@ -923,8 +1064,8 @@
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox>
-                        <Label Grid.Row="4" Grid.Column="0" Content="Regex Format:"/>
-                        <TextBox Grid.Row="5" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
+                        <Label Grid.Row="2" Grid.Column="0" Content="Regex Format:"/>
+                        <TextBox Grid.Row="3" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
                              controls:TextboxHelper.ClearTextButton="True">
                             <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
@@ -932,8 +1073,8 @@
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox>
-                        <Label Grid.Row="6" Grid.Column="0" Content="Regex Uploader:"/>
-                        <TextBox Grid.Row="7" Grid.Column="0" controls:TextboxHelper.Watermark="Regex or leave Empty"
+                        <Label Grid.Row="4" Grid.Column="0" Content="Regex Uploader:"/>
+                        <TextBox Grid.Row="5" Grid.Column="0" controls:TextboxHelper.Watermark="Regex or leave Empty"
                              controls:TextboxHelper.ClearTextButton="True">
                             <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>

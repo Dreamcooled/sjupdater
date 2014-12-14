@@ -169,13 +169,13 @@ namespace SjUpdater
 
         private void SettingsClicked(object o)
         {
-            if (CurrentPage() == 3)
+            if (CurrentPage() == 2)
             {
                 SwitchPage(_lastpage);
                 return;
             }
 
-            SwitchPage(3);
+            SwitchPage(2);
         }
 
         private void IconClicked(object obj)
@@ -316,18 +316,18 @@ namespace SjUpdater
         {
             if (_selectedEpisodeTreeItems.Count == 1 && _selectedEpisodeTreeItems.First() is SeasonViewModel)
             {
-                EpisodeTabControl.SelectedIndex = 1;
                 EpisodeTabControl_Season.DataContext = _selectedEpisodeTreeItems.First();
+                EpisodeTabControl.SelectedIndex = 1;
             }
             else if (_selectedEpisodeTreeItems.Count == 1 && _selectedEpisodeTreeItems.First() is EpisodeViewModel)
             {
-                EpisodeTabControl.SelectedIndex = 2;
                 EpisodeTabControl_Episode.DataContext = _selectedEpisodeTreeItems.First();
+                EpisodeTabControl.SelectedIndex = 2;
             }
             else if (!_selectedEpisodeTreeItems.Any())
             {
-                EpisodeTabControl.SelectedIndex = 0;
                 EpisodeTabControl_Episode.DataContext = _selectedEpisodeTreeItems;
+                EpisodeTabControl.SelectedIndex = 0;
             }
             else
             {
@@ -536,6 +536,17 @@ namespace SjUpdater
         private void EpisodeCloseAllDownloads(object sender, RoutedEventArgs e)
         {
             EpisodePopup.IsOpen = false;
+        }
+
+
+        private void SeasonShowAllDownloads(object sender, RoutedEventArgs e)
+        {
+            SeasonPopup.IsOpen = true;
+        }
+
+        private void SeasonCloseAllDownloads(object sender, RoutedEventArgs e)
+        {
+            SeasonPopup.IsOpen = false;
         }
     }
 }
