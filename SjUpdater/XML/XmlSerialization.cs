@@ -13,13 +13,13 @@ namespace SjUpdater.XML
         {
             return CustomXmlDeserializer.GetTypeOfContent(XmlFileReader.ReadXmlFile(filename).OuterXml);
         }
-        public static T LoadFromXml<T>(string filename)
+        public static T LoadFromXml<T>(string filename, int maxversion, out int actualversion)
         {
             try
             {
                 // load XML document and parse it
-                // deserialize a Test1 instance having a version number of at most 1
-                T obj = (T)CustomXmlDeserializer.Deserialize(XmlFileReader.ReadXmlFile(filename).OuterXml, 1);
+                // deserialize a Test1 instance having a version number of at most maxversion
+                T obj = (T)CustomXmlDeserializer.Deserialize(XmlFileReader.ReadXmlFile(filename).OuterXml, maxversion,out actualversion);
                 return obj;
             }
             catch (Exception ex )
@@ -27,11 +27,11 @@ namespace SjUpdater.XML
                 throw new Exception("Fehler beim Lesen von Xml Datei",ex);
             }
         }
-        public static void SaveToXml(object o, string filename, bool encrypt = false)
+        public static void SaveToXml(object o, string filename, int version, bool encrypt = false)
         {
             try
             {
-                XmlDocument doc = CustomXmlSerializer.Serialize(o, 1, "AMS_FILE");
+                XmlDocument doc = CustomXmlSerializer.Serialize(o, version, "AMS_FILE");
 
                 if (!encrypt)
                     doc.Save(filename);

@@ -61,10 +61,6 @@ namespace SjUpdater.ViewModel
 
             DownloadCommand = new SimpleCommand<object, String>(s =>
             {
-                if (_favEpisodeData.Number != -1 && _favEpisodeData.Season.Number != -1)
-                {
-                    _favEpisodeData.Downloaded = true;
-                }
                 for (int i = 0; i < 10; i++)
                 {
                     try

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -16,6 +17,7 @@ namespace SjUpdater.ViewModel
     {
         private readonly FavShowData _show;
         private readonly ObservableCollection<SeasonViewModel> _lisSeasons;
+        private readonly ObservableCollection<DownloadData> _lisNonSeasons;
         private readonly Dispatcher _dispatcher;
         private CachedBitmap _bitmap;
         private String _description;
@@ -25,8 +27,6 @@ namespace SjUpdater.ViewModel
             Comparer<SeasonViewModel>.Create( delegate(SeasonViewModel m1, SeasonViewModel m2)
             {
                 if (m1.Season.Number == m2.Season.Number) return 0;
-                if (m1.Season.Number == -1) return 1;
-                if (m2.Season.Number == -1) return -1;
                 if (Settings.Instance.SortSeasonsDesc)
                 {
                     if (m1.Season.Number > m2.Season.Number) return -1;
@@ -43,9 +43,11 @@ namespace SjUpdater.ViewModel
         {
             _show = show;
             _dispatcher = Dispatcher.CurrentDispatcher;
-            show.Seasons.CollectionChanged += update_source;
+            show.Seasons.CollectionChanged += UpdateSeasons;
+            show.NonSeasons.CollectionChanged += UpdateNonSeasons;
 
             _lisSeasons = new ObservableCollection<SeasonViewModel>();
+            _lisNonSeasons = new ObservableCollection<DownloadData>();
 
             Cover = !String.IsNullOrWhiteSpace(_show.Cover) ? new CachedBitmap(_show.Cover) : null;
             Description = (_show.Seasons.Any(s => s.Episodes.Any(e => e.Downloads.Any()))) ?
@@ -53,27 +55,25 @@ namespace SjUpdater.ViewModel
 
             foreach (FavSeasonData favSeasonData in show.Seasons)
             {
-                if(favSeasonData.Number==-1) continue;
                 var x = new SeasonViewModel(favSeasonData);
                 _lisSeasons.Add(x);
             }
             _lisSeasons.Sort(SeasonComparer);
+
+            foreach (DownloadData nonSeason in show.NonSeasons)
+            {
+                _lisNonSeasons.Add(nonSeason);
+            }
 
 
             UnmarkAllCommand = new SimpleCommand<object, object>(o =>
             {
                 foreach (var season in Show.Seasons)
                 {
-                    if (season.Number != -1)
+                    foreach (var episode in season.Episodes)
                     {
-                        foreach (var episode in season.Episodes)
-                        {
-                            if (episode.Number != -1)
-                            {
-                                episode.Downloaded = false;
-                                episode.Watched = false;
-                            }
-                        }
+                            episode.Downloaded = false;
+                            episode.Watched = false;
                     }
                 }
             });
@@ -81,16 +81,10 @@ namespace SjUpdater.ViewModel
             {
                 foreach (var season in Show.Seasons)
                 {
-                    if (season.Number != -1)
+                    foreach (var episode in season.Episodes)
                     {
-                        foreach (var episode in season.Episodes)
-                        {
-                            if (episode.Number != -1)
-                            {
-                                episode.Downloaded = true;
-                                //episode.Watched = false; //not sure here
-                            }
-                        }
+                        episode.Downloaded = true;
+                        //episode.Watched = false; //not sure here
                     }
                 }
             });
@@ -98,22 +92,36 @@ namespace SjUpdater.ViewModel
             {
                 foreach (var season in Show.Seasons)
                 {
-                    if (season.Number != -1)
+                    foreach (var episode in season.Episodes)
                     {
-                        foreach (var episode in season.Episodes)
-                        {
-                            if (episode.Number != -1)
-                            {
-                                episode.Downloaded = true;
-                                episode.Watched = true;
-                            }
-                        }
+                            episode.Downloaded = true;
+                            episode.Watched = true;
                     }
                 }
             });
+
+            DownloadCommand = new SimpleCommand<object, String>(s =>
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        Clipboard.SetText(s);
+                        Clipboard.Flush();
+                        Stats.TrackAction(Stats.TrackActivity.Download);
+                        return;
+                    }
+                    catch
+                    {
+                        //nah
+                    }
+                    Thread.Sleep(10);
+                }
+                MessageBox.Show("Couldn't Copy link to clipboard.\n" + s);
+            });
         }
 
-        private void update_source(object sender, NotifyCollectionChangedEventArgs e)
+        private void UpdateSeasons(object sender, NotifyCollectionChangedEventArgs e)
         {
             _dispatcher.Invoke(delegate
             {
@@ -123,7 +131,6 @@ namespace SjUpdater.ViewModel
                         foreach (var newItem in e.NewItems)
                         {
                             var favSeasonData = newItem as FavSeasonData;
-                            if(favSeasonData.Number!=-1)
                             _lisSeasons.Add(new SeasonViewModel(favSeasonData));
                         }
                         break;
@@ -131,7 +138,7 @@ namespace SjUpdater.ViewModel
                         foreach (var oldItem in e.OldItems)
                         {
                             var o = oldItem as FavShowData;
-                            for (int i = _lisSeasons.Count - 2; i >= 0; i--)
+                            for (int i = _lisSeasons.Count - 1; i >= 0; i--) 
                             {
                                 if (_lisSeasons[i].Season == oldItem)
                                 {
@@ -145,7 +152,6 @@ namespace SjUpdater.ViewModel
                         _lisSeasons.Clear();
                         foreach (FavSeasonData favSeasonData in _show.Seasons)
                         {
-                             if(favSeasonData.Number==-1) continue;
                             var x = new SeasonViewModel(favSeasonData);
                             _lisSeasons.Add(x);
                         }
@@ -157,13 +163,58 @@ namespace SjUpdater.ViewModel
                 _lisSeasons.Sort(SeasonComparer);
 
             });
-          
+        }
+
+        private void UpdateNonSeasons(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            _dispatcher.Invoke(delegate
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (var newItem in e.NewItems)
+                        {
+                            _lisNonSeasons.Add(newItem as DownloadData);
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (var oldItem in e.OldItems)
+                        {
+                            var o = oldItem as DownloadData;
+                            for (int i = _lisNonSeasons.Count - 1; i >= 0; i--) 
+                            {
+                                if (_lisNonSeasons[i] == oldItem)
+                                {
+                                    _lisNonSeasons.RemoveAt(i);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        _lisNonSeasons.Clear();
+                        foreach (DownloadData nonSeason in _show.NonSeasons)
+                        {
+                            _lisNonSeasons.Add(nonSeason);
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException(e.Action.ToString());
+
+                }
+
+            });
         }
 
 
         public ObservableCollection<SeasonViewModel> Seasons
         {
             get { return _lisSeasons; }
+        }
+
+
+        public ObservableCollection<DownloadData> NonSeasons {
+            get { return _lisNonSeasons; }
         }
 
         public String Title
@@ -277,5 +328,6 @@ namespace SjUpdater.ViewModel
         public ICommand UnmarkAllCommand { get; private set; }
         public ICommand MarkAllDownloadedCommand { get; private set; }
         public ICommand MarkAllWatchedCommand { get; private set; }
+        public ICommand DownloadCommand { get; private set; }
     }
 }

@@ -338,7 +338,7 @@ namespace SjUpdater
         private void CleanShow(object sender, RoutedEventArgs e)
         {
             var s = ((ShowViewModel) ShowGrid.DataContext).Show;
-            StaticInstance.ThreadPool.QueueWorkItem(() => s.ApplyFilter(), true, ThreadPriority.AboveNormal);
+            StaticInstance.ThreadPool.QueueWorkItem(() => s.ApplyFilter(true,false), true, ThreadPriority.AboveNormal);
         }
 
 
@@ -455,7 +455,7 @@ namespace SjUpdater
             if (!FilterFlyout.IsOpen)
             {
                 var vm = FilterFlyout.DataContext as ShowViewModel;
-                vm.Show.ApplyFilter();
+                vm.Show.ApplyFilter(true,false);
                 Stats.TrackAction(Stats.TrackActivity.Filter);
             }
 
@@ -523,7 +523,7 @@ namespace SjUpdater
             em.ContextMenu.IsOpen = true;
         }
 
-        private void ClearEpisodeSelection(object sender, RoutedEventArgs e)
+        private void OutsideTreeview_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             TreeViewExtensions.ClearSelection(ShowTreeView);
         }
@@ -548,5 +548,18 @@ namespace SjUpdater
         {
             SeasonPopup.IsOpen = false;
         }
+
+        private void NoneShowAllDownloads(object sender, RoutedEventArgs e)
+        {
+            NonePopup.IsOpen = true;
+        }
+
+        private void NoneCloseAllDownloads(object sender, RoutedEventArgs e)
+        {
+            NonePopup.IsOpen = false;
+        }
+
+
+   
     }
 }

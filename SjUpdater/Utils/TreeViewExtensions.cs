@@ -31,11 +31,6 @@ namespace SjUpdater.Utils
 				BindsTwoWayByDefault = true
 			});
 
-
-
-
-
-
 		public static IList GetSelectedItems(DependencyObject obj)
 		{
 			return (IList)obj.GetValue(SelectedItemsProperty);
@@ -51,7 +46,6 @@ namespace SjUpdater.Utils
 			DependencyProperty.RegisterAttached("SelectedItems", typeof(IList), typeof(TreeViewExtensions), new PropertyMetadata(null));
 
 
-
 		static TreeViewItem GetAnchorItem(DependencyObject obj)
 		{
 			return (TreeViewItem)obj.GetValue(AnchorItemProperty);
@@ -65,7 +59,6 @@ namespace SjUpdater.Utils
 		// Using a DependencyProperty as the backing store for AnchorItem.  This enables animation, styling, binding, etc...
 		static readonly DependencyProperty AnchorItemProperty =
 			DependencyProperty.RegisterAttached("AnchorItem", typeof(TreeViewItem), typeof(TreeViewExtensions), new PropertyMetadata(null));
-
 
 
 		static void EnableMultiSelectChanged(DependencyObject s, DependencyPropertyChangedEventArgs args)
@@ -105,7 +98,6 @@ namespace SjUpdater.Utils
             }
             return parent as TreeViewItem;
         }
-
 
 
         static void SetIsChecked(TreeViewItem item, bool? value, bool updateChildren, bool updateParent)
@@ -349,7 +341,6 @@ namespace SjUpdater.Utils
             foreach (TreeViewItem selectedItem in GetTreeViewItems(tree))
             {
                 selectedItem.SetValue(IsSelectedProperty, false);
-           
             }
 	    }
 
@@ -372,10 +363,6 @@ namespace SjUpdater.Utils
 		{
 			SetAnchorItem(tree, item);
 		}
-
-
-
-
 		public static bool? GetIsSelected(DependencyObject obj)
 		{
 			return (bool?)obj.GetValue(IsSelectedProperty);
@@ -393,7 +380,6 @@ namespace SjUpdater.Utils
 			 {
 				PropertyChangedCallback = RealSelectedChanged
 			});
-
 
 	}
 }

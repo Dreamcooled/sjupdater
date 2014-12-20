@@ -21,9 +21,9 @@ namespace SjUpdater.XML
             this.typeConverter = typeConverter;
         }
 
-        public static object Deserialize(string xml, int maxSupportedVer)
+        public static object Deserialize(string xml, int maxSupportedVer, out int actualVersion)
         {
-            return Deserialize(xml, maxSupportedVer, null);
+            return Deserialize(xml, maxSupportedVer, null,out actualVersion);
         }
 
         public static Type GetTypeOfContent(string xml)
@@ -48,12 +48,13 @@ namespace SjUpdater.XML
             }
             return objType;    
         }
-        public static object Deserialize(string xml, int maxSupportedVer, ITypeConverter typeConverter)
+        public static object Deserialize(string xml, int maxSupportedVer, ITypeConverter typeConverter, out int actualVersion)
         {
             CustomXmlDeserializer deserializer = new CustomXmlDeserializer(typeConverter);
             deserializer.doc.LoadXml(xml);
             string version = deserializer.doc.DocumentElement.GetAttribute("version");
-            if (maxSupportedVer < Convert.ToInt32(version))
+            actualVersion = Convert.ToInt32(version);
+            if (maxSupportedVer < actualVersion)
             {
                 return null;
             }

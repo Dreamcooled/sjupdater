@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using System.Windows.Media.Animation;
 using System.Xml.Serialization;
 using Amib.Threading;
 using MahApps.Metro.Converters;
@@ -20,22 +21,22 @@ namespace SjUpdater.Model
         private string _name;
         private string _cover;
         private ObservableCollection<FavSeasonData> _seasons;
+        private ObservableCollection<DownloadData> _nonSeasons; 
         private ShowData _show;
         private int _nrSeasons ;
         private int _nrEpisodes;
         private bool _newEpisodes;
         private bool _notified;
         private bool _isLoading;
+        private bool _resetOnRefresh;
 
         private UploadLanguage? _filterLanguage;
         private string _filterHoster;
-        private bool? _filterShowNonSeason;
         private string _filterName;
         private string _filterFormat;
         private string _filterUploader;
         private string _filterSize;
         private string _filterRuntime;
-        private bool? _filterShowNonEpisode;
         private string _infoUrl;
         private List<DownloadData> _allDownloads;
         private readonly bool _isNewShow; //=false
@@ -56,7 +57,7 @@ namespace SjUpdater.Model
             _seasons = new ObservableCollection<FavSeasonData>();
             _name = "";
             _cover = "";
-            _seasons = new ObservableCollection<FavSeasonData>();
+            _nonSeasons = new ObservableCollection<DownloadData>();
             _allDownloads = new List<DownloadData>();
 
             //the getters will return the default filter if the value is a null string
@@ -67,9 +68,12 @@ namespace SjUpdater.Model
             _filterUploader = null;
             _filterSize = null;
             _filterRuntime = null;
-            _filterShowNonSeason = null;
-            _filterShowNonEpisode = null;
 
+        }
+
+        public void SetResetOnRefresh()
+        {
+            _resetOnRefresh = true;
         }
 
         readonly Mutex _mutexFetch = new Mutex();
@@ -99,7 +103,15 @@ namespace SjUpdater.Model
                     Cover = cover;
                 }
                 _mutexFetch.ReleaseMutex();
-                ApplyFilter(false);
+                if (_resetOnRefresh)
+                {
+                    _resetOnRefresh = false;
+                    ApplyFilter(true); 
+                }
+                else
+                {
+                    ApplyFilter(false);
+                }
             }
             finally
             {
@@ -107,7 +119,7 @@ namespace SjUpdater.Model
             }
         }
 
-        public void ApplyFilter(bool reset=true)
+        public void ApplyFilter(bool reset,bool notifications=true)
         {
             if (AllDownloads == null || !AllDownloads.Any())
             {
@@ -122,36 +134,19 @@ namespace SjUpdater.Model
             int seasonNr = -1;
 
             ObservableCollection<FavSeasonData> newSeasons = new ObservableCollection<FavSeasonData>();
+            ObservableCollection<DownloadData> newNonSeasons = new ObservableCollection<DownloadData>();
 
             reset = reset || _isNewShow;
             if (!reset)
             {
                 newSeasons = Seasons;
+                newNonSeasons = NonSeasons;
             }
 
             UploadData currentUpload = null;
             bool ignoreCurrentUpload = false;
             foreach (var download in AllDownloads)
             {
-
-                //Season stuff ------------------------------------------------------------------------------------
-                if (currentSeasonData == null || currentSeasonData != download.Upload.Season)
-                {
-                    currentSeasonData = download.Upload.Season;
-                    seasonNr = -1;  
-                    Match m2 = new Regex("(?:season|staffel)\\s*(\\d+)", RegexOptions.IgnoreCase).Match(currentSeasonData.Title);
-                    if (m2.Success)
-                    {
-                        int.TryParse(m2.Groups[1].Value,out seasonNr);
-                    }
-                }
-
-                if (currentFavSeason == null || currentFavSeason.Number != seasonNr)
-                {
-                    currentFavSeason = newSeasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
-                                       new FavSeasonData() {Number = seasonNr,Show=this};
-                }
-
                 //upload stuff --------------------------------------------------------------------
                 if (currentUpload == null || currentUpload != download.Upload)
                 {
@@ -218,85 +213,89 @@ namespace SjUpdater.Model
                     }
                 }
 
+                //------------------------------------------
+
+                //Season stuff ------------------------------------------------------------------------------------
+                if (currentSeasonData == null || currentSeasonData != download.Upload.Season)
+                {
+                    currentSeasonData = download.Upload.Season;
+                    seasonNr = -1;
+                    Match m2 = new Regex("(?:season|staffel)\\s*(\\d+)", RegexOptions.IgnoreCase).Match(currentSeasonData.Title);
+                    if (m2.Success)
+                    {
+                        int.TryParse(m2.Groups[1].Value, out seasonNr);
+                    }
+                }
+
+                if (seasonNr == -1)
+                {
+                    if (newNonSeasons.All(d => d.Title != download.Title))
+                    {
+                        newNonSeasons.Add(download);
+                    }
+                    continue;
+                }
+
+                if (currentFavSeason == null || currentFavSeason.Number != seasonNr)
+                {
+                    currentFavSeason = newSeasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
+                                       new FavSeasonData() { Number = seasonNr, Show = this };
+
+                    if (!newSeasons.Contains(currentFavSeason)) //season not yet added?
+                    {
+                        newSeasons.Add(currentFavSeason);
+                    }
+                }
+
                 int episodeNr = -1;
-                if (seasonNr != -1)
+            
+                MatchCollection mts = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                MatchCollection mts_ep = new Regex("[^A-Z]E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                if (mts.Count==1 && mts_ep.Count==1) //if there is exactly one match for "S<xx>E<yy>" and there is no second "E<zz>" (e.g. S01E01-E12) 
                 {
-                    MatchCollection mts = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
-                    MatchCollection mts_ep = new Regex("[^A-Z]E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
-                    if (mts.Count==1 && mts_ep.Count==1) //if there is exactly one match for "S<xx>E<yy>" and there is no second "E<zz>" (e.g. S01E01-E12) 
+                    int.TryParse(mts[0].Groups[1].Value, out episodeNr);
+                }
+                
+
+                if (episodeNr == -1)
+                {
+                    if (currentFavSeason.NonEpisodes.All(d => d.Title != download.Title))
                     {
-                        int.TryParse(mts[0].Groups[1].Value, out episodeNr);
+                        currentFavSeason.NonEpisodes.Add(download);
                     }
+                    continue;
                 }
 
-                //At This point we're sure we want the episode
-                if (!newSeasons.Contains(currentFavSeason)) //season not yet added?
-                {
-                    newSeasons.Add(currentFavSeason);
-                }
-
-                FavEpisodeData currentFavEpisode = null;
-              
-                foreach (var episodeData in currentFavSeason.Episodes)
-                {
-                    if (seasonNr != -1)
-                    {
-                        if (episodeData.Number == episodeNr)
-                        {
-                            currentFavEpisode = episodeData;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (episodeData.Name == download.Title)
-                        {
-                            currentFavEpisode = episodeData;
-                            break;
-                        }
-                    }
-                }
+                FavEpisodeData currentFavEpisode = currentFavSeason.Episodes.FirstOrDefault(episodeData => episodeData.Number == episodeNr);
 
                 if (currentFavEpisode == null)
                 {
                     currentFavEpisode = new FavEpisodeData();
                     currentFavEpisode.Season = currentFavSeason;
-                    if (episodeNr == -1)
+                    currentFavEpisode.Number = episodeNr;
+                    bool existed = false;
+
+                    var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
+                    if (oldSeason != null)
                     {
-                        currentFavEpisode.Name = download.Title;
-                        if (!reset)
+                        var oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
+                        if (oldEpisode != null) //we can copy old data to current episode
                         {
-                            currentFavEpisode.NewUpdate = true;
-                            NewEpisodes = true;
-                        }
-                    }
-                    else
-                    {
-                        currentFavEpisode.Number = episodeNr;
-                        if (!reset)
-                        {
-                            currentFavEpisode.NewEpisode = true;
-                            NewEpisodes = true;
-                        }
-                    }
-                    currentFavSeason.Episodes.Add(currentFavEpisode);
-    
-                    if ( currentFavSeason.Number!=-1 && currentFavEpisode.Number!=-1) //old data possible
-                    {
-                        var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
-                        if (oldSeason != null)
-                        {
-                            var oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
-                            if (oldEpisode != null) //we can copy old data to current episode
-                            {
-                                currentFavEpisode.Watched = oldEpisode.Watched;
-                                currentFavEpisode.Downloaded = oldEpisode.Downloaded;
-                                //currentFavEpisode.ReviewInfoReview = oldEpisode.ReviewInfoReview;
-                            }
+                            currentFavEpisode.Watched = oldEpisode.Watched;
+                            currentFavEpisode.Downloaded = oldEpisode.Downloaded;
+                            currentFavEpisode.ReviewInfoReview = oldEpisode.ReviewInfoReview;
+                            existed = true;
                         }
                     }
 
-                    if (!String.IsNullOrWhiteSpace(InfoUrl) && currentFavEpisode.ReviewInfoReview == null)
+                    if (notifications && !existed) {
+                        currentFavEpisode.NewEpisode = true;
+                        NewEpisodes = true;
+                    }
+            
+                    currentFavSeason.Episodes.Add(currentFavEpisode);
+                    
+                    if (!String.IsNullOrWhiteSpace(InfoUrl) && (currentFavEpisode.ReviewInfoReview == null || reset))
                     {
                         StaticInstance.ThreadPool.QueueWorkItem(() =>
                         {
@@ -307,10 +306,17 @@ namespace SjUpdater.Model
                 }
                 else
                 {
+                    FavEpisodeData oldEpisode = null;
+                    var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
+                    if (oldSeason != null)
+                    {
+                        oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
+                    }
+                    
                     if (currentFavEpisode.Downloads.All(d => d.Title != download.Title))
                     {
                         currentFavEpisode.Downloads.Add(download);
-                        if (!reset)
+                        if (notifications && (oldEpisode==null ||  oldEpisode.Downloads.All(d => d.Title != download.Title)))
                         {
                             currentFavEpisode.NewUpdate = true;
                         }
@@ -326,6 +332,11 @@ namespace SjUpdater.Model
                 foreach (var season in newSeasons)
                 {
                     Seasons.Add(season);
+                }
+                NonSeasons.Clear();
+                foreach (var nonSeason in newNonSeasons)
+                {
+                    NonSeasons.Add(nonSeason);
                 }
             }
 
@@ -453,11 +464,8 @@ namespace SjUpdater.Model
             int seasons = 0;
             foreach (FavSeasonData season in _seasons)
             {
-                if (season.Number != -1)
-                {
                     seasons++;
                     episodes += season.NumberOfEpisodes;
-                }
             }
             NumberOfEpisodes = episodes;
             NumberOfSeasons = seasons;
@@ -593,6 +601,16 @@ namespace SjUpdater.Model
             internal set
             {
                 _seasons = value;
+                RecalcNumbers();
+                OnPropertyChanged();
+            }
+        }
+        public ObservableCollection<DownloadData> NonSeasons
+        {
+            get { return _nonSeasons; }
+            internal set
+            {
+                _nonSeasons = value;
                 RecalcNumbers();
                 OnPropertyChanged();
             }

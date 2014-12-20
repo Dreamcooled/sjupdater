@@ -24,8 +24,6 @@ namespace SjUpdater.ViewModel
            Comparer<EpisodeViewModel>.Create(delegate(EpisodeViewModel m1, EpisodeViewModel m2)
            {
                if (m1.Episode.Number == m2.Episode.Number) return 0;
-               if (m1.Episode.Number == -1) return 1;
-               if (m2.Episode.Number == -1) return -1;
 
                if (Settings.Instance.SortEpisodesDesc)
                {
@@ -71,24 +69,18 @@ namespace SjUpdater.ViewModel
            
             foreach (FavEpisodeData favEpisodeData in season.Episodes)
             {
-                if (favEpisodeData.Number == -1)
-                {
-                    NonEpisodes = favEpisodeData.Downloads;
-                    continue;
-                }
                 var x = new EpisodeViewModel(favEpisodeData);
                 _lisEpisodes.Add(x);
             }
+            NonEpisodes = Season.NonEpisodes;
 
             _lisEpisodes.Sort(EpisodeComparer);
-
-
 
         }
 
         public String Name
         {
-            get { return ((_season.Number == -1) ? "Others" : ("Season " + _season.Number)); }
+            get { return "Season " + _season.Number; }
         }
 
 
@@ -108,9 +100,9 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-                
-                int e= _season.Episodes.Count(episode => episode.Number != -1);
-                int n = (_season.Episodes.Any(episode => episode.Number == -1))?_season.Episodes.First(episode => episode.Number == -1).Downloads.Count : 0;
+
+                int e = _season.NumberOfEpisodes;
+                int n = _season.NumberOfNonEpisodes;
                 if(e>0 && n==0)
                     return e + " Episodes";
                 if (n > 0 && e == 0)
@@ -147,7 +139,6 @@ namespace SjUpdater.ViewModel
                         foreach (var newItem in e.NewItems)
                         {
                             var favEpisodeData = newItem as FavEpisodeData;
-                            if (favEpisodeData.Number == -1) continue;
                             _lisEpisodes.Add(new EpisodeViewModel(favEpisodeData));
                         }
                         break;
