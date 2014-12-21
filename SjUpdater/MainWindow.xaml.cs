@@ -71,7 +71,7 @@ namespace SjUpdater
 
             //Initialize view
             _viewModel = new MainWindowViewModel(_setti.TvShows);
-            ShowsPanorama.ItemsSource = _viewModel.PanoramaItems;
+            DataContext = _viewModel;
 
             _selectedEpisodeTreeItems.CollectionChanged += _selectedEpisodeTreeItems_CollectionChanged;
 

@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
         <Border Background="{DynamicResource WindowTitleColorBrush}" >
             <StackPanel Orientation="Horizontal">
-                <Image Source="icon3.ico" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased"/>
+                <Image Source="Resources/icon3.ico" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased"/>
                 <TextBlock Text="SERIENJUNKIES UPDATER" FontSize="16" FontFamily="Segoe UI Light" Foreground="White" Margin="10,0,0,0" VerticalAlignment="Center" ></TextBlock>
                 <Button Margin="20,1,9,1" Width="22" Style="{DynamicResource MetroWindowButtonStyle}" Click="CloseBalloon">
                     <Path Data="F1M0,0L2,0 5,3 8,0 10,0 6,4 10,8 8,8 5,5 2,8 0,8 4,4 0,0z"

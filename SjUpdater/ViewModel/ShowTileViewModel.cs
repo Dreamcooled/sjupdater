@@ -77,14 +77,7 @@ namespace SjUpdater.ViewModel
 
         public ShowViewModel ShowViewModel
         {
-            get
-            {
-                if (_showViewModel == null)
-                {
-                    _showViewModel = new ShowViewModel(_show);
-                }
-                return _showViewModel;
-            }
+            get { return _showViewModel ?? (_showViewModel = new ShowViewModel(_show)); }
         }
 
         public string NumberText

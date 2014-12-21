@@ -5,13 +5,13 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:viewModel="clr-namespace:SjUpdater.ViewModel"
                       xmlns:utils="clr-namespace:SjUpdater.Utils"
-                      xmlns:tb="http://www.hardcodet.net/taskbar"
                       xmlns:model="clr-namespace:SjUpdater.Model"
                       xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
+                      xmlns:taskbarNotification="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
                       x:Class="SjUpdater.MainWindow"
                       Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True" MinWidth="800" MinHeight="600"
-                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="icon3.ico" TextOptions.TextFormattingMode="Display" >
-    <controls:MetroWindow.WindowCommands>
+                      Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="Resources/icon3.ico" TextOptions.TextFormattingMode="Display" >
+    <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <Button Command="{Binding SettingsCommand, ElementName=Window}" >
                 <Rectangle Width="20" Height="20"
@@ -23,7 +23,7 @@
                 </Rectangle>
             </Button>
         </controls:WindowCommands>
-    </controls:MetroWindow.WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Resources>
         <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
     </controls:MetroWindow.Resources>
@@ -42,8 +42,8 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" MaxWidth="210" controls:TextboxHelper.ClearTextButton="True"
-                             controls:TextboxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
+                        <TextBox Grid.Column="0" MaxWidth="210" controls:TextBoxHelper.ClearTextButton="True"
+                             controls:TextBoxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
                              TextChanged="SearchTextBox_TextChanged" PreviewKeyUp="TextBoxAutoComl_PreviewKeyUp" />
 
                         <Button Grid.Column="1" Width="Auto" Height="Auto" Content="Add" VerticalAlignment="Center" Margin="10,0,10,0" Style="{DynamicResource MetroFlatButton}" Click="AddSelectedShowButton_Click" >
@@ -70,8 +70,8 @@
                 <Grid Margin="25" Width="250">
                     <StackPanel Orientation="Vertical">
                         <Label Content="Regex Name:"/>
-                        <TextBox controls:TextboxHelper.Watermark="e.g. .*-TVS$"
-                                 controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox controls:TextBoxHelper.Watermark="e.g. .*-TVS$"
+                                 controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -79,8 +79,8 @@
                             </Binding>
                         </TextBox>
                         <Label Content="Regex Format:"/>
-                        <TextBox controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
-                                 controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox controls:TextBoxHelper.Watermark="e.g. (1080|720)(p|i)"
+                                 controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -88,8 +88,8 @@
                             </Binding>
                         </TextBox>
                         <Label Content="Regex Uploader:"/>
-                        <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
-                                 controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox controls:TextBoxHelper.Watermark="Regex or leave Empty"
+                                 controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -97,8 +97,8 @@
                             </Binding>
                         </TextBox>
                         <Label Content="Regex Size:"/>
-                        <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
-                                 controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox controls:TextBoxHelper.Watermark="Regex or leave Empty"
+                                 controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -106,8 +106,8 @@
                             </Binding>
                         </TextBox>
                         <Label Content="Regex Runtime:"/>
-                        <TextBox controls:TextboxHelper.Watermark="Regex or leave Empty"
-                                 controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox controls:TextBoxHelper.Watermark="Regex or leave Empty"
+                                 controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -115,8 +115,8 @@
                             </Binding>
                         </TextBox>
                         <Label Content="Regex Hoster:"/>
-                        <TextBox controls:TextboxHelper.Watermark="e.g. share-online|uploaded"
-                                 controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox controls:TextBoxHelper.Watermark="e.g. share-online|uploaded"
+                                 controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -142,18 +142,89 @@
         </TabControl.Template>
         <TabItem Header="Overview">
             <Grid x:Name="OverviewGrid">
-                <tb:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" IconSource="icon3.ico" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" >
-                    <tb:TaskbarIcon.ContextMenu>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <taskbarNotification:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" IconSource="Resources/icon3.ico" >
+                    <taskbarNotification:TaskbarIcon.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Open" Command="{Binding IconClickedCommand}" FontWeight="Bold"/>
                             <MenuItem Header="Exit" Command="{Binding TerminateCommand}"/>
                         </ContextMenu>
-                    </tb:TaskbarIcon.ContextMenu>
-                </tb:TaskbarIcon>
-                <controls:Panorama x:Name="ShowsPanorama" UseSnapBackScrolling="False" Margin="10,10,10,10"
-                               VerticalAlignment="Stretch" ItemBox="200">
+                    </taskbarNotification:TaskbarIcon.ContextMenu>
+                </taskbarNotification:TaskbarIcon>
 
-                    <controls:Panorama.Resources>
+                <Label Grid.Row="0" Margin ="10,0,0,0"  FontFamily="Segoe UI Symbol" FontSize="32" Foreground="{DynamicResource LabelTextBrush}" Content="My TV Shows"
+                           VerticalAlignment="Center"/>
+
+                <Button Grid.Row="0" Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Height="40" Margin="0,0,90,0"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+                <Button Grid.Row="0" Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Height="40" Margin="0,0,50,0"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_browser}" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+
+                <Button Grid.Row="0" Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Height="40" Margin="0,0,10,0"
+                        Style="{DynamicResource MetroCircleButtonStyle}">
+                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_refresh}" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+
+                <ScrollViewer  Grid.Row="1" Margin="10,10,10,10" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding TvShows}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.Resources>
+                        <Style TargetType="{x:Type controls:Tile}">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
+                                        <Grid Background="{TemplateBinding Background}">
+                                            <ContentPresenter RecognizesAccessKey="True" />
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="0.98"
+                                                                    ScaleY="0.98"
+                                                                    CenterX="0.5"
+                                                                    CenterY="0.5" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
                             <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ShowClickedCommand, ElementName=Window}"
@@ -165,7 +236,7 @@
                                             <BlurEffect Radius="2"/>
                                         </Rectangle.Effect>
                                     </Rectangle>
-                                   
+
                                     <controls:ProgressRing Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
                                     <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top"
@@ -205,65 +276,9 @@
 
                             </controls:Tile>
                         </DataTemplate>
-                        <Style TargetType="{x:Type controls:Tile}">
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                            <Setter Property="HorizontalContentAlignment" Value="Center" />
-                            <Setter Property="VerticalContentAlignment" Value="Center" />
-                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
-                                        <Grid Background="{TemplateBinding Background}">
-                                            <ContentPresenter RecognizesAccessKey="True" />
-                                        </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="RenderTransform">
-                                                    <Setter.Value>
-                                                        <ScaleTransform ScaleX="0.98"
-                                                                    ScaleY="0.98"
-                                                                    CenterX="0.5"
-                                                                    CenterY="0.5" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </controls:Panorama.Resources>
-                </controls:Panorama>
-                <Button Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Height="40" Margin="0,10,90,0"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Uniform" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button>
-                <Button Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Height="40" Margin="0,10,50,0"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_browser}" Stretch="Uniform" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button>
-
-                <Button Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Height="40" Margin="0,10,10,0"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_refresh}" Stretch="Uniform" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button>
-
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </TabItem>
         <TabItem Header="ShowGrid">
@@ -289,7 +304,7 @@
                             </Rectangle>
                         </Button>
                         <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
-                           VerticalAlignment="Center" x:Name="SeasonLabel" />
+                           VerticalAlignment="Center"/>
                         <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
                             Height="40"
                             Style="{DynamicResource MetroCircleButtonStyle}">
@@ -1054,7 +1069,7 @@
                                   SelectedValue="{Binding CurrentTheme, ElementName=Window}" />
                             <Label Content="Accent:" Grid.Column="2"/>
                             <ComboBox Grid.Column="3"
-                                  ItemsSource="{Binding Source={x:Static metro:ThemeManager.DefaultAccents}}"
+                                  ItemsSource="{Binding Source={x:Static metro:ThemeManager.Accents}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Name"
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
                         </Grid>
@@ -1141,8 +1156,8 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="0" Content="Regex Name:"/>
-                        <TextBox Grid.Row="1" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. .*-TVS$"
-                             controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox Grid.Row="1" Grid.Column="0" controls:TextBoxHelper.Watermark="e.g. .*-TVS$"
+                             controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterName" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -1150,8 +1165,8 @@
                             </Binding>
                         </TextBox>
                         <Label Grid.Row="2" Grid.Column="0" Content="Regex Format:"/>
-                        <TextBox Grid.Row="3" Grid.Column="0" controls:TextboxHelper.Watermark="e.g. (1080|720)(p|i)"
-                             controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox Grid.Row="3" Grid.Column="0" controls:TextBoxHelper.Watermark="e.g. (1080|720)(p|i)"
+                             controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterFormat" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -1159,8 +1174,8 @@
                             </Binding>
                         </TextBox>
                         <Label Grid.Row="4" Grid.Column="0" Content="Regex Uploader:"/>
-                        <TextBox Grid.Row="5" Grid.Column="0" controls:TextboxHelper.Watermark="Regex or leave Empty"
-                             controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox Grid.Row="5" Grid.Column="0" controls:TextBoxHelper.Watermark="Regex or leave Empty"
+                             controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterUploader" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -1169,8 +1184,8 @@
                         </TextBox>
 
                         <Label  Grid.Row="0" Grid.Column="2" Content="Regex Size:"/>
-                        <TextBox Grid.Row="1" Grid.Column="2" controls:TextboxHelper.Watermark="Regex or leave Empty"
-                             controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox Grid.Row="1" Grid.Column="2" controls:TextBoxHelper.Watermark="Regex or leave Empty"
+                             controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterSize" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -1178,8 +1193,8 @@
                             </Binding>
                         </TextBox>
                         <Label Grid.Row="2" Grid.Column="2" Content="Regex Runtime:"/>
-                        <TextBox Grid.Row="3" Grid.Column="2" controls:TextboxHelper.Watermark="Regex or leave Empty"
-                             controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox Grid.Row="3" Grid.Column="2" controls:TextBoxHelper.Watermark="Regex or leave Empty"
+                             controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterRuntime" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />
@@ -1187,8 +1202,8 @@
                             </Binding>
                         </TextBox>
                         <Label Grid.Row="4" Grid.Column="2" Content="Regex Hoster:"/>
-                        <TextBox Grid.Row="5" Grid.Column="2" controls:TextboxHelper.Watermark="e.g. share-online|uploaded"
-                             controls:TextboxHelper.ClearTextButton="True">
+                        <TextBox Grid.Row="5" Grid.Column="2" controls:TextBoxHelper.Watermark="e.g. share-online|uploaded"
+                             controls:TextBoxHelper.ClearTextButton="True">
                             <Binding Path="FilterHoster" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <utils:RegexValidationRule />

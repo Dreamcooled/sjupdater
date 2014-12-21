@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Documents;
+using RestSharp.Extensions;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.TvShows;
@@ -77,12 +78,12 @@ namespace SjUpdater.Provider
             if (!(show is int)) throw new ArgumentException();
             var episodeinfo = client.GetTvEpisode((int) show, season, episode, TvEpisodeMethods.Images);
             if (episodeinfo == null || episodeinfo.Name==null) return null;
-
+           
             return new EpisodeInformation
             {
                 AirDate =  episodeinfo.AirDate,
                 Image = String.IsNullOrWhiteSpace(episodeinfo.StillPath)?null : client.GetImageUrl("original", episodeinfo.StillPath).AbsoluteUri,
-                Images =  episodeinfo.Images.Backdrops,
+                Images =  null, /*client.GetTvEpisodeImages((int)show,season,episode).Stills,*/
                 ProviderHomepage = "https://www.themoviedb.org/tv/" + ((int)show) + "/season/" + season + "/episode/"+episode,
                 PublisherHomepage = null,
                 Title = episodeinfo.Name,
