@@ -28,13 +28,13 @@ namespace SjUpdater
         public NotificationBalloon(IEnumerable<FavShowData> list)
         {
             InitializeComponent();
-            ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
+            ShowClickedCommand = new SimpleCommand<object, ShowTileViewModel>(OnShowViewClicked);
             ItemsControl.ItemsSource = list.Select(s => new ShowTileViewModel(s));
         }
 
         public event ShowViewClickedDelegate ShowViewClicked;
 
-        private void OnShowViewClicked(ShowViewModel obj)
+        private void OnShowViewClicked(ShowTileViewModel obj)
         {
             if (ShowViewClicked != null)
             {
@@ -57,5 +57,5 @@ namespace SjUpdater
         }
     }
 
-    public delegate void ShowViewClickedDelegate(object sender, ShowViewModel arg);
+    public delegate void ShowViewClickedDelegate(object sender, ShowTileViewModel arg);
 }

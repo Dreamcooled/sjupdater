@@ -5,6 +5,7 @@ using Amib.Threading;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SjUpdater.Model;
+using SjUpdater.Provider;
 using SjUpdater.Updater;
 using SjUpdater.Utils;
 using SjUpdater.ViewModel;
@@ -43,7 +44,7 @@ namespace SjUpdater
             Application.Current.SessionEnding += Current_SessionEnding;
 
             //Commands
-            ShowClickedCommand = new SimpleCommand<object, ShowViewModel>(OnShowViewClicked);
+            ShowClickedCommand = new SimpleCommand<object, ShowTileViewModel>(OnShowViewClicked);
             SettingsCommand = new SimpleCommand<object, object>(SettingsClicked);
             IconClickedCommand = new SimpleCommand<object, object>(IconClicked);
             TerminateCommand = new SimpleCommand<object, object>(Terminate);
@@ -268,15 +269,16 @@ namespace SjUpdater
         }
 
 
-        private void on_ShowViewClicked(object sender, ShowViewModel showView)
+        private void on_ShowViewClicked(object sender, ShowTileViewModel showView)
         {
             if (!IsVisible)
                 Show();
             OnShowViewClicked(showView);
         }
 
-        private void OnShowViewClicked(ShowViewModel showView)
+        private void OnShowViewClicked(ShowTileViewModel showTileView)
         {
+            var showView = showTileView.ShowViewModel;
             _selectedEpisodeTreeItems.Clear();
             showView.Show.NewEpisodes = false;
             ShowGrid.DataContext = showView;

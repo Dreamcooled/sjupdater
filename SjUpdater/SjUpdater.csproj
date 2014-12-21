@@ -96,6 +96,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="TMDbLib">
+      <HintPath>..\packages\TMDbLib.0.7.7\lib\net40\TMDbLib.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -121,6 +124,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Provider\IProvider.cs" />
+    <Compile Include="Provider\ProviderManager.cs" />
+    <Compile Include="Provider\TMDb.cs" />
     <Compile Include="Updater\Updater.cs" />
     <Compile Include="Updater\UpdaterViewModel.cs" />
     <Compile Include="Updater\UpdateWindow.xaml.cs">

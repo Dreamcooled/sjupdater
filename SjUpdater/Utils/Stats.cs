@@ -31,7 +31,7 @@ namespace SjUpdater.Utils
             AppUpdate,
             ShowAdd,
             Download,
-            Review,
+           /* Review,*/
             Browse,
             Filter
         };

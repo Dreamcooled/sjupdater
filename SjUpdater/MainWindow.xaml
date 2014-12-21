@@ -157,7 +157,7 @@
                         <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
                             <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ShowClickedCommand, ElementName=Window}"
-                                       CommandParameter="{Binding ShowViewModel}" Background="{DynamicResource ControlBackgroundBrush}">
+                                       CommandParameter="{Binding}" Background="{DynamicResource ControlBackgroundBrush}">
                                 <Grid>
                                     <Image Source="{Binding Background.ImageSource}" Visibility="{Binding BackgroundImageVisibility}" Stretch="UniformToFill" Opacity="0.9" />
                                     <Rectangle Fill="{DynamicResource AccentColorBrush3}" Visibility="{Binding BackgroundRectangleVisibility}">
@@ -269,9 +269,9 @@
         <TabItem Header="ShowGrid">
             <Grid x:Name="ShowGrid">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.6*" />
+                    <ColumnDefinition Width="0.7*" />
                     <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="0.4*" MaxWidth="600" MinWidth="270"/>
+                    <ColumnDefinition Width="0.3*" MaxWidth="600" MinWidth="270"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -830,7 +830,7 @@
 
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" VerticalAlignment="Top"  Margin="10,5,0,5">
-                                    <Button Content="Show Review"  Command="{Binding ReviewCommand}" Margin="0,0,5,0"  />
+                                    <Button Content="Show Info Online"  Command="{Binding ShowInfoCommand}" Margin="0,0,5,0"  />
                                     <Button Content="{Binding ButtonStateChangeText}"  Command="{Binding StateChangeCommand }" />
                                 </StackPanel>
                                  

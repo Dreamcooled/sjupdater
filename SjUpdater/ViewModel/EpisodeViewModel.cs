@@ -27,7 +27,7 @@ namespace SjUpdater.ViewModel
         public EpisodeViewModel(FavEpisodeData favEpisodeData)
         {
             _favEpisodeData = favEpisodeData;
-            Photo = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Photo);
+            Photo = (_favEpisodeData.EpisodeInformation == null || String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedBitmap(_favEpisodeData.EpisodeInformation.Image);
             NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
             NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
             DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
@@ -35,12 +35,13 @@ namespace SjUpdater.ViewModel
             _dispatcher = Dispatcher.CurrentDispatcher;
             favEpisodeData.PropertyChanged += favEpisodeData_PropertyChanged;
 
-            ReviewCommand = new SimpleCommand<object, object>(b => (_favEpisodeData.ReviewInfoReview != null), delegate
-            {
+            ShowInfoCommand = new SimpleCommand<object, object>(b => 
+                (_favEpisodeData.EpisodeInformation != null && (!String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.ProviderHomepage)||!String.IsNullOrWhiteSpace( _favEpisodeData.EpisodeInformation.PublisherHomepage))), 
+                delegate {
                 var p = new Process();
-                p.StartInfo.FileName = _favEpisodeData.ReviewInfoReview.ReviewUrl;
+                p.StartInfo.FileName = favEpisodeData.EpisodeInformation.PublisherHomepage != null ?
+                    _favEpisodeData.EpisodeInformation.PublisherHomepage : _favEpisodeData.EpisodeInformation.ProviderHomepage;
                 p.Start();
-                Stats.TrackAction(Stats.TrackActivity.Review);
             });
 
             StateChangeCommand = new SimpleCommand<object, object>(o =>
@@ -83,12 +84,14 @@ namespace SjUpdater.ViewModel
 
         void favEpisodeData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "ReviewInfoReview")
+            if (e.PropertyName == "EpisodeInformation")
             {
                 _dispatcher.Invoke(delegate
                 {
-                    Photo = _favEpisodeData.ReviewInfoReview == null ? null : new CachedBitmap(_favEpisodeData.ReviewInfoReview.Photo);
+                    Photo = (_favEpisodeData.EpisodeInformation == null || String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedBitmap(_favEpisodeData.EpisodeInformation.Image);
                 });
+                OnPropertyChanged("Title");
+                OnPropertyChanged("ShowInfoCommand");
 
             } else if (e.PropertyName == "NewEpisode" || e.PropertyName=="NewUpdate")
             {
@@ -109,6 +112,7 @@ namespace SjUpdater.ViewModel
         }
 
         public ICommand DownloadCommand { get; private set; }
+        public ICommand ShowInfoCommand { get; private set; }
 
         public FavEpisodeData Episode { get { return _favEpisodeData; } }
 
@@ -171,8 +175,6 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public ICommand ReviewCommand { get; private set; }
-
         public ICommand StateChangeCommand { get; private set; }
         public String ButtonStateChangeText
         {
@@ -195,10 +197,9 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-
-                if (_favEpisodeData.ReviewInfoReview != null)
+                if (_favEpisodeData.EpisodeInformation != null && !String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Title))
                 {
-                    return _favEpisodeData.ReviewInfoReview.Name;
+                    return _favEpisodeData.EpisodeInformation.Title;
                 }
 
                 return "Episode " + _favEpisodeData.Number;

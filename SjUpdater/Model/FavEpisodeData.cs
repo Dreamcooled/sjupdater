@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
+using SjUpdater.Provider;
 using SjUpdater.Utils;
 
 namespace SjUpdater.Model
 {
     public class FavEpisodeData : PropertyChangedImpl
     {
-        private string _name;
         private int _number;
         private bool _newEpisode;
         private bool _newUpdate;
@@ -15,26 +15,25 @@ namespace SjUpdater.Model
         private bool _downloaded;
         private ObservableCollection<DownloadData> _downloads;
         private FavSeasonData _season;
-        private SjDeReview _reviewInfoReview;
+        private EpisodeInformation _episodeInformation;
 
         public FavEpisodeData()
         {
             _downloads = new ObservableCollection<DownloadData>();
-            _name = "";
             _number = -1;
-            _reviewInfoReview = null;
+            _episodeInformation = null;
             _newEpisode = false;
             _newUpdate = false;
             _downloaded = false;
             _watched = false;
         }
 
-        public SjDeReview ReviewInfoReview
+        public EpisodeInformation EpisodeInformation
         {
-            get { return _reviewInfoReview; }
+            get { return _episodeInformation; }
             set
             {
-                _reviewInfoReview = value;
+                _episodeInformation = value;
                 OnPropertyChanged();
             }
         }
@@ -48,17 +47,6 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
-
-        public String Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value; 
-                OnPropertyChanged();
-            }
-        }
-
         public int Number
         {
             get { return _number; }

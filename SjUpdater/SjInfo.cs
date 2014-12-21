@@ -17,11 +17,6 @@ namespace SjUpdater
 {
     public static class SjInfo
     {
-        private static readonly ObservableCollection<KeyValuePair<String, String>> ListShows = new ObservableCollection<KeyValuePair<string, string>>();
-        public static ObservableCollection<KeyValuePair<String, String>> Shows
-        {
-            get { return ListShows; }
-        }
 
         static string CleanText(string text)
         {
@@ -43,7 +38,7 @@ namespace SjUpdater
             return new Regex(@"[ ]{2,}", RegexOptions.None).Replace(stringBuilder.ToString().Normalize(NormalizationForm.FormC),@" ").Trim();
 
         }
-
+        /*
         public static String SearchSjDe(String Title)
         {
             Title = CleanText(Title);
@@ -140,7 +135,7 @@ namespace SjUpdater
                 return null;
             }
             
-        }
+        }*/
 
         public static List<KeyValuePair<String, String>> SearchSjOrg(string Title)
         {

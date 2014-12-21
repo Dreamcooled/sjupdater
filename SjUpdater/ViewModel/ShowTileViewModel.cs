@@ -9,19 +9,19 @@ namespace SjUpdater.ViewModel
     public class ShowTileViewModel : PropertyChangedImpl
     {
         private readonly FavShowData _show;
-        private  CachedBitmap _bitmap;
+        private CachedBitmap _bitmap;
         private String _title;
         private String _numberText;
         private Visibility _newEpisodesVisible = Visibility.Collapsed;
-        private  Visibility _isLoadingVisible = Visibility.Collapsed;
-        private readonly ShowViewModel _showViewModel;
+        private Visibility _isLoadingVisible = Visibility.Collapsed;
+        private ShowViewModel _showViewModel;
         private readonly Dispatcher _dispatcher;
 
         public ShowTileViewModel(FavShowData show)
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
             _show = show;
-            _showViewModel  = new ShowViewModel(_show);
+           // _showViewModel  = new ShowViewModel(_show);
         
 
             Title= _show.Name;
@@ -77,7 +77,14 @@ namespace SjUpdater.ViewModel
 
         public ShowViewModel ShowViewModel
         {
-            get { return _showViewModel; }
+            get
+            {
+                if (_showViewModel == null)
+                {
+                    _showViewModel = new ShowViewModel(_show);
+                }
+                return _showViewModel;
+            }
         }
 
         public string NumberText

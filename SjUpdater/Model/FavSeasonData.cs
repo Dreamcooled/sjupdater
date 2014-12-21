@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
+using SjUpdater.Provider;
 using SjUpdater.Utils;
 
 namespace SjUpdater.Model
@@ -14,6 +15,7 @@ namespace SjUpdater.Model
         private ObservableCollection<FavEpisodeData> _episodes;
         private ObservableCollection<DownloadData> _nonEpisodes; 
         private FavShowData _show;
+       // private SeasonInformation _seasonInformation;
 
         public FavSeasonData()
         {
@@ -24,6 +26,16 @@ namespace SjUpdater.Model
             _nonEpisodes.CollectionChanged += _nonEpisodes_CollectionChanged;
 
         }
+
+       /* public SeasonInformation SeasonInformation
+        {
+            get { return _seasonInformation; }
+            set
+            {
+                _seasonInformation = value;
+                OnPropertyChanged();
+            }
+        }*/
 
         public FavShowData Show
         {

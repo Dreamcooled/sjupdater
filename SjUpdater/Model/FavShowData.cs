@@ -12,6 +12,7 @@ using System.Windows.Media.Animation;
 using System.Xml.Serialization;
 using Amib.Threading;
 using MahApps.Metro.Converters;
+using SjUpdater.Provider;
 using SjUpdater.Utils;
 
 namespace SjUpdater.Model
@@ -37,7 +38,10 @@ namespace SjUpdater.Model
         private string _filterUploader;
         private string _filterSize;
         private string _filterRuntime;
-        private string _infoUrl;
+
+        private object _providerData;
+        //private ShowInformation _showInformation;
+
         private List<DownloadData> _allDownloads;
         private readonly bool _isNewShow; //=false
 
@@ -59,6 +63,8 @@ namespace SjUpdater.Model
             _cover = "";
             _nonSeasons = new ObservableCollection<DownloadData>();
             _allDownloads = new List<DownloadData>();
+            _providerData = null;
+           // _showInformation = null; //TODO: fill & use this info
 
             //the getters will return the default filter if the value is a null string
             _filterName = null;
@@ -87,9 +93,10 @@ namespace SjUpdater.Model
                 _mutexFetch.ReleaseMutex();
                 return;
             }
-            if (String.IsNullOrWhiteSpace(_infoUrl))
+            if (_providerData==null)
             {
-                InfoUrl = SjInfo.SearchSjDe(Name);
+               // InfoUrl = SjInfo.SearchSjDe(Name);
+                ProviderData = ProviderManager.GetProvider().FindShow(Name);
             }
 
             try
@@ -136,6 +143,7 @@ namespace SjUpdater.Model
             ObservableCollection<FavSeasonData> newSeasons = new ObservableCollection<FavSeasonData>();
             ObservableCollection<DownloadData> newNonSeasons = new ObservableCollection<DownloadData>();
 
+            if (_isNewShow) notifications = false;
             reset = reset || _isNewShow;
             if (!reset)
             {
@@ -283,7 +291,7 @@ namespace SjUpdater.Model
                         {
                             currentFavEpisode.Watched = oldEpisode.Watched;
                             currentFavEpisode.Downloaded = oldEpisode.Downloaded;
-                            currentFavEpisode.ReviewInfoReview = oldEpisode.ReviewInfoReview;
+                            currentFavEpisode.EpisodeInformation = oldEpisode.EpisodeInformation;
                             existed = true;
                         }
                     }
@@ -294,15 +302,17 @@ namespace SjUpdater.Model
                     }
             
                     currentFavSeason.Episodes.Add(currentFavEpisode);
-                    
-                    if (!String.IsNullOrWhiteSpace(InfoUrl) && (currentFavEpisode.ReviewInfoReview == null || reset))
+
+                    currentFavEpisode.Downloads.Add(download);
+
+                    if (ProviderData != null && (currentFavEpisode.EpisodeInformation == null || reset))
                     {
                         StaticInstance.ThreadPool.QueueWorkItem(() =>
                         {
-                            currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl, currentFavEpisode.Season.Number, currentFavEpisode.Number);
+                            //currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl, currentFavEpisode.Season.Number, currentFavEpisode.Number);
+                            currentFavEpisode.EpisodeInformation = ProviderManager.GetProvider().GetEpisodeInformation(ProviderData, currentFavEpisode.Season.Number, currentFavEpisode.Number);
                         });
                     }
-                    currentFavEpisode.Downloads.Add(download);
                 }
                 else
                 {
@@ -321,9 +331,7 @@ namespace SjUpdater.Model
                             currentFavEpisode.NewUpdate = true;
                         }
                     }
-
-                }
-                
+                }  
             }
 
             if (reset)
@@ -380,14 +388,14 @@ namespace SjUpdater.Model
             }
         }
 
-        public String InfoUrl
+        public object ProviderData
         {
-            get { return _infoUrl; }
+            get { return _providerData; }
             set
             {
-                if (value == _infoUrl)
+                if (value == _providerData)
                     return;
-                _infoUrl = value;
+                _providerData = value;
                 OnPropertyChanged();
                 
             }

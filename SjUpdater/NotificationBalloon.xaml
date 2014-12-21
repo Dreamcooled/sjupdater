@@ -29,7 +29,7 @@
                     <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel }">
                         <controls:Tile Width="240" Height="60" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ElementName=Window, Path=ShowClickedCommand }"
-                                       CommandParameter="{Binding ShowViewModel}" Background="{DynamicResource ControlBackgroundBrush}">
+                                       CommandParameter="{Binding}" Background="{DynamicResource ControlBackgroundBrush}">
                             <Grid>
                                 <Image Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.9" />
                                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,0,0,0" VerticalAlignment="Top"
