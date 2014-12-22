@@ -126,11 +126,6 @@
     <Compile Include="NotificationBalloon.xaml.cs">
       <DependentUpon>NotificationBalloon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Provider\IProvider.cs" />
     <Compile Include="Provider\ProviderManager.cs" />
     <Compile Include="Provider\TMDb.cs" />
@@ -211,10 +206,6 @@
     <None Include="Model\ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

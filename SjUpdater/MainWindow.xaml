@@ -286,14 +286,14 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.7*" />
                     <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="0.3*" MaxWidth="600" MinWidth="270"/>
+                    <ColumnDefinition Width="0.3*" MaxWidth="600" MinWidth="300"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.ColumnSpan="2"  HorizontalAlignment="Stretch" Background="Transparent" PreviewMouseLeftButtonUp="OutsideTreeview_OnMouseLeftButtonUp" >
-                    <StackPanel  Margin="10,10,0,0" Orientation="Horizontal">
+                    <StackPanel  Margin="10" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Width="40" VerticalAlignment="Center" Click="EpisodesBack"
                             Height="40"
                             Style="{DynamicResource MetroCircleButtonStyle}">
@@ -303,8 +303,9 @@
                                 </Rectangle.OpacityMask>
                             </Rectangle>
                         </Button>
-                        <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}"
-                           VerticalAlignment="Center"/>
+                        <Label FontFamily="Segoe UI Symbol" FontSize="24" Foreground="{DynamicResource LabelTextBrush}" Content="{Binding Title}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel  Margin="10" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Width="40" VerticalAlignment="Center" Click="ShowFilter" ToolTip="Open Filter"
                             Height="40"
                             Style="{DynamicResource MetroCircleButtonStyle}">
@@ -314,7 +315,7 @@
                                 </Rectangle.OpacityMask>
                             </Rectangle>
                         </Button>
-                        <Button Width="40" VerticalAlignment="Center" Click="CleanShow" ToolTip="Remove Downloads which were removed"
+                        <Button Width="40" VerticalAlignment="Center" Click="CleanShow" ToolTip="Clear Episode-Cache"
                             Height="40"
                             Style="{DynamicResource MetroCircleButtonStyle}">
                             <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
@@ -554,8 +555,7 @@
                                     <RowDefinition Height="200" /> <!-- desc -->
                                     <RowDefinition Height="Auto" /> <!--- separator -->
                                     <RowDefinition Height="Auto" /> <!--- button and header-->
-                                    <RowDefinition Height="Auto"  MinHeight="200"/> <!--- list-->
-                                    <RowDefinition Height="*" /> <!--- rest -->
+                                    <RowDefinition Height="*"/> <!--- list-->
                                 </Grid.RowDefinitions>
                                 <Image Source="{Binding Cover.ImageSource}" VerticalAlignment="Top" Stretch="Uniform" />
 
@@ -565,7 +565,7 @@
                                 </ScrollViewer>
                                 <Separator Grid.Row="2" Grid.Column="0" Margin="10,0"/>
                                 <Label Grid.Row="3" FontSize="18" Margin="5,0,0,0">Unsortable Downloads</Label>
-                                <Button HorizontalAlignment="Right" Grid.Row="3"  Content="Show all" Margin="10,5" Click="NoneShowAllDownloads" x:Name="NoneShowAllDownloadsButton"/>
+                                <Button HorizontalAlignment="Right" Grid.Row="3"  Content="Show Detailed" Margin="10,5" Click="NoneShowAllDownloads" x:Name="NoneShowAllDownloadsButton"/>
 
                                 <Popup Grid.Row="3" StaysOpen="False" x:Name="NonePopup" 
                                        PlacementTarget="{Binding ElementName=NoneShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
@@ -582,7 +582,7 @@
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
 
-                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}">
+                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                                                 <ListView.View>
                                                     <GridView>
                                                         <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
@@ -625,7 +625,8 @@
                                         </Grid>
                                     </Border>
                                 </Popup>
-                                <ListView Grid.Row="4" Margin="10,0,10,10" ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                                <ListView  Grid.Row="4"  Margin="10,0,10,10"  ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type GridViewColumnHeader}">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -672,8 +673,6 @@
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-
-
                             </Grid>
 
                         </TabItem>
@@ -684,8 +683,7 @@
                                     <RowDefinition Height="0" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" MinHeight="200"/>
-                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0"   FontSize="24" Text="{Binding Name }" Margin="10,5" />
@@ -695,7 +693,7 @@
 
                                 <Separator Grid.Row="2" Margin="10,0"/>
                                 <Label Grid.Row="3" FontSize="18" Margin="5,0,0,0">Non-Episodes &amp; Packs</Label>
-                                <Button HorizontalAlignment="Right" Grid.Row="3"  Content="Show all" Margin="10,5" Click="SeasonShowAllDownloads" x:Name="SeasonShowAllDownloadsButton"/>
+                                <Button HorizontalAlignment="Right" Grid.Row="3"  Content="Show Detailed" Margin="10,5" Click="SeasonShowAllDownloads" x:Name="SeasonShowAllDownloadsButton"/>
                                 <Popup Grid.Row="3" StaysOpen="False" x:Name="SeasonPopup" 
                                        PlacementTarget="{Binding ElementName=SeasonShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
                                     <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
@@ -711,7 +709,7 @@
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
 
-                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding NonEpisodes}">
+                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding NonEpisodes}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                                                 <ListView.View>
                                                     <GridView>
                                                         <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
@@ -815,8 +813,7 @@
                                     <RowDefinition Height="Auto" /> <!-- More buttons -->
                                     <RowDefinition Height="Auto" /> <!-- Separator -->
                                     <RowDefinition Height="Auto" /> <!-- Title of list -->
-                                    <RowDefinition Height="Auto" MinHeight="200"/> <!-- List -->
-                                    <RowDefinition Height="*" /> <!-- Rest -->
+                                    <RowDefinition Height="*"/> <!-- List -->
                                 </Grid.RowDefinitions>
                                 
                                 <Grid Grid.Row ="0" Margin="10,5">
@@ -851,9 +848,9 @@
                                  
                                 <Separator Grid.Row="3" Margin="10,5,10,0"/>
                                 <Label Grid.Row="4" FontSize="18" Margin="5,0,0,0">Favorized Uploads</Label>
-                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Show all" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
+                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Show all Uploads" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
                                 <Popup Grid.Row="4" StaysOpen="False" x:Name="EpisodePopup" 
-                                       PlacementTarget="{Binding ElementName=EpisodeShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
+                                       PlacementTarget="{Binding ElementName=EpisodeShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62" Closed="EpisodePopup_Closed" >
                                     <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
                                             <Grid>
                                         <Grid.RowDefinitions>
@@ -866,8 +863,8 @@
                                           SnapsToDevicePixels="True"
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
-     
-                                        <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding Downloads}">
+
+                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding Downloads}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                                             <ListView.View>
                                                 <GridView>
                                                     <GridViewColumn Header="Fav" Width="30" >
@@ -958,7 +955,8 @@
                                     </Border> 
                                 </Popup>
 
-                                <ListView  Grid.Row="5" Margin="10,0,10,10" ItemsSource="{Binding FavorizedUploads}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                
+                                <ListView  Grid.Row="5" Margin="10,0,10,10" ItemsSource="{Binding FavorizedUploads}" x:Name="EpisodeFavorizedUploadsListView"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type GridViewColumnHeader}">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -1000,22 +998,29 @@
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
+                                <TextBlock Grid.Row="5" Margin="15,5" Text="No Favorized Uploads yet." x:Name="EpisodeFavorizedWarning1" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/>
+                                <TextBlock Grid.Row="5" Margin="15,5" Text="Check here^^"   x:Name="EpisodeFavorizedWarning2" HorizontalAlignment="Right" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/> 
+                                    
+                                    
+                          
                             </Grid>
 
 
                         </TabItem>
                         <TabItem Header="Multi"  x:Name="EpisodeTabControl_Multi">
-                            <Grid>
-                                <Label FontSize="24">Multi</Label>
+                            <StackPanel>
                                 
-                            </Grid>
+                                <TextBlock FontSize="24" Margin="10,5">Multiselection</TextBlock>
+                                <TextBlock FontSize="12" Margin="12,0">Multiselection support coming soon!</TextBlock>
+
+                            </StackPanel>
                         </TabItem>
                     </TabControl>
 
                 </Border>
             </Grid>
         </TabItem>
-        <TabItem Header="SettingsGrid">
+        <TabItem Header="SettingsGrid" DataContext="{Binding Settings}">
             <Grid x:Name="SettingsGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -1075,30 +1080,30 @@
                         </Grid>
 
                         <CheckBox Content="Sort Tv Shows Alphabetically" Margin="0,2"
-                              IsChecked="{Binding SortShowsAlphabetically, Source={x:Static local:Settings.Instance}}" />
+                              IsChecked="{Binding SortShowsAlphabetically}" />
                         <CheckBox Content="Sort Seasons Descending"  Margin="0,2"
-                              IsChecked="{Binding SortSeasonsDesc, Source={x:Static local:Settings.Instance}}" />
+                              IsChecked="{Binding SortSeasonsDesc}" />
                         <CheckBox Content="Sort Episodes Descending"  Margin="0,2"
-                              IsChecked="{Binding SortEpisodesDesc, Source={x:Static local:Settings.Instance}}" />
+                              IsChecked="{Binding SortEpisodesDesc}" />
                         <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2,0,1"
-                              IsChecked="{Binding MarkSubbedAsGerman, Source={x:Static local:Settings.Instance}}" />
+                              IsChecked="{Binding MarkSubbedAsGerman}" />
                         
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications, Source={x:Static local:Settings.Instance}}"/>
+                            <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications}"/>
                             <Label VerticalContentAlignment="Center" Content="Timeout for popup:" Margin="20,0,0,0"/>
                             <ComboBox Width="100" ItemsSource="{Binding Source={x:Static local:MainWindow.DictNotifyTimeouts}}"
                                   DisplayMemberPath="Key" SelectedValuePath="Value"
-                                  SelectedValue="{Binding NotificationTimeout, Source={x:Static local:Settings.Instance}}"/>
+                                  SelectedValue="{Binding NotificationTimeout}"/>
                         </StackPanel>
-                        
-                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages, Source={x:Static local:Settings.Instance}}"/>
+
+                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}"/>
                        
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
                     <StackPanel>
                         <CheckBox Content="Only Minimize to Tray when closing"
-        				IsChecked="{Binding MinimizeToTray, Source={x:Static local:Settings.Instance}}" />
+        				IsChecked="{Binding MinimizeToTray}" />
                         <Grid Width="500" HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -1108,7 +1113,7 @@
                             <Label Content="Number of working Threads:"/>
                             <Slider Minimum="1" Maximum="12" x:Name="threadSlider" Grid.Column="1" SmallChange="1"
         					IsSnapToTickEnabled="True"
-        					Value="{Binding NumFetchThreads, Source={x:Static local:Settings.Instance}}" />
+        					Value="{Binding NumFetchThreads}" />
                             <Label Content="{Binding Value, ElementName=threadSlider}" Grid.Column="2" />
                         </Grid>
                         <Grid Width="500" HorizontalAlignment="Left">
@@ -1124,22 +1129,22 @@
                             <Label Content="Update Shows Automatically:"/>
                             <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Source={x:Static local:MainWindow.DictUpdateTimes}}"
                                   DisplayMemberPath="Key" SelectedValuePath="Value"
-                                  SelectedValue="{Binding UpdateTime, Source={x:Static local:Settings.Instance}}"/>
+                                  SelectedValue="{Binding UpdateTime}"/>
 
                         </Grid>
                         <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
-        				IsChecked="{Binding NoPersonalData, Source={x:Static local:Settings.Instance}}" />
+        				IsChecked="{Binding NoPersonalData}" />
                         <Separator Margin="0,10,0,5"/>
                         <StackPanel Orientation="Horizontal">
                             <Label>Current Version:</Label>
                             <Label Content="{Binding ElementName=Window,Path=CurrentVersionString}" Margin="10,0"/>
                             <Button Click="ChangeLogButtonClicked">Changelog / Updates</Button>
-                            <CheckBox Margin="20,0,0,0" Content="Autocheck at start and every 30 minutes" IsChecked="{Binding CheckForUpdates, Source={x:Static local:Settings.Instance}}"/>
+                            <CheckBox Margin="20,0,0,0" Content="Autocheck at start and every 30 minutes" IsChecked="{Binding CheckForUpdates}"/>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Grid.Row="2" Margin="10,10,10,10" Header="Default Filter">
-                    <Grid DataContext="{Binding Source={x:Static local:Settings.Instance}}">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50*" />
                             <ColumnDefinition Width="50" />

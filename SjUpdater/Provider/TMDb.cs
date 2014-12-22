@@ -82,7 +82,7 @@ namespace SjUpdater.Provider
             return new EpisodeInformation
             {
                 AirDate =  episodeinfo.AirDate,
-                Image = String.IsNullOrWhiteSpace(episodeinfo.StillPath)?null : client.GetImageUrl("original", episodeinfo.StillPath).AbsoluteUri,
+                Image = String.IsNullOrWhiteSpace(episodeinfo.StillPath)?null : client.GetImageUrl("w600", episodeinfo.StillPath).AbsoluteUri,
                 Images =  null, /*client.GetTvEpisodeImages((int)show,season,episode).Stills,*/
                 ProviderHomepage = "https://www.themoviedb.org/tv/" + ((int)show) + "/season/" + season + "/episode/"+episode,
                 PublisherHomepage = null,

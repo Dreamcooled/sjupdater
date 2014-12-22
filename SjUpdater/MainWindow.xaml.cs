@@ -51,13 +51,14 @@ namespace SjUpdater
 
             //Settings & Theme
             _setti = Settings.Instance;
+
             _currentAccent = ThemeManager.GetAccent(_setti.ThemeAccent);
             _currentTheme = ThemeManager.GetAppTheme(_setti.ThemeBase);
             CurrentAccent = _setti.ThemeAccent;
 
             updateTimer = new Timer();
             //Updater
-            _updater = new UpdateWindow("http://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "");
+            _updater = new UpdateWindow("http://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "-uf " + Stats.GetVersionString());
             _updater.updateStartedEvent += (a, dsa) =>
                                            {
                                                Terminate(null);
@@ -316,14 +317,18 @@ namespace SjUpdater
 
         void _selectedEpisodeTreeItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (_selectedEpisodeTreeItems.Count == 1 && _selectedEpisodeTreeItems.First() is SeasonViewModel)
+            var first = _selectedEpisodeTreeItems.FirstOrDefault();
+            if (_selectedEpisodeTreeItems.Count == 1 && first is SeasonViewModel)
             {
-                EpisodeTabControl_Season.DataContext = _selectedEpisodeTreeItems.First();
+                EpisodeTabControl_Season.DataContext = first;
                 EpisodeTabControl.SelectedIndex = 1;
             }
-            else if (_selectedEpisodeTreeItems.Count == 1 && _selectedEpisodeTreeItems.First() is EpisodeViewModel)
+            else if (_selectedEpisodeTreeItems.Count == 1 && first is EpisodeViewModel)
             {
-                EpisodeTabControl_Episode.DataContext = _selectedEpisodeTreeItems.First();
+                var vm = (first as EpisodeViewModel);
+                vm.Episode.NewEpisode = false;
+                vm.Episode.NewUpdate = false;
+                EpisodeTabControl_Episode.DataContext = first;
                 EpisodeTabControl.SelectedIndex = 2;
             }
             else if (!_selectedEpisodeTreeItems.Any())
@@ -344,10 +349,7 @@ namespace SjUpdater
         }
 
 
-        private void EpisodeDataBack(object sender, RoutedEventArgs e)
-        {
-            SwitchPage(1);
-        }
+
 
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
@@ -363,9 +365,6 @@ namespace SjUpdater
                     EpisodesBack(this, new RoutedEventArgs());
                     break;
                 case 2:
-                    EpisodeDataBack(this, new RoutedEventArgs());
-                    break;
-                case 3:
                     SwitchPage(_lastpage);
                     break;
 
@@ -540,6 +539,13 @@ namespace SjUpdater
             EpisodePopup.IsOpen = false;
         }
 
+        private void EpisodePopup_Closed(object sender, EventArgs e)
+        {
+            EpisodeFavorizedUploadsListView.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+            EpisodeFavorizedWarning1.GetBindingExpression(VisibilityProperty).UpdateTarget();
+            EpisodeFavorizedWarning2.GetBindingExpression(VisibilityProperty).UpdateTarget();
+        }
+
 
         private void SeasonShowAllDownloads(object sender, RoutedEventArgs e)
         {
@@ -560,6 +566,7 @@ namespace SjUpdater
         {
             NonePopup.IsOpen = false;
         }
+
 
 
    

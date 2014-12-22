@@ -62,6 +62,7 @@ namespace SjUpdater.ViewModel
 
             DownloadCommand = new SimpleCommand<object, String>(s =>
             {
+                _favEpisodeData.Downloaded = true;
                 for (int i = 0; i < 10; i++)
                 {
                     try
@@ -260,6 +261,10 @@ namespace SjUpdater.ViewModel
         public List<DownloadData> FavorizedUploads
         {
             get { return _favEpisodeData.Downloads.Where(d => d.Upload.Favorized).OrderByDescending(d => d.Upload.Size).ToList(); }
+        }
+        public Visibility ShowNoFavUploadsWarning
+        {
+            get { return (_favEpisodeData.Downloads.Any(d => d.Upload.Favorized)) ?Visibility.Collapsed: Visibility.Visible; }
         }
 
         public ObservableCollection<DownloadData> Downloads

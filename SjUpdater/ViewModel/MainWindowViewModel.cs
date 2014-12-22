@@ -67,7 +67,12 @@ namespace SjUpdater.ViewModel
         public ObservableCollection<ShowTileViewModel> TvShows
         {
             get { return _tvShows; }
-        } 
+        }
+
+        public Settings Settings
+        {
+            get { return Settings.Instance; }
+        }
 
 
     }

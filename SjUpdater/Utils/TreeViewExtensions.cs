@@ -69,12 +69,12 @@ namespace SjUpdater.Utils
 			if(wasEnable)
 			{
 				tree.RemoveHandler(TreeViewItem.MouseDownEvent, new MouseButtonEventHandler(ItemClicked));
-				tree.RemoveHandler(TreeView.KeyDownEvent, new KeyEventHandler(KeyDown));
+				tree.RemoveHandler(TreeView.PreviewKeyDownEvent, new KeyEventHandler(KeyDown));
 			}
 			if(isEnabled)
 			{
 				tree.AddHandler(TreeViewItem.MouseDownEvent, new MouseButtonEventHandler(ItemClicked), true);
-				tree.AddHandler(TreeView.KeyDownEvent, new KeyEventHandler(KeyDown));
+                tree.AddHandler(TreeView.PreviewKeyDownEvent, new KeyEventHandler(KeyDown));
 			}
 		}
 
@@ -168,15 +168,54 @@ namespace SjUpdater.Utils
 
 		static void KeyDown(object sender, KeyEventArgs e)
 		{
-			TreeView tree = (TreeView)sender;
-			if(e.Key == Key.A && e.KeyboardDevice.Modifiers == ModifierKeys.Control) //Ctrl + A
-			{
-				foreach(var item in GetTreeViewItems(tree))
-				{
-					SetIsSelected(item, true);
-				}
-				e.Handled = true;
-			}
+            var tree = (TreeView)sender;
+            var selectedItems = GetSelectedTreeViewItems(tree);
+			
+		    if (e.Key == Key.A && e.KeyboardDevice.Modifiers == ModifierKeys.Control) //Ctrl + A
+		    {
+                foreach (var item in GetTreeViewItems(tree).ToList())
+		        {
+		            SetIsSelected(item, true);
+		        }
+		        e.Handled = true;
+		    }
+            else if (e.KeyboardDevice.Modifiers == ModifierKeys.None && selectedItems.Count>0)
+            {
+                var items = GetTreeViewItems(tree, true).ToList(); //get expanded items
+                switch (e.Key)
+                {
+                    case Key.Space:
+                        if (selectedItems.Count == 1)
+                        {
+                            selectedItems.First().IsExpanded ^= true;
+                        }
+                        break;
+                    case Key.Up:
+                        int ind = items.IndexOf(selectedItems.First());
+                        if (ind > 0)
+                        {
+                            MakeSingleSelection(tree, items[ind - 1]);
+                        }
+                        else
+                        {
+                            MakeSingleSelection(tree, items.First());
+                        }
+
+                        break;
+                    case Key.Down:
+                        int ind2 = items.IndexOf(selectedItems.Last());
+                        if (ind2 < items.Count - 1)
+                        {
+                            MakeSingleSelection(tree, items[ind2 + 1]);
+                        }
+                        else
+                        {
+                            MakeSingleSelection(tree, items.Last());
+                        }
+
+                        break;
+                }
+            } 
 		}
 
 		static void ItemClicked(object sender, MouseButtonEventArgs e)
@@ -257,7 +296,7 @@ namespace SjUpdater.Utils
 	        }
 	    } 
 
-		private static IEnumerable<TreeViewItem> GetTreeViewItems(ItemsControl tree)
+		private static IEnumerable<TreeViewItem> GetTreeViewItems(ItemsControl tree, bool only_expanded=false)
 		{
 			for(int i = 0; i < tree.Items.Count; i++)
 			{
@@ -265,7 +304,7 @@ namespace SjUpdater.Utils
 				if(item == null)
 					continue;
 				yield return item;
-				//if(item.IsExpanded)
+				if(item.IsExpanded || !only_expanded)
 				foreach(var subItem in GetTreeViewItems(item))
 				    yield return subItem;
 			}
@@ -294,7 +333,6 @@ namespace SjUpdater.Utils
 
 			var items = GetTreeViewItems(tree);
 			bool betweenBoundary = false;
-			bool end = false;
 			foreach(var item in items)
 			{
 				bool isBoundary = item == anchor || item == actionItem;

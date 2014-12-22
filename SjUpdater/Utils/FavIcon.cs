@@ -93,9 +93,8 @@ namespace SjUpdater.Utils
             {
                 return GetFromCache(value) ?? GetFromUrl(value);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-
                 return null; 
             }
         }
