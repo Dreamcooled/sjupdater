@@ -1,16 +1,20 @@
 #filename:md5hash
 
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
-MahApps.Metro.dll:7f2f4a5c703f04d72de28066ec33c0fd
-MahApps.Metro.Resources.dll:b093dfedc9ab46ecce0f1bd16091323f
+MahApps.Metro.dll:ff84c687d4e7a18184f6baa9790cbaad
 RestSharp.dll:33d116ac4b9b681570b805412f242eed
-SjUpdater.exe:e84324ef0d3d70b90c35d98e661dad09
+SjUpdater.exe:e4ebf35fbcdd8c7c6ecd3086344ef629
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
-System.Windows.Interactivity.dll:3ab57a33a6e3a1476695d5a6e856c06a
-
-
+System.Windows.Interactivity.dll:580244bc805220253a87196913eb3e5e
+TMDbLib.dll:1df26aca1f2c563f1999b4da53e4c329
 
 [###CHANGELOG###]
+
+v0.2 (2014-12-22)
+- Design Change!! Removed Panorama.
+- New Information Provider: The Movie DB
+- Favorized Uploads are now used and presented first
+
 v0.16 (2014-09-20)
 - Episodes can now be marked as "Downloaded" and "Watched"
 - Fixed "New-Episode" not showing up when the first episode of a show is released
