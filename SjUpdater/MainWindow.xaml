@@ -581,98 +581,17 @@
                                           SnapsToDevicePixels="True"
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
-
-                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                                                <ListView.View>
-                                                    <GridView>
-                                                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                                                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
-                                                        <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                                                        <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
-                                                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
-                                                        <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
-                                                        <GridViewColumn Header="Links (Copy2Clipboard)">
-                                                            <GridViewColumn.CellTemplate>
-                                                                <DataTemplate>
-                                                                    <ItemsControl ItemsSource="{Binding Links}">
-                                                                        <ItemsControl.ItemsPanel>
-                                                                            <ItemsPanelTemplate>
-                                                                                <StackPanel Orientation="Horizontal" />
-                                                                            </ItemsPanelTemplate>
-                                                                        </ItemsControl.ItemsPanel>
-                                                                        <ItemsControl.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <Button Margin="4" Padding="4,0" 
-                                                        Command="{Binding DataContext.DownloadCommand, ElementName=ShowGrid}" ToolTip="{Binding Key}"
-                                                        CommandParameter="{Binding Value}" >
-                                                                                    <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
-                                                                                        <ContentPresenter.ContentTemplate>
-                                                                                            <DataTemplate>
-                                                                                                <Image Source="{Binding Image}" Width="16" Height="16"/>
-                                                                                            </DataTemplate>
-                                                                                        </ContentPresenter.ContentTemplate>
-                                                                                    </ContentPresenter>
-                                                                                </Button>
-                                                                            </DataTemplate>
-                                                                        </ItemsControl.ItemTemplate>
-                                                                    </ItemsControl>
-                                                                </DataTemplate>
-                                                            </GridViewColumn.CellTemplate>
-                                                        </GridViewColumn>
-                                                    </GridView>
-                                                </ListView.View>
-                                            </ListView>
+                                            <local:DownloadPopupList  Grid.Row="1" Margin="10,0,10,10" 
+                                                                     ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}"
+                                                                     DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=ShowGrid}" />
                                         </Grid>
                                     </Border>
                                 </Popup>
 
-                                <ListView  Grid.Row="4"  Margin="10,0,10,10"  ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                    <ListView.Resources>
-                                        <Style TargetType="{x:Type GridViewColumnHeader}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </Style>
-                                    </ListView.Resources>
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Header="Links (Copy2Clipboard)">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ItemsControl ItemsSource="{Binding Links}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Button Margin="4" Padding="4,0" 
-                                                        Command="{Binding DataContext.DownloadCommand, ElementName=ShowGrid}" ToolTip="{Binding Key}"
-                                                        CommandParameter="{Binding Value}" >
-                                                                        <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
-                                                                            <ContentPresenter.ContentTemplate>
-                                                                                <DataTemplate>
-                                                                                    <Image Source="{Binding Image}" Width="16" Height="16"/>
-                                                                                </DataTemplate>
-                                                                            </ContentPresenter.ContentTemplate>
-                                                                        </ContentPresenter>
-                                                                    </Button>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                            <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                                            <GridViewColumn Header="Title" >
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
+                                <local:SpecialDownloadList  Grid.Row="4"  Margin="10,0,10,10"
+                                                            ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}" 
+                                                           DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=ShowGrid}" />
+                                
                             </Grid>
 
                         </TabItem>
@@ -709,98 +628,16 @@
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
 
-                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding NonEpisodes}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                                                <ListView.View>
-                                                    <GridView>
-                                                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                                                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
-                                                        <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                                                        <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
-                                                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
-                                                        <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
-                                                        <GridViewColumn Header="Links (Copy2Clipboard)">
-                                                            <GridViewColumn.CellTemplate>
-                                                                <DataTemplate>
-                                                                    <ItemsControl ItemsSource="{Binding Links}">
-                                                                        <ItemsControl.ItemsPanel>
-                                                                            <ItemsPanelTemplate>
-                                                                                <StackPanel Orientation="Horizontal" />
-                                                                            </ItemsPanelTemplate>
-                                                                        </ItemsControl.ItemsPanel>
-                                                                        <ItemsControl.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <Button Margin="4" Padding="4,0" 
-                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}" ToolTip="{Binding Key}"
-                                                        CommandParameter="{Binding Value}" >
-                                                                                    <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
-                                                                                        <ContentPresenter.ContentTemplate>
-                                                                                            <DataTemplate>
-                                                                                                <Image Source="{Binding Image}" Width="16" Height="16"/>
-                                                                                            </DataTemplate>
-                                                                                        </ContentPresenter.ContentTemplate>
-                                                                                    </ContentPresenter>
-                                                                                </Button>
-                                                                            </DataTemplate>
-                                                                        </ItemsControl.ItemTemplate>
-                                                                    </ItemsControl>
-                                                                </DataTemplate>
-                                                            </GridViewColumn.CellTemplate>
-                                                        </GridViewColumn>
-                                                    </GridView>
-                                                </ListView.View>
-                                            </ListView>
+                                            <local:DownloadPopupList  Grid.Row="1" Margin="10,0,10,10" 
+                                                                     ItemsSource="{Binding NonEpisodes}"
+                                                                     DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}"/>
                                         </Grid>
                                     </Border>
                                 </Popup>
-                                <ListView Grid.Column="0" Grid.Row="4" Margin="10,0,10,10" ItemsSource="{Binding NonEpisodes}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                    <ListView.Resources>
-                                        <Style TargetType="{x:Type GridViewColumnHeader}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </Style>
-                                    </ListView.Resources>
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Header="Links (Copy2Clipboard)">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ItemsControl ItemsSource="{Binding Links}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Button Margin="4" Padding="4,0" 
-                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}" ToolTip="{Binding Key}"
-                                                        CommandParameter="{Binding Value}" >
-                                                                        <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
-                                                                            <ContentPresenter.ContentTemplate>
-                                                                                <DataTemplate>
-                                                                                    <Image Source="{Binding Image}" Width="16" Height="16"/>
-                                                                                </DataTemplate>
-                                                                            </ContentPresenter.ContentTemplate>
-                                                                        </ContentPresenter>
-                                                                    </Button>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                            <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                                            <GridViewColumn Header="Title" > 
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
 
-
+                                <local:SpecialDownloadList  Grid.Row="4"  Margin="10,0,10,10"
+                                                            ItemsSource="{Binding NonEpisodes}" 
+                                                           DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}" />
 
                             </Grid>
 
@@ -864,93 +701,10 @@
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
 
-                                            <ListView  Grid.Row="1" Margin="10,0,10,10" ItemsSource="{Binding Downloads}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn Header="Fav" Width="30" >
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <CheckBox  ToolTip="Favorite/Unfavorite this Release" IsChecked="{Binding Upload.Favorized}">
-                                                                    <CheckBox.Style>
-                                                                        <Style TargetType="CheckBox">
-                                                                            <Setter Property="Template">
-                                                                                <Setter.Value>
-                                                                                    <ControlTemplate TargetType="{x:Type CheckBox}">
-                                                                                        <StackPanel Orientation="Horizontal">
-                                                                                            <Rectangle  x:Name="rect" Fill="{DynamicResource LabelTextBrush}" Width="17" Height="17" Opacity="0.2">
-                                                                                                <Rectangle.Style>
-                                                                                                    <Style TargetType="Rectangle">
-                                                                                                        <Style.Triggers>
-                                                                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                                                                <Setter Property="OpacityMask">
-                                                                                                                    <Setter.Value>
-                                                                                                                        <VisualBrush Visual="{StaticResource appbar_star_invincible}" Stretch="Uniform" />
-                                                                                                                    </Setter.Value>
-                                                                                                                </Setter>
-                                                                                                            </Trigger>
-                                                                                                        </Style.Triggers>
-                                                                                                        <Setter Property="OpacityMask">
-                                                                                                            <Setter.Value>
-                                                                                                                <VisualBrush Visual="{StaticResource appbar_star}" Stretch="Uniform" />
-                                                                                                            </Setter.Value>
-                                                                                                        </Setter>
-                                                                                                    </Style>
-                                                                                                </Rectangle.Style>
-                                                                                            </Rectangle>
-                                                                                            <ContentPresenter VerticalAlignment="Center" Margin="10,0,0,0" />
-                                                                                        </StackPanel>
-
-                                                                                        <ControlTemplate.Triggers>
-                                                                                            <Trigger Property="IsChecked" Value="true">
-                                                                                                <Setter TargetName="rect" Property="Opacity" Value="1" />
-                                                                                            </Trigger>
-                                                                                        </ControlTemplate.Triggers>
-                                                                                    </ControlTemplate>
-                                                                                </Setter.Value>
-                                                                            </Setter>
-                                                                        </Style>
-                                                                    </CheckBox.Style>
-                                                                </CheckBox>
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                    <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" />
-                                                    <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Upload.Language}" />
-                                                    <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
-                                                    <GridViewColumn Header="Runtime" DisplayMemberBinding="{Binding Upload.Runtime}" />
-                                                    <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
-                                                    <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
-                                                    <GridViewColumn Header="Links (Copy2Clipboard)">
-                                                        <GridViewColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <ItemsControl ItemsSource="{Binding Links}">
-                                                                    <ItemsControl.ItemsPanel>
-                                                                        <ItemsPanelTemplate>
-                                                                            <StackPanel Orientation="Horizontal" />
-                                                                        </ItemsPanelTemplate>
-                                                                    </ItemsControl.ItemsPanel>
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate>
-                                                                            <Button Margin="4" Padding="4,0" 
-                                                        Command="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Episode}" ToolTip="{Binding Key}"
-                                                        CommandParameter="{Binding Value}" >
-                                                                                <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
-                                                                                    <ContentPresenter.ContentTemplate>
-                                                                                        <DataTemplate>
-                                                                                            <Image Source="{Binding Image}" Width="16" Height="16"/>
-                                                                                        </DataTemplate>
-                                                                                    </ContentPresenter.ContentTemplate>
-                                                                                </ContentPresenter>
-                                                                            </Button>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ItemsControl>
-                                                            </DataTemplate>
-                                                        </GridViewColumn.CellTemplate>
-                                                    </GridViewColumn>
-                                                </GridView>
-                                            </ListView.View>
-                                        </ListView>
+                                            <local:DownloadPopupList  Grid.Row="1" Margin="10,0,10,10" 
+                                                                     ItemsSource="{Binding Downloads}"
+                                                                     DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Episode}"
+                                                                     ShowFavColumn="True"/>
                                     </Grid>
                                     </Border> 
                                 </Popup>
@@ -1000,11 +754,8 @@
                                 </ListView>
                                 <TextBlock Grid.Row="5" Margin="15,5" Text="No Favorized Uploads yet." x:Name="EpisodeFavorizedWarning1" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/>
                                 <TextBlock Grid.Row="5" Margin="15,5" Text="Check here^^"   x:Name="EpisodeFavorizedWarning2" HorizontalAlignment="Right" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/> 
-                                    
-                                    
-                          
+  
                             </Grid>
-
 
                         </TabItem>
                         <TabItem Header="Multi"  x:Name="EpisodeTabControl_Multi">

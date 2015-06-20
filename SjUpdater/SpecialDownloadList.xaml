@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="SjUpdater.SpecialDownloadList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SjUpdater"
+             xmlns:utils="clr-namespace:SjUpdater.Utils"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
+    </UserControl.Resources>
+    <ListView ItemsSource="{Binding Path=ItemsSource, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SpecialDownloadList}}}"
+              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListView.Resources>
+            <Style TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </Style>
+        </ListView.Resources>
+        <ListView.View>
+            <GridView>
+                <GridViewColumn Header="Links (Copy2Clipboard)">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Links}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Margin="4" Padding="4,0" 
+						 Command="{Binding Path=DownloadCommand, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SpecialDownloadList}}}" ToolTip="{Binding Key}"
+						CommandParameter="{Binding Value}" >
+                                            <ContentPresenter Content="{Binding Key,Converter={StaticResource StringToFaviconConverter}}" >
+                                                <ContentPresenter.ContentTemplate>
+                                                    <DataTemplate>
+                                                        <Image Source="{Binding Image}" Width="16" Height="16"/>
+                                                    </DataTemplate>
+                                                </ContentPresenter.ContentTemplate>
+                                            </ContentPresenter>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                </GridViewColumn>
+                <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
+                <GridViewColumn Header="Title" >
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                </GridViewColumn>
+            </GridView>
+        </ListView.View>
+    </ListView>
+</UserControl>

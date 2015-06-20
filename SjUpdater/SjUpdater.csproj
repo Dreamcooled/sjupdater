@@ -79,9 +79,9 @@
     <Reference Include="Hardcodet.Wpf.TaskbarNotification">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net45\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="MahApps.Metro, Version=1.1.2.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\MahApps.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="RestSharp">
@@ -96,7 +96,8 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -115,6 +116,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DownloadPopupList.xaml.cs">
+      <DependentUpon>DownloadPopupList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\DownloadData.cs" />
     <Compile Include="Model\FavEpisodeData.cs" />
     <Compile Include="Model\FavSeasonData.cs" />
@@ -129,6 +133,9 @@
     <Compile Include="Provider\IProvider.cs" />
     <Compile Include="Provider\ProviderManager.cs" />
     <Compile Include="Provider\TMDb.cs" />
+    <Compile Include="SpecialDownloadList.xaml.cs">
+      <DependentUpon>SpecialDownloadList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Updater\Updater.cs" />
     <Compile Include="Updater\UpdaterViewModel.cs" />
     <Compile Include="Updater\UpdateWindow.xaml.cs">
@@ -139,6 +146,7 @@
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FavIcon.cs" />
     <Compile Include="Utils\GlobalMutex.cs" />
+    <Compile Include="Utils\GridViewColumnVisibilityManager.cs" />
     <Compile Include="Utils\Native.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
@@ -163,6 +171,10 @@
     <Compile Include="XML\CustomXmlSerializer.cs" />
     <Compile Include="XML\CustomXmlSerializerBase.cs" />
     <Compile Include="XML\XmlSerialization.cs" />
+    <Page Include="DownloadPopupList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -182,6 +194,10 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SpecialDownloadList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Updater\UpdateWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
