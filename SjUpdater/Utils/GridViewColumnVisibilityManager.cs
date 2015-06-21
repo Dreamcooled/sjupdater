@@ -1,13 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using MahApps.Metro.Controls;
 
 namespace SjUpdater.Utils
 {
+
+    //Copied from http://stackoverflow.com/questions/20985005/get-parent-for-gridviewcolumn
+    public static class DependencyObjectExtensions
+    {
+        private static readonly PropertyInfo InheritanceContextProp = typeof(DependencyObject).GetProperty("InheritanceContext", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        public static IEnumerable<DependencyObject> GetParents(this DependencyObject child)
+        {
+            while (child != null)
+            {
+                var parent = LogicalTreeHelper.GetParent(child);
+                if (parent == null)
+                {
+                    if (child is FrameworkElement)
+                    {
+                        parent = VisualTreeHelper.GetParent(child);
+                    }
+                    if (parent == null && child is ContentElement)
+                    {
+                        parent = ContentOperations.GetParent((ContentElement)child);
+                    }
+                    if (parent == null)
+                    {
+                        parent = InheritanceContextProp.GetValue(child, null) as DependencyObject;
+                    }
+                }
+                child = parent;
+                yield return parent;
+            }
+        }
+    }
+
+
+
+
     //Adapted from http://stackoverflow.com/a/9634769/2606757
     public class GridViewColumnVisibilityManager
     {
@@ -40,43 +78,18 @@ namespace SjUpdater.Utils
         }
 
         public static readonly DependencyProperty IsVisibleProperty =
-            DependencyProperty.RegisterAttached("IsVisible", typeof(bool), typeof(GridViewColumnVisibilityManager), new UIPropertyMetadata(true));
+            DependencyProperty.RegisterAttached("IsVisible", typeof(bool), typeof(GridViewColumnVisibilityManager), new UIPropertyMetadata(true,new PropertyChangedCallback(OnVisibleChanged)));
 
-
-        public static bool GetEnabled(DependencyObject obj)
+        private static void OnVisibleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            return (bool)obj.GetValue(EnabledProperty);
-        }
-
-        public static void SetEnabled(DependencyObject obj, bool value)
-        {
-            obj.SetValue(EnabledProperty, value);
-        }
-
-        public static readonly DependencyProperty EnabledProperty =
-            DependencyProperty.RegisterAttached("Enabled", typeof(bool), typeof(GridViewColumnVisibilityManager), new UIPropertyMetadata(false,
-                new PropertyChangedCallback(OnEnabledChanged)));
-
-        private static void OnEnabledChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        {
-            ListView view = obj as ListView;
-            if (view != null)
+            var parents = dependencyObject.GetParents();
+            foreach (DependencyObject parent in parents)
             {
-                bool enabled = (bool)e.NewValue;
-                if (enabled)
+                var l = parent as ListView;
+                if (l != null)
                 {
-                    view.Loaded += (sender, e2) =>
-                    {
-                        UpdateListView((ListView)sender);
-                    };
-                    view.TargetUpdated += (sender, e2) =>
-                    {
-                        UpdateListView((ListView)sender);
-                    };
-                    view.DataContextChanged += (sender, e2) =>
-                    {
-                        UpdateListView((ListView)sender);
-                    };
+                    UpdateListView(l);
+                    return;
                 }
             }
         }

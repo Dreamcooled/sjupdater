@@ -258,13 +258,58 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public List<DownloadData> FavorizedUploads
+        public List<DownloadData> ListedDownloads   
         {
-            get { return _favEpisodeData.Downloads.Where(d => d.Upload.Favorized).OrderByDescending(d => d.Upload.Size).ToList(); }
+            get
+            {
+                if(Settings.Instance.UseFavorites)
+                    return _favEpisodeData.Downloads.Where(d => d.Upload.Favorized).OrderByDescending(d => d.Upload.Size).ToList();
+                else
+                    return _favEpisodeData.Downloads.ToList();
+            }
         }
+
+        public String ListTitle
+        {
+            get
+            {
+                if (Settings.Instance.UseFavorites)
+                    return "Favorized Uploads";
+                else
+                    return "All Uploads";
+            }
+        }
+
+        public String ButtonPopupTitle
+        {
+            get
+            {
+                if (Settings.Instance.UseFavorites)
+                    return "Show all Uploads";
+                else
+                    return "Show Detailed";
+            }
+        }
+
+        public bool UseFavorites
+        {
+            get
+            {
+                return Settings.Instance.UseFavorites;   
+            }
+        }
+
         public Visibility ShowNoFavUploadsWarning
         {
-            get { return (_favEpisodeData.Downloads.Any(d => d.Upload.Favorized)) ?Visibility.Collapsed: Visibility.Visible; }
+            get
+            {
+                if (Settings.Instance.UseFavorites)
+                    return (_favEpisodeData.Downloads.Any(d => d.Upload.Favorized))
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
         }
 
         public ObservableCollection<DownloadData> Downloads

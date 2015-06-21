@@ -58,7 +58,7 @@ namespace SjUpdater
 
 
         public static readonly DependencyProperty ShowFavColumnProperty = DependencyProperty.Register("ShowFavColumn",
-     typeof(bool), typeof(DownloadPopupList), new FrameworkPropertyMetadata(false));
+     typeof(bool), typeof(DownloadPopupList), new FrameworkPropertyMetadata(true));
 
         public bool ShowFavColumn
         {

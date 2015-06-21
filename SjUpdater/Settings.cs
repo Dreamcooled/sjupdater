@@ -170,6 +170,14 @@ namespace SjUpdater
         /// </summary>
         public bool NoPersonalData { get; set; }
 
+
+
+        /// <summary>
+        /// Whether or not Episodes can be favorized
+        /// </summary>
+        public bool UseFavorites { get; set; }
+
+
         //Default Filters: See FavShowData.cs
 
         public UploadLanguage FilterLanguage { get; set; }
@@ -197,6 +205,7 @@ namespace SjUpdater
             NoPersonalData = false;
             EnableImages = true;
             CheckForUpdates = true;
+            UseFavorites = true;
         }
         
         public static Settings Load(string filename, out bool converted)

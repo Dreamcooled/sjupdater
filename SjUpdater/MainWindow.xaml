@@ -582,8 +582,9 @@
                                           Fill="White" HorizontalAlignment="Right"/>
                                             </Button>
                                             <local:DownloadPopupList  Grid.Row="1" Margin="10,0,10,10" 
-                                                                     ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}"
-                                                                     DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=ShowGrid}" />
+                                                                      ItemsSource="{Binding DataContext.NonSeasons, ElementName=ShowGrid}"
+                                                                      DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=ShowGrid}"
+                                                                      ShowFavColumn="False" />
                                         </Grid>
                                     </Border>
                                 </Popup>
@@ -629,15 +630,16 @@
                                             </Button>
 
                                             <local:DownloadPopupList  Grid.Row="1" Margin="10,0,10,10" 
-                                                                     ItemsSource="{Binding NonEpisodes}"
-                                                                     DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}"/>
+                                                                      ItemsSource="{Binding NonEpisodes}"
+                                                                      DownloadCommand="{Binding DownloadCommand}"
+                                                                      ShowFavColumn="False" />
                                         </Grid>
                                     </Border>
                                 </Popup>
 
                                 <local:SpecialDownloadList  Grid.Row="4"  Margin="10,0,10,10"
                                                             ItemsSource="{Binding NonEpisodes}" 
-                                                           DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Season}" />
+                                                            DownloadCommand="{Binding DownloadCommand}" />
 
                             </Grid>
 
@@ -684,8 +686,8 @@
                                 </StackPanel>
                                  
                                 <Separator Grid.Row="3" Margin="10,5,10,0"/>
-                                <Label Grid.Row="4" FontSize="18" Margin="5,0,0,0">Favorized Uploads</Label>
-                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Show all Uploads" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
+                                <Label Grid.Row="4" FontSize="18" Margin="5,0,0,0" Content="{Binding ListTitle}" />
+                                <Button HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="{Binding ButtonPopupTitle}" Margin="10,5" Click="EpisodeShowAllDownloads" x:Name="EpisodeShowAllDownloadsButton"/>
                                 <Popup Grid.Row="4" StaysOpen="False" x:Name="EpisodePopup" 
                                        PlacementTarget="{Binding ElementName=EpisodeShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62" Closed="EpisodePopup_Closed" >
                                     <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
@@ -703,14 +705,14 @@
 
                                             <local:DownloadPopupList  Grid.Row="1" Margin="10,0,10,10" 
                                                                      ItemsSource="{Binding Downloads}"
-                                                                     DownloadCommand="{Binding DataContext.DownloadCommand, ElementName=EpisodeTabControl_Episode}"
-                                                                     ShowFavColumn="True"/>
+                                                                     DownloadCommand="{Binding DownloadCommand}"
+                                                                     ShowFavColumn="{Binding UseFavorites}"/>
                                     </Grid>
                                     </Border> 
                                 </Popup>
 
                                 
-                                <ListView  Grid.Row="5" Margin="10,0,10,10" ItemsSource="{Binding FavorizedUploads}" x:Name="EpisodeFavorizedUploadsListView"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView  Grid.Row="5" Margin="10,0,10,10" ItemsSource="{Binding ListedDownloads}" x:Name="EpisodeFavorizedUploadsListView"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type GridViewColumnHeader}">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -836,10 +838,14 @@
                               IsChecked="{Binding SortSeasonsDesc}" />
                         <CheckBox Content="Sort Episodes Descending"  Margin="0,2"
                               IsChecked="{Binding SortEpisodesDesc}" />
-                        <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2,0,1"
+                        <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2"
                               IsChecked="{Binding MarkSubbedAsGerman}" />
                         
-                        <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="0,2" />
+
+                        <CheckBox Content="Enable Favorizing of Uploads" IsChecked="{Binding UseFavorites}"   Margin="0,2" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,-1,0,0" >
                             <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications}"/>
                             <Label VerticalContentAlignment="Center" Content="Timeout for popup:" Margin="20,0,0,0"/>
                             <ComboBox Width="100" ItemsSource="{Binding Source={x:Static local:MainWindow.DictNotifyTimeouts}}"
@@ -847,8 +853,6 @@
                                   SelectedValue="{Binding NotificationTimeout}"/>
                         </StackPanel>
 
-                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}"/>
-                       
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">

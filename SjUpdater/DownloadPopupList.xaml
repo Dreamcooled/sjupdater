@@ -11,8 +11,7 @@
         <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
     </UserControl.Resources>
     <ListView ItemsSource="{Binding Path=ItemsSource, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:DownloadPopupList}}}" 
-              ScrollViewer.VerticalScrollBarVisibility="Visible"
-              utils:GridViewColumnVisibilityManager.Enabled="True">
+              ScrollViewer.VerticalScrollBarVisibility="Visible">
         <ListView.View>
             <GridView>
                 <GridViewColumn Header="Fav" Width="30" utils:GridViewColumnVisibilityManager.IsVisible="{Binding Path=ShowFavColumn, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:DownloadPopupList}}}">
