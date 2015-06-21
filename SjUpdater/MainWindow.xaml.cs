@@ -339,7 +339,7 @@ namespace SjUpdater
             }
             else
             {
-                var selectedEpisodes = _selectedEpisodeTreeItems.OfType<EpisodeViewModel>().ToList();
+                var selectedEpisodes = _selectedEpisodeTreeItems.OfType<EpisodeViewModel>().Select(ev=>ev.Episode).ToList();
                 _multiSelectionViewModel.SelectedEpisodes = selectedEpisodes;
                 EpisodeTabControl_Multi.DataContext = _multiSelectionViewModel;
                 EpisodeTabControl.SelectedIndex = 3;

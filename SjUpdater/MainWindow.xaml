@@ -596,7 +596,7 @@
                             </Grid>
 
                         </TabItem>
-                        <TabItem Header="Season"  x:Name="EpisodeTabControl_Season">
+                        <TabItem Header="Season"  x:Name="EpisodeTabControl_Season" DataContext="{x:Null}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -644,7 +644,7 @@
                             </Grid>
 
                         </TabItem>
-                        <TabItem Header="Episode" x:Name="EpisodeTabControl_Episode">
+                        <TabItem Header="Episode" x:Name="EpisodeTabControl_Episode" DataContext="{x:Null}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" /> <!-- Title /Button -->
@@ -760,7 +760,7 @@
                             </Grid>
 
                         </TabItem>
-                        <TabItem Header="Multi"  x:Name="EpisodeTabControl_Multi">
+                        <TabItem Header="Multi"  x:Name="EpisodeTabControl_Multi" DataContext="{x:Null}">
                             <StackPanel>
 
                                 <TextBlock FontSize="24" Margin="10,5" Text="{Binding InfoText}"/>
@@ -776,7 +776,8 @@
                                         </Button.ContextMenu>
                                     </Button>
                                 </StackPanel>
-
+                                <Separator Margin="10,5,10,0"/>
+                                <local:MultiDownloadSelectionGrid Episodes="{Binding SelectedEpisodes}" Margin="10,0" />
                             </StackPanel>
                         </TabItem>
                     </TabControl>

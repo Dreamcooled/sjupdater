@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using SjUpdater.Model;
 using SjUpdater.Utils;
 
 namespace SjUpdater.ViewModel
@@ -17,39 +18,40 @@ namespace SjUpdater.ViewModel
         {
             MarkSelectedAsDownloadedCommand = new SimpleCommand<object,object>(delegate
             {
-                foreach (var episodeViewModel in SelectedEpisodes)
+                foreach (var episode in SelectedEpisodes)
                 {
-                    episodeViewModel.Episode.Downloaded = true;
+                    episode.Downloaded = true;
                 }
                 OnPropertyChanged("InfoText2");
             });
             MarkSelectedAsWatchedCommand = new SimpleCommand<object, object>(delegate
             {
-                foreach (var episodeViewModel in SelectedEpisodes)
+                foreach (var episode in SelectedEpisodes)
                 {
-                    episodeViewModel.Episode.Watched = true;
-                    episodeViewModel.Episode.Downloaded = true;
+                    episode.Watched = true;
+                    episode.Downloaded = true;
                 }
                 OnPropertyChanged("InfoText2");
             });
             UnmarkSelectedCommand= new SimpleCommand<object, object>(delegate
             {
-                foreach (var episodeViewModel in SelectedEpisodes)
+                foreach (var episode in SelectedEpisodes)
                 {
-                    episodeViewModel.Episode.Watched = false;
-                    episodeViewModel.Episode.Downloaded = false;
+                    episode.Watched = false;
+                    episode.Downloaded = false;
                 }
                 OnPropertyChanged("InfoText2");
             });
         }
 
-        private List<EpisodeViewModel> _selectedEpisodes = null; 
-        public List<EpisodeViewModel> SelectedEpisodes
+        private List<FavEpisodeData> _selectedEpisodes = null; 
+        public List<FavEpisodeData> SelectedEpisodes
         {
             get { return _selectedEpisodes;}
             set
             {
                 _selectedEpisodes = value;
+                OnPropertyChanged();
                 OnPropertyChanged("InfoText");
                 OnPropertyChanged("InfoText2");
             }
@@ -62,7 +64,7 @@ namespace SjUpdater.ViewModel
                 int nrEpisodes = SelectedEpisodes.Count;
 
                 String info = nrEpisodes + " Episodes";
-                int seasons = SelectedEpisodes.Select(ev => ev.Episode.Season).Distinct().Count();
+                int seasons = SelectedEpisodes.Select(e => e.Season).Distinct().Count();
                 if (seasons == 1)
                 {
                     info += " in 1 Season";
@@ -79,8 +81,8 @@ namespace SjUpdater.ViewModel
         {
             get
             {
-                int nrDownloaded = SelectedEpisodes.Count(ev => ev.Episode.Downloaded);
-                int nrWatched = SelectedEpisodes.Count(ev => ev.Episode.Watched);
+                int nrDownloaded = SelectedEpisodes.Count(e => e.Downloaded);
+                int nrWatched = SelectedEpisodes.Count(e => e.Watched);
 
                 return nrDownloaded + " Downloaded, " + nrWatched + " Wachted";
             }

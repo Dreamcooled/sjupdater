@@ -358,18 +358,17 @@ namespace SjUpdater.Utils
 
 		private static void MakeSingleSelection(TreeView tree, TreeViewItem item)
 		{
-			foreach(TreeViewItem selectedItem in GetTreeViewItems(tree))
+            //first deselect old, then select new!
+            foreach (TreeViewItem selectedItem in GetTreeViewItems(tree))
+            {
+                if (selectedItem == null) continue;
+                selectedItem.SetValue(IsSelectedProperty, false);
+            }
+            foreach (TreeViewItem selectedItem in GetTreeViewItems(tree))
 			{
-				if(selectedItem == null)
-					continue;
-				if(selectedItem != item)
-                     selectedItem.SetValue(IsSelectedProperty, false);
-
-				else
-				{
-                    selectedItem.SetValue(IsSelectedProperty, true);
-				}
-			}
+				if(selectedItem == null) continue;
+				if(selectedItem == item) selectedItem.SetValue(IsSelectedProperty, true);
+            }
 			UpdateAnchorAndActionItem(tree, item);
 		}
 

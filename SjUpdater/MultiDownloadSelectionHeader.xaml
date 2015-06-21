@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="SjUpdater.MultiDownloadSelectionHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SjUpdater"
+             xmlns:utils="clr-namespace:SjUpdater.Utils"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" VerticalAlignment="Bottom">
+    <UserControl.Resources>
+        <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding Title}" HorizontalAlignment="Center">
+            <TextBlock.LayoutTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="90" />
+                    <ScaleTransform ScaleX="-1" ScaleY="-1"/>
+                </TransformGroup>
+            </TextBlock.LayoutTransform>
+        </TextBlock>
+        <Separator Grid.Row="1" Margin="0,4,0,2" />
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding Hosters}" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border ToolTip="{Binding}">
+                    <ContentPresenter Content="{Binding Converter={StaticResource StringToFaviconConverter}}" >
+                        <ContentPresenter.ContentTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Image}" Width="16" Height="16" Margin="2"/>
+                            </DataTemplate>
+                        </ContentPresenter.ContentTemplate>
+                    </ContentPresenter>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+         </ItemsControl>
+  
+    </Grid>
+</UserControl>

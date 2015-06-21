@@ -127,6 +127,15 @@
     <Compile Include="Model\ShowData.cs" />
     <Compile Include="Model\SjDeReview.cs" />
     <Compile Include="Model\UploadData.cs" />
+    <Compile Include="MultiDownloadSelectionCell.xaml.cs">
+      <DependentUpon>MultiDownloadSelectionCell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MultiDownloadSelectionGrid.xaml.cs">
+      <DependentUpon>MultiDownloadSelectionGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MultiDownloadSelectionHeader.xaml.cs">
+      <DependentUpon>MultiDownloadSelectionHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NotificationBalloon.xaml.cs">
       <DependentUpon>NotificationBalloon.xaml</DependentUpon>
     </Compile>
@@ -188,6 +197,18 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MultiDownloadSelectionCell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiDownloadSelectionGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MultiDownloadSelectionHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="NotificationBalloon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
