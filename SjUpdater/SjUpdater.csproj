@@ -163,6 +163,7 @@
     <Compile Include="Utils\UploadCache.cs" />
     <Compile Include="ViewModel\EpisodeViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="ViewModel\MultiSelectionViewModel.cs" />
     <Compile Include="ViewModel\SeasonViewModel.cs" />
     <Compile Include="ViewModel\ShowTileViewModel.cs" />
     <Compile Include="ViewModel\ShowViewModel.cs" />

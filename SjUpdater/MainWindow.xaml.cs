@@ -315,6 +315,7 @@ namespace SjUpdater
             }
         }
 
+        private MultiSelectionViewModel _multiSelectionViewModel = new MultiSelectionViewModel();
         void _selectedEpisodeTreeItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             var first = _selectedEpisodeTreeItems.FirstOrDefault();
@@ -338,6 +339,9 @@ namespace SjUpdater
             }
             else
             {
+                var selectedEpisodes = _selectedEpisodeTreeItems.OfType<EpisodeViewModel>().ToList();
+                _multiSelectionViewModel.SelectedEpisodes = selectedEpisodes;
+                EpisodeTabControl_Multi.DataContext = _multiSelectionViewModel;
                 EpisodeTabControl.SelectedIndex = 3;
             }
         }
@@ -517,12 +521,13 @@ namespace SjUpdater
             Terminate(null);
         }
 
-        private void MarkAllContextMenuButtonClicked(object sender, RoutedEventArgs e)
+        private void MarkContextMenuButtonClicked(object sender, RoutedEventArgs e)
         {
             var em = (e.Source as FrameworkElement);
             em.ContextMenu.PlacementTarget = em;
             em.ContextMenu.IsOpen = true;
         }
+
 
         private void OutsideTreeview_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
