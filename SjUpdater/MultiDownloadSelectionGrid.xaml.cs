@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using RestSharp.Extensions;
 using SjUpdater.Model;
+using SjUpdater.Utils;
 using SjUpdater.ViewModel;
 
 namespace SjUpdater
@@ -74,27 +76,40 @@ namespace SjUpdater
         {
             public String Title { get; set; }
             public List<String> Hosters { get; set; }
+            public ICommand ToggleCommand { get; set; }
         }
 
         private class Row
         {
             public String Title { get; set; }
-            public FavEpisodeData Episode { get; set; }
             public List<Cell> Cells { get; set; } 
         }
 
 
         private class Cell
         {
-            public List<CellEntry> Links { get; set; }
+            public List<CellEntry> Entries { get; set; }
+            public FavEpisodeData Episode { get; set; }
             public Header Header { get; set; }
         }
 
-        private class CellEntry
+        private class CellEntry : PropertyChangedImpl
         {
+            
             public Visibility Visibility { get; set; }
             public bool Enabled { get; set; }
-            public bool Checked { get; set; }
+
+            private bool _checked;
+            public bool Checked
+            {
+                get { return _checked; }
+                set
+                {
+                    _checked = value;
+                    OnPropertyChanged();
+                }
+            }
+
             public String Link { get; set; }
         }
 
@@ -103,14 +118,19 @@ namespace SjUpdater
             return upload.Format + ", " + upload.Uploader + "\n" + upload.Size + ", " + upload.Runtime + ", " + upload.Language;
         }
 
+
+        private List<Cell> _cells;
         private void UpdateAll()
         {
             dgrid.Columns.Clear();
             if (!Episodes.Any()) return;
+
+
             var episodesSorted = Episodes.OrderBy(e => e, EpisodeComparer); //sort Episodes by season, episode
             var uploadsSorted = episodesSorted.SelectMany(e => e.Downloads.Select(d => d.Upload)).OrderBy(u=>u,UploadComparer).Distinct(); //get a unique collection of the Uploads, sorted by fav/nofav
      
             List<Header> headers = new List<Header>();
+            _cells = new List<Cell>();
             int i = 0;
 
             //Idea: In the following Loop we create 1 Header instance for ALL Uploads (regardless of the season) which have the same String-Representation
@@ -124,6 +144,7 @@ namespace SjUpdater
                 {
                     Header newHeader = new Header();
                     newHeader.Title = BuildUploadTitle(upload);
+                    newHeader.ToggleCommand = new SimpleCommand<object,string>( s => ToggleColumn(newHeader,s));
                     newHeader.Hosters =
                         episodesSorted.SelectMany(e => e.Downloads)
                             .Where(d => d.Upload == upload)
@@ -154,12 +175,16 @@ namespace SjUpdater
                 }
             }
 
+            DataGridTemplateColumn fColumn = new DataGridTemplateColumn();
+            fColumn.HeaderStyle = (Style)FindResource("RemovedHeaderContentStyle");
+            fColumn.Width = new DataGridLength(1,DataGridLengthUnitType.Star);
+            dgrid.Columns.Add(fColumn);
+
             List<Row> rows = new List<Row>();
             foreach (var episode in episodesSorted)
             {
                 Row r = new Row();
                 r.Title = "S" + episode.Season.Number + " E" + episode.Number;
-                r.Episode = episode;
                 r.Cells = new List<Cell>();
 
                 bool firstSelected = true;
@@ -168,7 +193,8 @@ namespace SjUpdater
                 {
                     var c = new Cell();
                     c.Header = header;
-                    c.Links = new List<CellEntry>();
+                    c.Entries = new List<CellEntry>();
+                    c.Episode = episode;
 
                     DownloadData dloads = episode.Downloads.FirstOrDefault(da => BuildUploadTitle(da.Upload) == header.Title);
                     bool selected = dloads!=null && dloads.Upload.Favorized;
@@ -185,13 +211,14 @@ namespace SjUpdater
                     {
                         if (dloads!=null && dloads.Links.ContainsKey(hoster))
                         {
-                            c.Links.Add(new CellEntry {Visibility = Visibility.Visible,Enabled=true, Link = dloads.Links[hoster], Checked = selected});
+                            c.Entries.Add(new CellEntry {Visibility = Visibility.Visible,Enabled=true, Link = dloads.Links[hoster], Checked = selected});
                         }
                         else
                         {
-                            c.Links.Add(new CellEntry {Visibility = Visibility.Hidden,Enabled=false,Link = "",Checked = false});
+                            c.Entries.Add(new CellEntry {Visibility = Visibility.Hidden,Enabled=false,Link = "",Checked = false});
                         }
                     }
+                    _cells.Add(c);
                     r.Cells.Add(c);
                 }
 
@@ -199,6 +226,22 @@ namespace SjUpdater
             }
             dgrid.ItemsSource = rows;
 
+        }
+
+        private void ToggleColumn(Header header, String hoster)
+        {
+            int entryind = header.Hosters.IndexOf(hoster);
+            var entries = _cells.Where(c => c.Header == header).Select(c => c.Entries.ElementAt(entryind)).Where(ce=>ce.Enabled).ToList();
+            bool allChecked = entries.All(e => e.Checked);
+            entries.ForEach(e => e.Checked=!allChecked);
+        }
+
+        private void DownloadButtonClick(object sender, RoutedEventArgs rea)
+        {   
+            _cells.Where(c=>c.Entries.Any(e=>e.Checked)).Select(c=>c.Episode).Distinct().ToList().ForEach(e=>e.Downloaded=true);
+            var links = _cells.SelectMany(c => c.Entries).Where(e => e.Checked).Select(e => e.Link).ToList();
+            Console.WriteLine(links.Count + " Links:");
+            links.ForEach(Console.WriteLine);
 
         }
     }

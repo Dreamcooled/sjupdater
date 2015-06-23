@@ -33,7 +33,9 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border ToolTip="{Binding}">
+                    <Button ToolTip="{Binding}" Style="{StaticResource ChromelessButtonStyle}" Padding="0"
+                            Command="{Binding Path=DataContext.ToggleCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MultiDownloadSelectionHeader}}}" 
+                            CommandParameter="{Binding}">
                     <ContentPresenter Content="{Binding Converter={StaticResource StringToFaviconConverter}}" >
                         <ContentPresenter.ContentTemplate>
                             <DataTemplate>
@@ -41,7 +43,7 @@
                             </DataTemplate>
                         </ContentPresenter.ContentTemplate>
                     </ContentPresenter>
-                    </Border>
+                    </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
          </ItemsControl>

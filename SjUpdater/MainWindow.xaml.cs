@@ -34,7 +34,7 @@ namespace SjUpdater
         private readonly UpdateWindow _updater;
         private readonly Timer updateTimer;
 
-        private readonly ObservableCollection<object> _selectedEpisodeTreeItems = new ObservableCollection<object>();
+        private readonly List<object> _selectedEpisodeTreeItems = new List<object>();
 
   
 
@@ -74,9 +74,12 @@ namespace SjUpdater
             _viewModel = new MainWindowViewModel(_setti.TvShows);
             DataContext = _viewModel;
 
-            _selectedEpisodeTreeItems.CollectionChanged += _selectedEpisodeTreeItems_CollectionChanged;
 
+            //Enhance TreeView with Multiselection Extension
+            //Note: We could also pass a observable collection to the first method, and get changes from the CollectionChanged Event on the observablecollection
+            //But this way (custom event) we get less Events, which speeds up the GUI
             TreeViewExtensions.SetSelectedItems(ShowTreeView, _selectedEpisodeTreeItems);
+            TreeViewExtensions.AddSelectionChangedListener(ShowTreeView,_selectedEpisodeTreeItems_CollectionChanged); 
 
             SwitchPage(0);
 
@@ -316,7 +319,7 @@ namespace SjUpdater
         }
 
         private MultiSelectionViewModel _multiSelectionViewModel = new MultiSelectionViewModel();
-        void _selectedEpisodeTreeItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        void _selectedEpisodeTreeItems_CollectionChanged(object sender)
         {
             var first = _selectedEpisodeTreeItems.FirstOrDefault();
             if (_selectedEpisodeTreeItems.Count == 1 && first is SeasonViewModel)

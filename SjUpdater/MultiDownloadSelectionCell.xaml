@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SjUpdater"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <ItemsControl ItemsSource="{Binding Links}">
+    <ItemsControl ItemsSource="{Binding Entries}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" />

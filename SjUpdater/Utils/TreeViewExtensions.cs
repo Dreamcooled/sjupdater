@@ -61,7 +61,32 @@ namespace SjUpdater.Utils
 			DependencyProperty.RegisterAttached("AnchorItem", typeof(TreeViewItem), typeof(TreeViewExtensions), new PropertyMetadata(null));
 
 
-		static void EnableMultiSelectChanged(DependencyObject s, DependencyPropertyChangedEventArgs args)
+	    private static readonly DependencyProperty FinishChangedListenersProperty = DependencyProperty.Register(
+	        "FinishChangedListeners", typeof (List<Action<object>>), typeof (TreeViewExtensions), new PropertyMetadata(new List<Action<object>>()));
+
+
+        static List<Action<object>> GetSelectionChangedListeners(TreeView obj)
+	    {
+	         return (List<Action<object>>)obj.GetValue(FinishChangedListenersProperty); 
+	    }
+
+	    static void NotifySelectionChangedListeners(TreeView treeview)
+	    {
+	        GetSelectionChangedListeners(treeview).ForEach(l => l.Invoke(treeview));
+	    }
+
+	    static public void AddSelectionChangedListener(TreeView treeview, Action<object> listener)
+	    {
+	        GetSelectionChangedListeners(treeview).Add(listener);
+	    }
+
+        static public void RemoveSelectionChangedListener(TreeView treeview, Action<object> listener)
+        {
+            GetSelectionChangedListeners(treeview).Remove(listener);
+        }
+
+
+        static void EnableMultiSelectChanged(DependencyObject s, DependencyPropertyChangedEventArgs args)
 		{
 			TreeView tree = (TreeView)s;
 			var wasEnable = (bool)args.OldValue;
@@ -178,7 +203,8 @@ namespace SjUpdater.Utils
 		            SetIsSelected(item, true);
 		        }
 		        e.Handled = true;
-		    }
+                NotifySelectionChangedListeners(tree);
+            }
             else if (e.KeyboardDevice.Modifiers == ModifierKeys.None && selectedItems.Count>0)
             {
                 var items = GetTreeViewItems(tree, true).ToList(); //get expanded items
@@ -200,6 +226,7 @@ namespace SjUpdater.Utils
                         {
                             MakeSingleSelection(tree, items.First());
                         }
+                        NotifySelectionChangedListeners(tree);
 
                         break;
                     case Key.Down:
@@ -212,6 +239,7 @@ namespace SjUpdater.Utils
                         {
                             MakeSingleSelection(tree, items.Last());
                         }
+                        NotifySelectionChangedListeners(tree);
 
                         break;
                 }
@@ -258,20 +286,18 @@ namespace SjUpdater.Utils
 				if((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
 				{
 					MakeToggleSelection(tree, item);
-					return;
+                    NotifySelectionChangedListeners(tree);
+                    return;
 				}
 				if((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
 				{
 					MakeAnchorSelection(tree, item, true);
-					return;
+                    NotifySelectionChangedListeners(tree);
+                    return;
 				}
 				MakeSingleSelection(tree, item);
-				return;
+                NotifySelectionChangedListeners(tree);
 			}
-			//MakeAnchorSelection(item, false);
-
-
-			//SetIsSelected(tree.SelectedItem
 		}
 
 		private static TreeViewItem FindTreeViewItem(object obj)
@@ -296,7 +322,7 @@ namespace SjUpdater.Utils
 	        }
 	    } 
 
-		private static IEnumerable<TreeViewItem> GetTreeViewItems(ItemsControl tree, bool only_expanded=false)
+		private static IEnumerable<TreeViewItem> GetTreeViewItems(ItemsControl tree, bool onlyExpanded=false)
 		{
 			for(int i = 0; i < tree.Items.Count; i++)
 			{
@@ -304,7 +330,7 @@ namespace SjUpdater.Utils
 				if(item == null)
 					continue;
 				yield return item;
-				if(item.IsExpanded || !only_expanded)
+				if(item.IsExpanded || !onlyExpanded)
 				foreach(var subItem in GetTreeViewItems(item))
 				    yield return subItem;
 			}
@@ -362,12 +388,7 @@ namespace SjUpdater.Utils
             foreach (TreeViewItem selectedItem in GetTreeViewItems(tree))
             {
                 if (selectedItem == null) continue;
-                selectedItem.SetValue(IsSelectedProperty, false);
-            }
-            foreach (TreeViewItem selectedItem in GetTreeViewItems(tree))
-			{
-				if(selectedItem == null) continue;
-				if(selectedItem == item) selectedItem.SetValue(IsSelectedProperty, true);
+                selectedItem.SetValue(IsSelectedProperty, (selectedItem == item));
             }
 			UpdateAnchorAndActionItem(tree, item);
 		}
@@ -379,7 +400,8 @@ namespace SjUpdater.Utils
             {
                 selectedItem.SetValue(IsSelectedProperty, false);
             }
-	    }
+            NotifySelectionChangedListeners(tree);
+        }
 
 		private static void MakeToggleSelection(TreeView tree, TreeViewItem item)
 		{
