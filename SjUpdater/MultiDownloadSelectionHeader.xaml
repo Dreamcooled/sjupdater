@@ -16,14 +16,17 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding Title}" HorizontalAlignment="Center">
-            <TextBlock.LayoutTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="90" />
-                    <ScaleTransform ScaleX="-1" ScaleY="-1"/>
-                </TransformGroup>
-            </TextBlock.LayoutTransform>
-        </TextBlock>
+        <Button Style="{StaticResource ChromelessButtonStyle}" Padding="0" HorizontalAlignment="Stretch"
+                            Command="{Binding Path=ToggleAllCommand}">
+            <TextBlock Text="{Binding Title}" ToolTip="{Binding Title}">
+                <TextBlock.LayoutTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="90" />
+                        <ScaleTransform ScaleX="-1" ScaleY="-1"/>
+                    </TransformGroup>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        </Button>
         <Separator Grid.Row="1" Margin="0,4,0,2" />
         <ItemsControl Grid.Row="2" ItemsSource="{Binding Hosters}" >
             <ItemsControl.ItemsPanel>

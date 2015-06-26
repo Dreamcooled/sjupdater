@@ -58,9 +58,20 @@
               >
             <DataGrid.RowHeaderStyle>
                 <Style TargetType="DataGridRowHeader" BasedOn="{StaticResource MetroDataGridRowHeader}">
-                    <Setter Property="Content" Value="{Binding Title}" />
+                   <Setter Property="Content" Value="{Binding}"/>
                     <Setter Property="Padding" Value="4,1" />
                     <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Button ToolTip="{Binding Tooltip}" Style="{StaticResource ChromelessButtonStyle}" Padding="0" HorizontalAlignment="Left"
+                            Command="{Binding Path=ToggleRowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MultiDownloadSelectionGrid}}}" 
+                            CommandParameter="{Binding}">
+                                <TextBlock Text="{Binding Title}"/>
+                                </Button>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </DataGrid.RowHeaderStyle>
         </DataGrid>

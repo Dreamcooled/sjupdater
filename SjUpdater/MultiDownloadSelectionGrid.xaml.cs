@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,6 +32,7 @@ namespace SjUpdater
         public MultiDownloadSelectionGrid()
         {
             InitializeComponent();
+            ToggleRowCommand= new SimpleCommand<object,Row>(ToggleRow);
         }
 
         public static readonly DependencyProperty EpisodesProperty = DependencyProperty.Register(
@@ -72,16 +74,20 @@ namespace SjUpdater
             });
 
 
+        public ICommand ToggleRowCommand { get; private set; }
+
         private class Header
         {
             public String Title { get; set; }
             public List<String> Hosters { get; set; }
             public ICommand ToggleCommand { get; set; }
+            public ICommand ToggleAllCommand { get; set; }
         }
 
         private class Row
         {
             public String Title { get; set; }
+            public String Tooltip { get; set; }
             public List<Cell> Cells { get; set; } 
         }
 
@@ -145,6 +151,7 @@ namespace SjUpdater
                     Header newHeader = new Header();
                     newHeader.Title = BuildUploadTitle(upload);
                     newHeader.ToggleCommand = new SimpleCommand<object,string>( s => ToggleColumn(newHeader,s));
+                    newHeader.ToggleAllCommand = new SimpleCommand<object, object>(o => ToggleFullColumn(newHeader));
                     newHeader.Hosters =
                         episodesSorted.SelectMany(e => e.Downloads)
                             .Where(d => d.Upload == upload)
@@ -185,6 +192,10 @@ namespace SjUpdater
             {
                 Row r = new Row();
                 r.Title = "S" + episode.Season.Number + " E" + episode.Number;
+                if (episode.EpisodeInformation != null && !String.IsNullOrWhiteSpace(episode.EpisodeInformation.Title))
+                {
+                    r.Tooltip = episode.EpisodeInformation.Title;
+                }
                 r.Cells = new List<Cell>();
 
                 bool firstSelected = true;
@@ -230,18 +241,90 @@ namespace SjUpdater
 
         private void ToggleColumn(Header header, String hoster)
         {
-            int entryind = header.Hosters.IndexOf(hoster);
-            var entries = _cells.Where(c => c.Header == header).Select(c => c.Entries.ElementAt(entryind)).Where(ce=>ce.Enabled).ToList();
-            bool allChecked = entries.All(e => e.Checked);
-            entries.ForEach(e => e.Checked=!allChecked);
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                int entryind = header.Hosters.IndexOf(hoster); //cell entries from this hoster
+                var affectedCells = _cells.Where(c => c.Header == header).ToList(); //cells from this header
+                bool allChecked = affectedCells.Select(c=>c.Entries.ElementAt(entryind)).Where(e=>e.Enabled).All(e=>e.Checked); //check if all checkboxes for this hoster are checked
+                affectedCells.ForEach(c => c.Entries.ForEach(e =>e.Checked=e.Enabled&&((c.Entries.IndexOf(e)==entryind)^ allChecked))); //either turn all others from this header off, or on
+                _cells.Where(c => c.Header != header).SelectMany(c => c.Entries).ToList().ForEach(e=>e.Checked= e.Enabled&&allChecked); //either turn all checkboxes of the other headers on or off
+            }
+            else
+            {
+
+                int entryind = header.Hosters.IndexOf(hoster);
+                var entries =
+                    _cells.Where(c => c.Header == header)
+                        .Select(c => c.Entries.ElementAt(entryind))
+                        .Where(ce => ce.Enabled)
+                        .ToList(); //all cell entries from this hoster&header combo
+                bool allChecked = entries.All(e => e.Checked); //check if all checkboxes for this hoster&header are checked
+                entries.ForEach(e => e.Checked = !allChecked);
+            }
+        }
+
+        private void ToggleFullColumn(Header header)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                var entries = _cells.Where(c => c.Header == header).SelectMany(c => c.Entries).Where(ce => ce.Enabled).ToList(); //cell entries from this header
+                bool allChecked = entries.All(e => e.Checked); //check if all checkboxes for this header are checked
+                entries.ForEach(e => e.Checked = !allChecked); //either turn all entries for this header on or off
+                _cells.Where(c => c.Header != header).SelectMany(c => c.Entries).ToList().ForEach(e => e.Checked = e.Enabled && allChecked); //either turn all checkboxes of the other headers on or off
+            }
+            else
+            {
+                var entries =
+                    _cells.Where(c => c.Header == header)
+                        .SelectMany(c=>c.Entries)
+                        .Where(ce => ce.Enabled)
+                        .ToList(); //all cell entries from this header
+                bool allChecked = entries.All(e => e.Checked); //check if all checkboxes for this header are checked
+                entries.ForEach(e => e.Checked = !allChecked);
+            }
+        }
+
+        private void ToggleRow(Row row)
+        {
+
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+               var entries = row.Cells.SelectMany(c => c.Entries).Where(ce => ce.Enabled).ToList(); //all cell entries from this row
+               bool allChecked = entries.All(e => e.Checked); //check if all checkboxes for this row are checked
+               entries.ForEach(e => e.Checked = !allChecked); //either turn all entries for this row off or on
+               _cells.Where(c=> !row.Cells.Contains(c)).SelectMany(c=>c.Entries).Where(ce => ce.Enabled).ToList().ForEach(e => e.Checked = allChecked); //either turn all entries for the other rows on or off
+            }
+            else
+            {
+                var entries = row.Cells.SelectMany(c => c.Entries).Where(ce => ce.Enabled).ToList(); //all cell entries from this row
+                bool allChecked = entries.All(e => e.Checked); //check if all checkboxes for this row are checked
+                entries.ForEach(e => e.Checked = !allChecked);
+            }
         }
 
         private void DownloadButtonClick(object sender, RoutedEventArgs rea)
         {   
             _cells.Where(c=>c.Entries.Any(e=>e.Checked)).Select(c=>c.Episode).Distinct().ToList().ForEach(e=>e.Downloaded=true);
-            var links = _cells.SelectMany(c => c.Entries).Where(e => e.Checked).Select(e => e.Link).ToList();
-            Console.WriteLine(links.Count + " Links:");
-            links.ForEach(Console.WriteLine);
+            var links = _cells.SelectMany(c => c.Entries).Where(e => e.Checked).Select(e => e.Link).Distinct().ToList();
+            var linkstring = String.Join("\r\n",links);
+
+
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    Clipboard.SetText(linkstring);
+                    Clipboard.Flush();
+                    Stats.TrackAction(Stats.TrackActivity.Download);
+                    return;
+                }
+                catch
+                {
+                    //nah
+                }
+                Thread.Sleep(10);
+            }
+            MessageBox.Show("Couldn't Copy link to clipboard.\n" + linkstring);
 
         }
     }
