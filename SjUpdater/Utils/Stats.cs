@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using RestSharp;
@@ -41,66 +43,70 @@ namespace SjUpdater.Utils
 
         public static void TrackAction(TrackActivity action, String comment=null)
         {
-            try
-            {
-                var client = new RestClient(StatsUrl);
-
-                var request = new RestRequest("trackAction", Method.GET);
-                request.AddHeader("Accept", "application/xml");
-
-                request.AddParameter("id", getUniqueID());
-                request.AddParameter("version", GetVersionString());
-                request.AddParameter("action", action.ToString());
-                if (!String.IsNullOrEmpty(comment))
+            StaticInstance.ThreadPool.QueueWorkItem(delegate {
+                try
                 {
-                    request.AddParameter("comment", comment);
+                    var client = new RestClient(StatsUrl);
+
+                    var request = new RestRequest("trackAction", Method.GET);
+                    request.AddHeader("Accept", "application/xml");
+
+                    request.AddParameter("id", getUniqueID());
+                    request.AddParameter("version", GetVersionString());
+                    request.AddParameter("action", action.ToString());
+                    if (!String.IsNullOrEmpty(comment))
+                    {
+                        request.AddParameter("comment", comment);
+                    }
+
+                    var response = client.Execute<SimpleResponse<String>>(request);
+
+                    if (response.Data.Value == "ok")
+                    {
+                        //good
+                    }
                 }
-
-                var response = client.Execute<SimpleResponse<String>>(request);
-
-                if (response.Data.Value == "ok")
+                catch
                 {
-                    //good
+                    //sorry
                 }
-            }
-            catch
-            {
-                //sorry
-            }
+            }, true, ThreadPriority.BelowNormal);
 
         }
 
         public static void TrackCustomVariable(String key, object value, String comment=null)
         {
             if (!AllowCustom) return;
-            try
-            {
-                var client = new RestClient(StatsUrl);
-
-                var request = new RestRequest("trackCustomVariable", Method.GET);
-                request.AddHeader("Accept", "application/xml");
-
-                request.AddParameter("id", getUniqueID());
-                request.AddParameter("version", GetVersionString());
-                request.AddParameter("key", key);
-                request.AddParameter("value", SimpleJson.SerializeObject(value));
-                if (!String.IsNullOrEmpty(comment))
+            StaticInstance.ThreadPool.QueueWorkItem(delegate {
+                try
                 {
-                    request.AddParameter("comment", comment);
+                    var client = new RestClient(StatsUrl);
+
+                    var request = new RestRequest("trackCustomVariable", Method.GET);
+                    request.AddHeader("Accept", "application/xml");
+
+                    request.AddParameter("id", getUniqueID());
+                    request.AddParameter("version", GetVersionString());
+                    request.AddParameter("key", key);
+                    request.AddParameter("value", SimpleJson.SerializeObject(value));
+                    if (!String.IsNullOrEmpty(comment))
+                    {
+                        request.AddParameter("comment", comment);
+                    }
+
+                    var response = client.Execute<SimpleResponse<String>>(request);
+
+                    if (response.Data.Value == "ok")
+                    {
+                        //good
+                    }
                 }
-
-                var response = client.Execute<SimpleResponse<String>>(request);
-
-                if (response.Data.Value == "ok")
+                catch 
                 {
-                    //good
+                    //sorry
                 }
-            }
-            catch 
-            {
-                //sorry
-            }
-          
+            }, true, ThreadPriority.BelowNormal);
+
         }
 
         public static string GetVersionString()
