@@ -257,13 +257,18 @@ namespace SjUpdater.Model
 
                 int episodeNr = -1;
             
-                MatchCollection mts = new Regex("S0{0,4}" + seasonNr + "E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                MatchCollection mts = new Regex("S0{0,4}" + seasonNr + "\\.?E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
                 MatchCollection mts_ep = new Regex("[^A-Z]E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
-                if (mts.Count==1 && mts_ep.Count==1) //if there is exactly one match for "S<xx>E<yy>" and there is no second "E<zz>" (e.g. S01E01-E12) 
+                MatchCollection mts_alt = new Regex("\\bE(\\d+)\\b", RegexOptions.IgnoreCase).Matches(download.Title);
+                if (mts.Count == 1 && mts_ep.Count == 1)
+                    //if there is exactly one match for "S<xx>E<yy>" and there is no second "E<zz>" (e.g. S01E01-E12) 
                 {
                     int.TryParse(mts[0].Groups[1].Value, out episodeNr);
                 }
-                
+                else if (mts_alt.Count==1) { //if there's exactly one match for the alternative regex 
+                    int.TryParse(mts_alt[0].Groups[1].Value, out episodeNr);
+                }
+
 
                 if (episodeNr == -1)
                 {
