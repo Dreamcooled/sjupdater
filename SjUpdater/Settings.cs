@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Windows;
+using System.Xml;
 using System.Xml.Serialization;
 using SjUpdater.Model;
 using SjUpdater.Utils;
@@ -20,29 +21,70 @@ namespace SjUpdater
 
         private static readonly Settings setti;
         private ObservableCollection<FavShowData> _tvShows;
+        private const string CONFIG = "config.xml";
+        private const string CONFIGBAK = "config.xml.autobackup";
+
 
         static Settings()
         {
-            if (File.Exists("config.xml"))
+            if (File.Exists(CONFIG))
             {
-                bool overwrite;
-                setti = Load("config.xml",out overwrite);
-                if (setti != null && overwrite)
+                bool overwrite =false;
+                try
                 {
-                    setti.Save("config.xml");
+                    setti = Load(CONFIG, out overwrite);
+                }
+                catch (Exception ex) //eror while loading config (file broken?)
+                {
+                    if (File.Exists(CONFIGBAK)) //There's a backup, hurray!
+                    {
+                        try
+                        {
+                            setti = Load(CONFIGBAK, out overwrite); //try to load backup
+                            overwrite = true; //Overwrite broken config anyway (not only if updated)
+                            MessageBox.Show(
+                                "SjUpdater was not terminated properly ("+CONFIG+" broken). Old Settings restored from backup ("+CONFIGBAK+"). " +
+                                "Submit a Bugreport if you see this message often. Details:\n"+ ex,
+                                "SjUpdater was not terminated properly");
+                        }
+                        catch (Exception ex2) //Loading backup failed as well :(
+                        {
+                            MessageBox.Show(
+                             "SjUpdater was not terminated properly (" + CONFIG + " broken). Backup (" + CONFIGBAK + ") couldn't be restored either. " +
+                             "Your config was deleted and you have to start over again :( . " +
+                             "Report the following to the developer:\n" + ex2,
+                             "SjUpdater was not terminated properly");
+                        }
+                    }
+                    else //No Backup available :(
+                    {
+                        MessageBox.Show(
+                               "SjUpdater was not terminated properly (" + CONFIG + " broken) and " +
+                               "there was no backup (" + CONFIGBAK + ") for your config available. " +
+                               "Your config was deleted and you have to start over again :( . " +
+                               "Submit a Bugreport if you see this message often. Details:\n" + ex,
+                               "SjUpdater was not terminated properly");
+                    }
+                }
+
+                if (setti != null) //loading ok
+                {
+                    if (overwrite) setti.Save(CONFIG); //if we need to save the changes because of a settings migration
+                    File.Copy(CONFIG, CONFIGBAK, true); //backup the successfully loadable file.
                 }
             }
-            if(setti==null)
+            if(setti==null) //either the user has started the application for the first time or the config could not be loaded
             {
-                setti = new Settings();
-                setti.Save("config.xml");
+                setti = new Settings(); //Create a new settings instance/file
+                setti.Save(CONFIG); //and save it
+                File.Copy(CONFIG, CONFIGBAK, true); //backup the new file (paranoid)
             }
 
         }
 
         public static void Save()
         {
-            setti.Save("config.xml");
+            setti.Save(CONFIG);
         }
 
         public static Settings Instance

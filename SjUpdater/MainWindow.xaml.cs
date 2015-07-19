@@ -422,16 +422,17 @@ namespace SjUpdater
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
-            if (!_forceClose && _setti.MinimizeToTray && !Debugger.IsAttached)
+            if (!_forceClose && _setti.MinimizeToTray  && !Debugger.IsAttached)
             {
-                e.Cancel = true;
-                Hide();
+                e.Cancel = true; //abort closing
+                Hide(); // hide instead
+                Settings.Save(); // ... and save the config 
             }
             else
             {
+                Settings.Save(); //do the important stuff first!
                 _updater.TryClose();
                 NotifyIcon.Dispose();
-                Settings.Save();
                 Stats.TrackAction(Stats.TrackActivity.AppTerm);
             }
         }
@@ -444,7 +445,6 @@ namespace SjUpdater
         {
             _forceClose = true;
             Close();
-
         }
 
         //called when windows shuts down or user logs out
