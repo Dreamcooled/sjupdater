@@ -3,12 +3,18 @@
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
 MahApps.Metro.dll:e438a28d505850f8f83e312f342d6c53
 RestSharp.dll:33d116ac4b9b681570b805412f242eed
-SjUpdater.exe:2c3454707dac2c68beadfc37a1c8f934
+SjUpdater.exe:8e3e3c9be26b5a25f88fd0dee2f4089d
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
 System.Windows.Interactivity.dll:580244bc805220253a87196913eb3e5e
 TMDbLib.dll:1df26aca1f2c563f1999b4da53e4c329
 
+
 [###CHANGELOG###]
+
+v0.31 (2015-07-19)
+- Improved automatic selection of episodes in Multiselection
+- Improved errorhandling of config save/load
+- Minor other bugfixes 
 
 v0.30 (2015-06-27)
 - Favorizing of Uploads can now be disabled
