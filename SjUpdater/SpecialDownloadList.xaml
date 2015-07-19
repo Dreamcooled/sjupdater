@@ -9,17 +9,13 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
+        <utils:GridViewWidthCalulationMultiConverter x:Key="lastColumnMaximizerConverter"/>
     </UserControl.Resources>
     <ListView ItemsSource="{Binding Path=ItemsSource, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SpecialDownloadList}}}"
               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        <ListView.Resources>
-            <Style TargetType="{x:Type GridViewColumnHeader}">
-                <Setter Property="Visibility" Value="Collapsed" />
-            </Style>
-        </ListView.Resources>
         <ListView.View>
             <GridView>
-                <GridViewColumn Header="Links (Copy2Clipboard)">
+                <GridViewColumn Header="Links">
                     <GridViewColumn.CellTemplate>
                         <DataTemplate>
                             <ItemsControl ItemsSource="{Binding Links}">
@@ -54,6 +50,14 @@
                             <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
                         </DataTemplate>
                     </GridViewColumn.CellTemplate>
+                    <GridViewColumn.Width>
+                        <MultiBinding Converter="{StaticResource lastColumnMaximizerConverter}">
+                            <Binding Path="ActualWidth" 
+                     RelativeSource="{RelativeSource AncestorType=ListView}"/>
+                            <Binding Path="View.Columns" 
+                     RelativeSource="{RelativeSource AncestorType=ListView}"/>
+                        </MultiBinding>
+                    </GridViewColumn.Width>
                 </GridViewColumn>
             </GridView>
         </ListView.View>

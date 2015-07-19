@@ -26,6 +26,7 @@
     </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Resources>
         <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
+        <utils:GridViewWidthCalulationMultiConverter x:Key="lastColumnMaximizerConverter"/>
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
@@ -713,14 +714,9 @@
 
                                 
                                 <ListView  Grid.Row="5" Margin="10,0,10,10" ItemsSource="{Binding ListedDownloads}" x:Name="EpisodeFavorizedUploadsListView"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                    <ListView.Resources>
-                                        <Style TargetType="{x:Type GridViewColumnHeader}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </Style>
-                                    </ListView.Resources>
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Header="Links (Copy2Clipboard)">
+                                            <GridViewColumn Header="Links">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ItemsControl ItemsSource="{Binding Links}">
@@ -750,12 +746,21 @@
                                             </GridViewColumn>
                                             <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Upload.Format}" />
                                             <GridViewColumn Header="Uploader" DisplayMemberBinding="{Binding Upload.Uploader}" />
-                                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}" />
+                                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Upload.Size}">
+                                                <GridViewColumn.Width>
+                                                    <MultiBinding Converter="{StaticResource lastColumnMaximizerConverter}">
+                                                        <Binding Path="ActualWidth" 
+                     RelativeSource="{RelativeSource AncestorType=ListView}"/>
+                                                        <Binding Path="View.Columns" 
+                     RelativeSource="{RelativeSource AncestorType=ListView}"/>
+                                                    </MultiBinding>
+                                                </GridViewColumn.Width>
+                                            </GridViewColumn>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-                                <TextBlock Grid.Row="5" Margin="15,5" Text="No Favorized Uploads yet." x:Name="EpisodeFavorizedWarning1" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/>
-                                <TextBlock Grid.Row="5" Margin="15,5" Text="Check here^^"   x:Name="EpisodeFavorizedWarning2" HorizontalAlignment="Right" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/> 
+                                <TextBlock Grid.Row="5" Margin="15,20,15,5" Text="No Favorized Uploads yet." x:Name="EpisodeFavorizedWarning1" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/>
+                                <TextBlock Grid.Row="5" Margin="15,20,15,5" Text="Check here^^"   x:Name="EpisodeFavorizedWarning2" HorizontalAlignment="Right" Foreground="{DynamicResource DisabledMenuItemForeground}" FontWeight="Bold" FontSize="13" Visibility="{Binding ShowNoFavUploadsWarning}"/> 
   
                             </Grid>
 

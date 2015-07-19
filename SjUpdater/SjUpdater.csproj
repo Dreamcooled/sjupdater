@@ -156,6 +156,7 @@
     <Compile Include="Utils\FavIcon.cs" />
     <Compile Include="Utils\GlobalMutex.cs" />
     <Compile Include="Utils\GridViewColumnVisibilityManager.cs" />
+    <Compile Include="Utils\GridViewWidthCalulationMultiConverter.cs" />
     <Compile Include="Utils\Native.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
