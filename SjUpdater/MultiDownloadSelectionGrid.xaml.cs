@@ -133,7 +133,13 @@ namespace SjUpdater
 
 
             var episodesSorted = Episodes.OrderBy(e => e, EpisodeComparer); //sort Episodes by season, episode
-            var uploadsSorted = episodesSorted.SelectMany(e => e.Downloads.Select(d => d.Upload)).OrderBy(u=>u,UploadComparer).Distinct(); //get a unique collection of the Uploads, sorted by fav/nofav
+            var uploadsSorted = episodesSorted.SelectMany(e => e.Downloads.Select(d => d.Upload)).Distinct(); //get a unique collection of the uploads;
+            if (Settings.Instance.UseFavorites)
+            {
+                uploadsSorted =  uploadsSorted.OrderBy(u => u, UploadComparer); //sort by fav/nofav
+            }
+
+          
      
             List<Header> headers = new List<Header>();
             _cells = new List<Cell>();
@@ -198,7 +204,15 @@ namespace SjUpdater
                 }
                 r.Cells = new List<Cell>();
 
-                bool firstSelected = true;
+                bool singleUpload =
+                    (episode.Downloads.Select(d => d.Upload)
+                        .Distinct()
+                        .Select(BuildUploadTitle)
+                        .Distinct()
+                        .Count() == 1); //if we only have downloads from one upload for this episode
+                bool firstSelected = Settings.Instance.UseFavorites; //initialize state flag with a value from settings
+                //if this is set to false, all following headers will not have any checkboxes ticked
+                //if this is set to true, the next header from a favorized upload will have its checkboxes checked
 
                 foreach (var header in headers)
                 {
@@ -208,7 +222,7 @@ namespace SjUpdater
                     c.Episode = episode;
 
                     DownloadData dloads = episode.Downloads.FirstOrDefault(da => BuildUploadTitle(da.Upload) == header.Title);
-                    bool selected = dloads!=null && dloads.Upload.Favorized;
+                    bool selected = dloads!=null && dloads.Upload.Favorized; //select this episode because it's favorized
                     if (firstSelected && selected)
                     {
                         firstSelected = false;
@@ -222,7 +236,7 @@ namespace SjUpdater
                     {
                         if (dloads!=null && dloads.Links.ContainsKey(hoster))
                         {
-                            c.Entries.Add(new CellEntry {Visibility = Visibility.Visible,Enabled=true, Link = dloads.Links[hoster], Checked = selected});
+                            c.Entries.Add(new CellEntry {Visibility = Visibility.Visible,Enabled=true, Link = dloads.Links[hoster], Checked = selected || singleUpload});
                         }
                         else
                         {
