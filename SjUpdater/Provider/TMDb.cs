@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using RestSharp.Extensions;
 using TMDbLib.Client;
@@ -23,12 +24,32 @@ namespace SjUpdater.Provider
 
         public object FindShow(String name)
         {
-            var x = client.SearchTvShow(name);
-            if (x.TotalResults > 0)
+            Regex r = new Regex(@"\(([12]\d{3})\)"); //name contains year?
+            Match m = r.Match(name);
+            if (!m.Success)
             {
-                return x.Results.First().Id;
+                var x = client.SearchTvShow(name);
+                if (x.TotalResults > 0)
+                {
+                    return x.Results.First().Id;
+                }
+                return null;
             }
-            return null;
+            else
+            {
+                int year = int.Parse(m.Groups[1].Value);
+                name=name.Replace(m.Value, "").Trim();//remove year
+                var x = client.SearchTvShow(name);
+                foreach (var result in x.Results)
+                {
+                    if (result.FirstAirDate.HasValue && result.FirstAirDate.Value.Year == year)
+                    {
+                        return result.Id;
+                    }
+                }
+          
+                return null;
+            }
         }
 
         public ShowInformation GetShowInformation(object show, bool withImages, bool withPreviousNextEp)
