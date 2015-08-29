@@ -85,29 +85,29 @@ namespace SjUpdater.ViewModel
 
         void favEpisodeData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "EpisodeInformation")
+            if (e.PropertyName == nameof(FavEpisodeData.EpisodeInformation))
             {
                 _dispatcher.Invoke(delegate
                 {
                     Photo = (_favEpisodeData.EpisodeInformation == null || String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedBitmap(_favEpisodeData.EpisodeInformation.Image);
                 });
-                OnPropertyChanged("Title");
-                OnPropertyChanged("ShowInfoCommand");
+                OnPropertyChanged(nameof(Title));
+                OnPropertyChanged(nameof(ShowInfoCommand));
 
-            } else if (e.PropertyName == "NewEpisode" || e.PropertyName=="NewUpdate")
+            } else if (e.PropertyName == nameof(FavEpisodeData.NewEpisode)| e.PropertyName== nameof(FavEpisodeData.NewUpdate))
             {
                 NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
                 NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
             }
-            else if (e.PropertyName == "Downloaded")
+            else if (e.PropertyName == nameof(FavEpisodeData.Downloaded))
             {
                 DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
-                OnPropertyChanged("ButtonStateChangeText");
+                OnPropertyChanged(nameof(ButtonStateChangeText));
             }
-            else if (e.PropertyName == "Watched")
+            else if (e.PropertyName == nameof(FavEpisodeData.Watched))
             {
                 WatchedCheckVisibility = (_favEpisodeData.Watched) ? Visibility.Visible : Visibility.Collapsed;
-                OnPropertyChanged("ButtonStateChangeText");
+                OnPropertyChanged(nameof(ButtonStateChangeText));
             }
 
         }

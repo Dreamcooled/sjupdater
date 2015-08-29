@@ -12,8 +12,44 @@
                       Title="Serienjunkies Updater" Height="784.65" Width="1096" x:Name="Window" SaveWindowPosition="True" MinWidth="800" MinHeight="600"
                       Closing="MainWindow_OnClosing" AllowsTransparency="True" WindowStyle="None" Icon="Resources/icon3.ico" TextOptions.TextFormattingMode="Display" >
     <controls:MetroWindow.RightWindowCommands>
-        <controls:WindowCommands>
-            <Button Command="{Binding SettingsCommand, ElementName=Window}">
+        <controls:WindowCommands ShowSeparators="False">
+            <Button Click="AddShow" ToolTip="Add Show">
+                <Rectangle Width="15" Height="15"
+                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                            Visual="{StaticResource appbar_add}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+            <Button Click="OpenHomepage" ToolTip="Open serienjunkies.org">
+                <Rectangle Width="15" Height="15"
+                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                            Visual="{StaticResource appbar_browser}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+            <Button Click="ReloadAll" ToolTip="Recheck all">
+                <Rectangle Width="17" Height="20"
+                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                            Visual="{StaticResource appbar_refresh}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+          <Rectangle    SnapsToDevicePixels="True"
+                        IsHitTestVisible="False"
+                        Opacity="0.25"
+                        Width="1"
+                        Height="15"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Right"
+                        Fill="{Binding RelativeSource={RelativeSource AncestorType=controls:WindowCommands}, Path=Foreground}"
+                        Margin="8,0,0,0" />
+            <Button Click="SettingsClicked" ToolTip="Settings">
                 <Rectangle Width="20" Height="20"
                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
                     <Rectangle.OpacityMask>
@@ -22,6 +58,15 @@
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
+            <Rectangle  SnapsToDevicePixels="True"
+                        IsHitTestVisible="False"
+                        Opacity="0.25"
+                        Width="1"
+                        Height="15"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Right"
+                        Fill="{Binding RelativeSource={RelativeSource AncestorType=controls:WindowCommands}, Path=Foreground}"
+                        Margin="0" />
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Resources>
@@ -143,10 +188,6 @@
         </TabControl.Template>
         <TabItem Header="Overview">
             <Grid x:Name="OverviewGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
                 <taskbarNotification:TaskbarIcon x:Name="NotifyIcon" DataContext="{Binding ElementName=Window}" ToolTipText="SjUpdater" DoubleClickCommand="{Binding IconClickedCommand, ElementName=Window}" IconSource="Resources/icon3.ico" >
                     <taskbarNotification:TaskbarIcon.ContextMenu>
                         <ContextMenu>
@@ -156,129 +197,123 @@
                     </taskbarNotification:TaskbarIcon.ContextMenu>
                 </taskbarNotification:TaskbarIcon>
 
-                <Label Grid.Row="0" Margin ="10,0,0,0"  FontFamily="Segoe UI Symbol" FontSize="32" Foreground="{DynamicResource LabelTextBrush}" Content="My TV Shows"
-                           VerticalAlignment="Center"/>
+                <ScrollViewer Margin="10,0,3,0" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 
-                <Button Grid.Row="0" Width="40" Click="AddShow"  ToolTip="Add Show" HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Height="40" Margin="0,0,90,0"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Uniform" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button>
-                <Button Grid.Row="0" Width="40" Click="OpenHomepage"  ToolTip="Open serienjunkies.org" HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Height="40" Margin="0,0,50,0"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_browser}" Stretch="Uniform" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button>
-
-                <Button Grid.Row="0" Width="40" Click="ReloadAll"  ToolTip="Recheck all" HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Height="40" Margin="0,0,10,0"
-                        Style="{DynamicResource MetroCircleButtonStyle}">
-                    <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="17" Height="17">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_refresh}" Stretch="Uniform" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button>
-
-                <ScrollViewer  Grid.Row="1" Margin="10,10,10,10" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding TvShows}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                                <WrapPanel />
+                    <ItemsControl ItemsSource="{Binding Categories}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" />
                             </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.Resources>
-                        <Style TargetType="{x:Type controls:Tile}">
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                            <Setter Property="HorizontalContentAlignment" Value="Center" />
-                            <Setter Property="VerticalContentAlignment" Value="Center" />
-                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
-                                        <Grid Background="{TemplateBinding Background}">
-                                            <ContentPresenter RecognizesAccessKey="True" />
-                                        </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="RenderTransform">
-                                                    <Setter.Value>
-                                                        <ScaleTransform ScaleX="0.98"
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModel:ShowCategory}">
+                                <StackPanel Orientation="Vertical">
+                                    <Label FontSize="20pt" Content="{Binding Description}" />
+                                    <ItemsControl ItemsSource="{Binding Shows}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.Resources>
+                                        <Style TargetType="{x:Type controls:Tile}">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type controls:Tile}">
+                                                        <Grid Background="{TemplateBinding Background}">
+                                                            <ContentPresenter RecognizesAccessKey="True" />
+                                                        </Grid>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsPressed" Value="True">
+                                                                <Setter Property="RenderTransform">
+                                                                    <Setter.Value>
+                                                                        <ScaleTransform ScaleX="0.98"
                                                                     ScaleY="0.98"
                                                                     CenterX="0.5"
                                                                     CenterY="0.5" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ItemsControl.Resources>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
-                            <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ItemsControl.Resources>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
+                                            <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
                                        Command="{Binding ShowClickedCommand, ElementName=Window}"
                                        CommandParameter="{Binding}" Background="{DynamicResource ControlBackgroundBrush}">
-                                <Grid>
-                                    <Image Source="{Binding Background.ImageSource}" Visibility="{Binding BackgroundImageVisibility}" Stretch="UniformToFill" Opacity="0.9" />
-                                    <Rectangle Fill="{DynamicResource AccentColorBrush3}" Visibility="{Binding BackgroundRectangleVisibility}">
+                                                <Grid>
+                                                    <Image Source="{Binding Background.ImageSource}" Visibility="{Binding BackgroundImageVisibility}" Stretch="UniformToFill" Opacity="0.9" />
+                                                    <!--<Rectangle Fill="{DynamicResource AccentColorBrush3}" Visibility="{Binding BackgroundRectangleVisibility}">
                                         <Rectangle.Effect>
                                             <BlurEffect Radius="2"/>
                                         </Rectangle.Effect>
-                                    </Rectangle>
+                                    </Rectangle>-->
+                                                    <controls:ProgressRing Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
 
-                                    <controls:ProgressRing Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
-
-                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,0,0" VerticalAlignment="Top"
+                                                    <Grid utils:VisibilityAnimation.IsActive="True">
+                                                        <Grid.Style>
+                                                            <Style TargetType="{x:Type Grid}">
+                                                                <Style.Setters>
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </Style.Setters>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid},
+                                            Path=IsMouseOver}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Grid.Style>
+                                                        <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8">
+                                                            <Rectangle.Effect>
+                                                                <BlurEffect Radius="2"/>
+                                                            </Rectangle.Effect>
+                                                        </Rectangle>
+                                                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0" VerticalAlignment="Top"
                                             HorizontalAlignment="Stretch">
-                                        <Label
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Foreground="White" FontWeight="Bold" Content="{Binding Title}" >
-                                            <Label.Effect>
-                                                <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
-                                                                  BlurRadius="10" />
-                                            </Label.Effect>
-                                        </Label>
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Label
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Center"
-                                            Foreground="White" Content="{Binding NumberText}">
-                                                <Label.Effect>
-                                                    <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
-                                                                  BlurRadius="10" />
-                                                </Label.Effect>
-                                            </Label>
-                                            <Label
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="Lime" FontWeight="Bold" Content="+New!"
-                                            Visibility="{Binding NewEpisodesVisible}">
-                                                <Label.Effect>
-                                                    <DropShadowEffect RenderingBias="Quality" ShadowDepth="0"
-                                                                  BlurRadius="10" />
-                                                </Label.Effect>
-                                            </Label>
-                                        </Grid>
-                                    </StackPanel>
-                                </Grid>
+                                                            <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding Title}" FontSize="18pt" Padding="5,0" 
+                                                    TextTrimming="CharacterEllipsis" Foreground="{DynamicResource BlackColorBrush}" />
 
-                            </controls:Tile>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                                            <Label
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center" Padding="5,0"
+                                                    Content="{Binding NumberText}">
+                                                            </Label>
+
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0" VerticalAlignment="Bottom"
+                                                         HorizontalAlignment="Stretch">
+                                                            <Label HorizontalAlignment="Left"
+                                                        VerticalAlignment="Center"  Padding="5,0"
+                                                        Content="{Binding NextText}" >
+                                                            </Label>
+                                                            <Label HorizontalAlignment="Left"
+                                                       VerticalAlignment="Center" Padding="5,0,5,5"
+                                                       Content="{Binding PrevText}" >
+                                                            </Label>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Grid>
+                                            </controls:Tile>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ScrollViewer>
             </Grid>
         </TabItem>
@@ -807,7 +842,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Button Width="40" VerticalAlignment="Center"
-                        Command="{Binding SettingsCommand, ElementName=Window}"
+                        Click="SettingsClicked"
                         Height="40"
                         Style="{DynamicResource MetroCircleButtonStyle}">
                         <Rectangle Fill="{DynamicResource LabelTextBrush}"  Width="20" Height="20">

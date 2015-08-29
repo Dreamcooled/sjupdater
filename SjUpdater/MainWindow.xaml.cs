@@ -45,7 +45,6 @@ namespace SjUpdater
 
             //Commands
             ShowClickedCommand = new SimpleCommand<object, ShowTileViewModel>(OnShowViewClicked);
-            SettingsCommand = new SimpleCommand<object, object>(SettingsClicked);
             IconClickedCommand = new SimpleCommand<object, object>(IconClicked);
             TerminateCommand = new SimpleCommand<object, object>(Terminate);
 
@@ -172,7 +171,7 @@ namespace SjUpdater
 
         private int _lastpage = 0;
 
-        private void SettingsClicked(object o)
+        private void SettingsClicked(object sender, RoutedEventArgs e)
         {
             if (CurrentPage() == 2)
             {
@@ -221,7 +220,6 @@ namespace SjUpdater
         public String CurrentVersionString { get { return Stats.GetVersionString(); } }
 
         public ICommand AddShowCommand { get; private set; }
-        public ICommand SettingsCommand { get; private set; }
         public ICommand ShowClickedCommand { get; private set; }
         public ICommand IconClickedCommand { get; private set; }
         public ICommand TerminateCommand { get; private set; }

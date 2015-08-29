@@ -42,6 +42,16 @@ namespace SjUpdater.Model
         private object _providerData;
         //private ShowInformation _showInformation;
 
+        private string _status;
+        private DateTime? _nextEpisodeDate;
+        private DateTime? _previousEpisodeDate;
+        private int? _nextEpisodeSeasonNr;
+        private int? _nextEpisodeEpisodeNr;
+        private int? _previousEpisodeSeasonNr;
+        private int? _previousEpisodeEpisodeNr;
+        private ObservableCollection<string> _categories; 
+
+
         private List<DownloadData> _allDownloads;
         private readonly bool _isNewShow; //=false
 
@@ -64,6 +74,7 @@ namespace SjUpdater.Model
             _nonSeasons = new ObservableCollection<DownloadData>();
             _allDownloads = new List<DownloadData>();
             _providerData = null;
+            _categories = new ObservableCollection<string>();
            // _showInformation = null; //TODO: fill & use this info
 
             //the getters will return the default filter if the value is a null string
@@ -93,10 +104,25 @@ namespace SjUpdater.Model
                 _mutexFetch.ReleaseMutex();
                 return;
             }
-            if (_providerData==null)
+            if (_providerData == null)
             {
-               // InfoUrl = SjInfo.SearchSjDe(Name);
+                // InfoUrl = SjInfo.SearchSjDe(Name);
                 ProviderData = ProviderManager.GetProvider().FindShow(Name);
+                Status = "Unknown";
+            }
+            if(_providerData!=null)
+            {
+                ShowInformation si = ProviderManager.GetProvider().GetShowInformation(ProviderData,false,true);
+                if (si != null)
+                {
+                    Status = si.Status;
+                    PreviousEpisodeDate = si.PreviousEpisodeDate;
+                    PreviousEpisodeSeasonNr = si.PreviousEpisodeSeasonNr;
+                    PreviousEpisodeEpisodeNr = si.PreviousEpisodeEpisodeNr;
+                    NextEpisodeDate = si.NextEpisodeDate;
+                    NextEpisodeEpisodeNr = si.NextEpisodeEpisodeNr;
+                    NextEpisodeSeasonNr = si.NextEpisodeSeasonNr;
+                }
             }
 
             try
@@ -113,12 +139,16 @@ namespace SjUpdater.Model
                 if (_resetOnRefresh)
                 {
                     _resetOnRefresh = false;
-                    ApplyFilter(true); 
+                    ApplyFilter(true);
                 }
                 else
                 {
                     ApplyFilter(false);
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
@@ -359,6 +389,20 @@ namespace SjUpdater.Model
 
         }
 
+        private void SetCategory(String cat, bool active)
+        {
+            if (active)
+            {
+                if (!_categories.Contains(cat))
+                {
+                    _categories.Add(cat);
+                } 
+            } else if (_categories.Contains(cat))
+            {
+                _categories.Remove(cat);
+            }
+        }
+
         public ShowData Show
         {
             get { return _show; }
@@ -440,6 +484,7 @@ namespace SjUpdater.Model
             {
                 if (value == _newEpisodes) return;
                 _newEpisodes = value;
+                SetCategory("new",value);
                 OnPropertyChanged();
             }
         }
@@ -625,6 +670,96 @@ namespace SjUpdater.Model
             {
                 _nonSeasons = value;
                 RecalcNumbers();
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<String> Categories
+        {
+            get { return _categories; }
+            internal set
+            {
+                _categories = value;
+                OnPropertyChanged();
+            }
+        } 
+
+        public String Status
+        {
+            get { return _status; }
+            set
+            {
+                if (_status == value) return;
+                _status = value;
+                SetCategory("active",_status=="Returning Series");
+                SetCategory("ended",_status=="Ended" || _status=="Cancelled");
+                SetCategory("unknown", _status != "Returning Series"  && _status != "Ended" && _status != "Cancelled");
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTime? NextEpisodeDate
+        {
+            get { return _nextEpisodeDate; }
+            set
+            {
+                if (_nextEpisodeDate == value) return;
+                _nextEpisodeDate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTime? PreviousEpisodeDate
+        {
+            get { return _previousEpisodeDate; }
+            set
+            {
+                if (_previousEpisodeDate == value) return;
+                _previousEpisodeDate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int? NextEpisodeSeasonNr
+        {
+            get { return _nextEpisodeSeasonNr; }
+            set
+            {
+                if (_nextEpisodeSeasonNr == value) return;
+                _nextEpisodeSeasonNr = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int? NextEpisodeEpisodeNr
+        {
+            get { return _nextEpisodeEpisodeNr; }
+            set
+            {
+                if (_nextEpisodeEpisodeNr == value) return;
+                _nextEpisodeEpisodeNr = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int? PreviousEpisodeSeasonNr
+        {
+            get { return _previousEpisodeSeasonNr; }
+            set
+            {
+                if (_previousEpisodeSeasonNr == value) return;
+                _previousEpisodeSeasonNr = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int? PreviousEpisodeEpisodeNr
+        {
+            get { return _previousEpisodeEpisodeNr; }
+            set
+            {
+                if (_previousEpisodeEpisodeNr == value) return;
+                _previousEpisodeEpisodeNr = value;
                 OnPropertyChanged();
             }
         }
