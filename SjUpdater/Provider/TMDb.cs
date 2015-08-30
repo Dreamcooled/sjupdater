@@ -17,13 +17,17 @@ namespace SjUpdater.Provider
         private const string API_KEY = "32b427eaba430fb1c86e9d15049e7799";
         public TMDb()
         {
-            client = new TMDbClient(API_KEY);
-            client.GetConfig();
-            //client.MaxRetryCount = 15;
+            try {
+                client = new TMDbClient(API_KEY);
+                client.GetConfig();
+                //client.MaxRetryCount = 15;
+            } catch(Exception) { }
+
         }
 
         public object FindShow(String name)
         {
+            if (client?.Config == null) return null;
             Regex r = new Regex(@"\(([12]\d{3})\)"); //name contains year?
             Match m = r.Match(name);
             if (!m.Success)
@@ -55,7 +59,8 @@ namespace SjUpdater.Provider
         public ShowInformation GetShowInformation(object show, bool withImages, bool withPreviousNextEp)
         {
             if(!(show is int)) throw new ArgumentException();
-           var showinfo = client.GetTvShow((int) show,withImages?TvShowMethods.Images:TvShowMethods.Undefined);
+            if (client?.Config == null) return null;
+            var showinfo = client.GetTvShow((int) show,withImages?TvShowMethods.Images:TvShowMethods.Undefined);
             if(showinfo?.Name == null) return null;
 
             var si= new ShowInformation
@@ -125,6 +130,7 @@ namespace SjUpdater.Provider
         public SeasonInformation GetSeasonInformation(object show, int season, bool withImages)
         {
             if (!(show is int)) throw new ArgumentException();
+            if (client?.Config == null) return null;
             var seasoninfo = client.GetTvSeason((int)show,season, withImages ? TvSeasonMethods.Images : TvSeasonMethods.Undefined);
             if (seasoninfo?.Name == null) return null;
 
@@ -146,6 +152,7 @@ namespace SjUpdater.Provider
         public EpisodeInformation GetEpisodeInformation(object show, int season, int episode, bool withImages)
         {
             if (!(show is int)) throw new ArgumentException();
+            if (client?.Config == null) return null;
             var episodeinfo = client.GetTvEpisode((int) show, season, episode, withImages ? TvEpisodeMethods.Images : TvEpisodeMethods.Undefined);
             if (episodeinfo?.Name == null) return null;
            
@@ -166,6 +173,7 @@ namespace SjUpdater.Provider
         {
             if (images == null) return null;
             if (!(images is List<ImageData>)) throw new ArgumentException();
+            if (client?.Config == null) return null;
             var i = (List<ImageData>) images;
             if (i.Count == 0) return null;
             return client.GetImageUrl("original", i.First().FilePath).AbsoluteUri;

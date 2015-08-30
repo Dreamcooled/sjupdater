@@ -282,7 +282,6 @@ namespace SjUpdater
         {
             var showView = showTileView.ShowViewModel;
             _selectedEpisodeTreeItems.Clear();
-            showView.Show.NewEpisodes = false;
             ShowGrid.DataContext = showView;
             FilterFlyout.DataContext = showView;
             SwitchPage(1);
@@ -358,6 +357,9 @@ namespace SjUpdater
 
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
+            var show = ((ShowViewModel)ShowGrid.DataContext).Show;
+            show.NewEpisodes = show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewEpisode));
+            show.NewUpdates= show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewUpdate));
             SwitchPage(0);
         }
 

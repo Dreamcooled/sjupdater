@@ -27,6 +27,7 @@ namespace SjUpdater.Model
         private int _nrSeasons ;
         private int _nrEpisodes;
         private bool _newEpisodes;
+        private bool _newUpdates;
         private bool _notified;
         private bool _isLoading;
         private bool _resetOnRefresh;
@@ -360,11 +361,12 @@ namespace SjUpdater.Model
                     
                     if (currentFavEpisode.Downloads.All(d => d.Title != download.Title))
                     {
-                        currentFavEpisode.Downloads.Add(download);
-                        if (notifications && (oldEpisode==null ||  oldEpisode.Downloads.All(d => d.Title != download.Title)))
+                        if (notifications && (oldEpisode==null ||  (!oldEpisode.NewEpisode && oldEpisode.Downloads.All(d => d.Title != download.Title))))
                         {
                             currentFavEpisode.NewUpdate = true;
+                            NewUpdates = true;
                         }
+                        currentFavEpisode.Downloads.Add(download);
                     }
                 }  
             }
@@ -474,9 +476,8 @@ namespace SjUpdater.Model
         }
 
         /// <summary>
-        /// Is set to true when we have new episodes (count > cached number). Reset this to false, yourself
+        /// Is set to true when we have new episodes. Reset this to false, yourself
         /// </summary>
-        [XmlIgnore]
         public bool NewEpisodes
         {
             get { return _newEpisodes; }
@@ -490,9 +491,23 @@ namespace SjUpdater.Model
         }
 
         /// <summary>
+        /// Is set to true when we have episode updates. Reset this to false, yourself
+        /// </summary>
+        public bool NewUpdates
+        {
+            get { return _newUpdates; }
+            internal set
+            {
+                if (value == _newUpdates) return;
+                _newUpdates = value;
+                SetCategory("update", value);
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Not touched by class at all. It's intended to be set to true when you have notified the user about updates.
         /// </summary>
-        [XmlIgnore]
         public bool Notified
         {
             get { return _notified; }

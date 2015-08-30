@@ -83,7 +83,6 @@ namespace SjUpdater.Model
         /// <summary>
         /// Is set to true when the episode is new. Reset this to false, yourself
         /// </summary>
-        [XmlIgnore]
         public bool NewEpisode
         {
             get { return _newEpisode; }
@@ -98,7 +97,6 @@ namespace SjUpdater.Model
         /// <summary>
         /// Is set to true when the episode received a new Download. Reset this to false, yourself
         /// </summary>
-        [XmlIgnore]
         public bool NewUpdate
         {
             get { return _newUpdate; }
