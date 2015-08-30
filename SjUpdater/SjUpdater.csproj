@@ -176,7 +176,6 @@
     <Compile Include="Utils\timehelper.cs" />
     <Compile Include="Utils\TreeViewExtensions.cs" />
     <Compile Include="Utils\UploadCache.cs" />
-    <Compile Include="Utils\VisibilityAnimation.cs" />
     <Compile Include="ViewModel\EpisodeViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\MultiSelectionViewModel.cs" />

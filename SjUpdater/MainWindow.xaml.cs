@@ -278,9 +278,11 @@ namespace SjUpdater
             OnShowViewClicked(showView);
         }
 
+        private ShowTileViewModel _lastClickedTileVm = null;
         private void OnShowViewClicked(ShowTileViewModel showTileView)
         {
             var showView = showTileView.ShowViewModel;
+            _lastClickedTileVm = showTileView;
             _selectedEpisodeTreeItems.Clear();
             ShowGrid.DataContext = showView;
             FilterFlyout.DataContext = showView;
@@ -304,6 +306,16 @@ namespace SjUpdater
             p.Start();
             Stats.TrackAction(Stats.TrackActivity.Browse, "Home");
         }
+
+        private void GithubClicked(object sender, RoutedEventArgs e)
+        {
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo("https://github.com/Dreamcooled/sjupdater");
+            p.Start();
+            Stats.TrackAction(Stats.TrackActivity.Browse, "Github");
+        }
+
+
         private async void ShowDelete(object sender, RoutedEventArgs e)
         {
             var res = await this.ShowMessageAsync("Remove Show?", "Do you really want to remove this show from your favorites?",
@@ -357,9 +369,11 @@ namespace SjUpdater
 
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
-            var show = ((ShowViewModel)ShowGrid.DataContext).Show;
+            //The following block is a bit hacky. but still easier than to subscribe on the changed events of every episode
+            var show = _lastClickedTileVm.Show;
             show.NewEpisodes = show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewEpisode));
             show.NewUpdates= show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewUpdate));
+            _lastClickedTileVm.RecalcNextPrevEpText();
             SwitchPage(0);
         }
 

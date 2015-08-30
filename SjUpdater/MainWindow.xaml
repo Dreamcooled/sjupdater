@@ -22,21 +22,21 @@
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
-            <Button Click="OpenHomepage" ToolTip="Open serienjunkies.org">
-                <Rectangle Width="15" Height="15"
-                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Stretch="Fill"
-                            Visual="{StaticResource appbar_browser}" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>
-            </Button>
             <Button Click="ReloadAll" ToolTip="Recheck all">
                 <Rectangle Width="17" Height="20"
                     Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                         <VisualBrush Stretch="Fill"
                             Visual="{StaticResource appbar_refresh}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+            <Button Click="OpenHomepage" ToolTip="Open serienjunkies.org">
+                <Rectangle Width="15" Height="15"
+                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                            Visual="{StaticResource appbar_browser}" />
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
@@ -49,6 +49,15 @@
                         HorizontalAlignment="Right"
                         Fill="{Binding RelativeSource={RelativeSource AncestorType=controls:WindowCommands}, Path=Foreground}"
                         Margin="8,0,0,0" />
+            <Button Click="GithubClicked" ToolTip="Show Project on Github">
+                <Rectangle Width="24" Height="20"
+                   Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                         Visual="{StaticResource appbar_social_github_octocat_solid}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
             <Button Click="SettingsClicked" ToolTip="Settings">
                 <Rectangle Width="20" Height="20"
                    Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
@@ -197,8 +206,7 @@
                     </taskbarNotification:TaskbarIcon.ContextMenu>
                 </taskbarNotification:TaskbarIcon>
 
-                <ScrollViewer Margin="10,0,3,0" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-
+                <ScrollViewer Margin="10,0,3,0" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="0,3">
                     <ItemsControl ItemsSource="{Binding Categories}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -208,7 +216,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type viewModel:ShowCategory}">
                                 <StackPanel Orientation="Vertical">
-                                    <Label FontSize="20pt" Content="{Binding Description}" />
+                                    <Label FontSize="20pt" Content="{Binding Description}" Margin="0,-5,0,0"/>
                                     <ItemsControl ItemsSource="{Binding Shows}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -217,29 +225,15 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.Resources>
                                         <Style TargetType="{x:Type controls:Tile}">
-                                            <Setter Property="Foreground" Value="White" />
-                                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                                             <Setter Property="HorizontalContentAlignment" Value="Center" />
                                             <Setter Property="VerticalContentAlignment" Value="Center" />
-                                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type controls:Tile}">
                                                         <Grid Background="{TemplateBinding Background}">
                                                             <ContentPresenter RecognizesAccessKey="True" />
                                                         </Grid>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsPressed" Value="True">
-                                                                <Setter Property="RenderTransform">
-                                                                    <Setter.Value>
-                                                                        <ScaleTransform ScaleX="0.98"
-                                                                    ScaleY="0.98"
-                                                                    CenterX="0.5"
-                                                                    CenterY="0.5" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -247,69 +241,60 @@
                                     </ItemsControl.Resources>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type viewModel:ShowTileViewModel}">
-                                            <controls:Tile Width="240" Height="120" x:Name="tile" Title="{Binding Title}"
-                                       Command="{Binding ShowClickedCommand, ElementName=Window}"
-                                       CommandParameter="{Binding}" Background="{DynamicResource ControlBackgroundBrush}">
-                                                <Grid>
-                                                    <Image Source="{Binding Background.ImageSource}" Visibility="{Binding BackgroundImageVisibility}" Stretch="UniformToFill" Opacity="0.9" />
-                                                    <!--<Rectangle Fill="{DynamicResource AccentColorBrush3}" Visibility="{Binding BackgroundRectangleVisibility}">
-                                        <Rectangle.Effect>
-                                            <BlurEffect Radius="2"/>
-                                        </Rectangle.Effect>
-                                    </Rectangle>-->
-                                                    <controls:ProgressRing Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White" />
+                                            <controls:Tile Width="240" Height="115" x:Name="tile" Title="{Binding Title}" Command="{Binding ShowClickedCommand, ElementName=Window}" CommandParameter="{Binding}">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="25" />
+                                                            <RowDefinition Height="90" />
+                                                        </Grid.RowDefinitions>
+                                                        <Label Grid.Row="0" VerticalAlignment="Center" Content="{Binding Title}" Padding="5,0" FontSize="15px" FontWeight="DemiBold"/>
 
-                                                    <Grid utils:VisibilityAnimation.IsActive="True">
-                                                        <Grid.Style>
+                                                        <Image Grid.Row="1" Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.85"  />
+                                                        <controls:ProgressRing Grid.Row="1" Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White"/>
+                                                        
+                                                        <Grid Grid.Row="1">
+                                                            <Grid.Style>
                                                             <Style TargetType="{x:Type Grid}">
                                                                 <Style.Setters>
                                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                                 </Style.Setters>
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid},
-                                            Path=IsMouseOver}" Value="True">
+                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
                                                                         <Setter Property="Visibility" Value="Visible"/>
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </Grid.Style>
-                                                        <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8">
-                                                            <Rectangle.Effect>
-                                                                <BlurEffect Radius="2"/>
-                                                            </Rectangle.Effect>
-                                                        </Rectangle>
-                                                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0" VerticalAlignment="Top"
-                                            HorizontalAlignment="Stretch">
-                                                            <TextBlock
-                                                    HorizontalAlignment="Left"
-                                                    VerticalAlignment="Center"
-                                                    Text="{Binding Title}" FontSize="18pt" Padding="5,0" 
-                                                    TextTrimming="CharacterEllipsis" Foreground="{DynamicResource BlackColorBrush}" />
+                                                            <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8" />
+                                                            <Label HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5" Content="{Binding NumberText}" />
+                                                            <StackPanel  VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                                                                <Label HorizontalAlignment="Left" VerticalAlignment="Center"  Padding="5,0" Content="{Binding NextText}" /> 
+                                                                <Label HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5,0,5,5" Content="{Binding PrevText}" />
+                                                            </StackPanel>
+                                                        </Grid>
 
-                                                            <Label
-                                                    HorizontalAlignment="Left"
-                                                    VerticalAlignment="Center" Padding="5,0"
-                                                    Content="{Binding NumberText}">
-                                                            </Label>
-
-                                                        </StackPanel>
-                                                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0" VerticalAlignment="Bottom"
-                                                         HorizontalAlignment="Stretch">
-                                                            <Label HorizontalAlignment="Left"
-                                                        VerticalAlignment="Center"  Padding="5,0"
-                                                        Content="{Binding NextText}" >
-                                                            </Label>
-                                                            <Label HorizontalAlignment="Left"
-                                                       VerticalAlignment="Center" Padding="5,0,5,5"
-                                                       Content="{Binding PrevText}" >
-                                                            </Label>
-                                                        </StackPanel>
+                                                        <Grid Grid.Row="1" VerticalAlignment="Bottom">
+                                                            <Grid.Style>
+                                                                <Style TargetType="{x:Type Grid}">
+                                                                    <Style.Setters>
+                                                                        <Setter Property="Visibility" Value="{Binding BottomVisible}"/>
+                                                                    </Style.Setters>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid},Path=IsMouseOver}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Grid.Style>
+                                                            <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8" VerticalAlignment="Bottom" Height="18pt" />
+                                                            <Label Content="{Binding BottomText}"/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
                                             </controls:Tile>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                    <Separator/>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -401,7 +386,7 @@
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type TreeViewItem}">
@@ -604,7 +589,7 @@
                                 <Button HorizontalAlignment="Right" Grid.Row="3"  Content="Show Detailed" Margin="10,5" Click="NoneShowAllDownloads" x:Name="NoneShowAllDownloadsButton"/>
 
                                 <Popup Grid.Row="3" StaysOpen="False" x:Name="NonePopup" 
-                                       PlacementTarget="{Binding ElementName=NoneShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62">
+                                       PlacementTarget="{Binding ElementName=NoneShowAllDownloadsButton}" Placement="Left" HorizontalOffset="62" >
                                     <Border BorderBrush="{DynamicResource LabelTextBrush}" BorderThickness="1" Background="{DynamicResource AccentColorBrush3}" >
                                         <Grid>
                                             <Grid.RowDefinitions>
@@ -890,8 +875,6 @@
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
                         </Grid>
 
-                        <CheckBox Content="Sort Tv Shows Alphabetically" Margin="0,2"
-                              IsChecked="{Binding SortShowsAlphabetically}" />
                         <CheckBox Content="Sort Seasons Descending"  Margin="0,2"
                               IsChecked="{Binding SortSeasonsDesc}" />
                         <CheckBox Content="Sort Episodes Descending"  Margin="0,2"
@@ -899,7 +882,7 @@
                         <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2"
                               IsChecked="{Binding MarkSubbedAsGerman}" />
                         
-                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="0,2" />
+                        <!--<CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="0,2" />-->
 
                         <CheckBox Content="Enable Favorizing of Uploads" IsChecked="{Binding UseFavorites}"   Margin="0,2" />
 
@@ -964,6 +947,7 @@
                             <ColumnDefinition Width="50*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

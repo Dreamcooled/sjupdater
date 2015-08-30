@@ -20,6 +20,7 @@ namespace SjUpdater.ViewModel
         private readonly ObservableCollection<EpisodeViewModel> _lisEpisodes;
         private readonly FavSeasonData _season;
         private readonly Dispatcher _dispatcher;
+        private bool _isExpanded;
         private static readonly Comparer<EpisodeViewModel> EpisodeComparer =
            Comparer<EpisodeViewModel>.Create(delegate(EpisodeViewModel m1, EpisodeViewModel m2)
            {
@@ -83,6 +84,16 @@ namespace SjUpdater.ViewModel
             get { return "Season " + _season.Number; }
         }
 
+        public bool IsExpanded
+        {
+            get { return _isExpanded; }
+            set
+            {
+                if (value == _isExpanded) return;
+                _isExpanded = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         public ICommand DownloadCommand { get; private set; }

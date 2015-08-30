@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
+using SjUpdater.Annotations;
 using SjUpdater.Model;
 using SjUpdater.Utils;
 
@@ -14,7 +16,8 @@ namespace SjUpdater.ViewModel
         private String _numberText;
         private String _nextText;
         private String _prevText;
-        private Visibility _newEpisodesVisible = Visibility.Collapsed;
+        private String _bottomText;
+        private Visibility _bottomVisible = Visibility.Collapsed;
         private Visibility _isLoadingVisible = Visibility.Collapsed;
         private ShowViewModel _showViewModel;
         private readonly Dispatcher _dispatcher;
@@ -25,52 +28,51 @@ namespace SjUpdater.ViewModel
             _show = show;
            // _showViewModel  = new ShowViewModel(_show);
         
-
             Title= _show.Name;
             IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
             RecalcText();
             RecalcNextPrevEpText();
-            if (!String.IsNullOrWhiteSpace(_show.Cover))
-                Background = new CachedBitmap(_show.Cover);
-            else
-                Background = null;
+            Background = !String.IsNullOrWhiteSpace(_show.Cover) ? new CachedBitmap(_show.Cover) : null;
             _show.PropertyChanged += _show_PropertyChanged;
 
         }
 
         void _show_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(FavShowData.Name))
-            { 
-                Title = _show.Name;
-            } 
-            else if (e.PropertyName == nameof(FavShowData.Cover))
+            switch (e.PropertyName)
             {
-                _dispatcher.Invoke(delegate
-                {
-                    Background = new CachedBitmap(_show.Cover);
-                });
-
-            } else if (e.PropertyName == nameof(FavShowData.NumberOfEpisodes) || e.PropertyName == nameof(FavShowData.NumberOfSeasons))
-            {
-                RecalcText();
-            } else if (e.PropertyName == nameof(FavShowData.NewEpisodes))
-            {
-                NewEpisodesVisible = (_show.NewEpisodes) ? Visibility.Visible : Visibility.Collapsed;
-            } else if (e.PropertyName == nameof(FavShowData.IsLoading))
-            {
-                IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
-            } else if (e.PropertyName == nameof(FavShowData.Status) || e.PropertyName.StartsWith("NextEpisode") ||
-                       e.PropertyName.StartsWith("PreviousEpisode"))
-            {
-                RecalcNextPrevEpText();
+                case nameof(FavShowData.Name):
+                    Title = _show.Name;
+                    break;
+                case nameof(FavShowData.Cover):
+                    _dispatcher.Invoke(delegate
+                    {
+                        Background = new CachedBitmap(_show.Cover);
+                    });
+                    break;
+                case nameof(FavShowData.NumberOfEpisodes):
+                case nameof(FavShowData.NumberOfSeasons):
+                    RecalcText();
+                    break;
+                case nameof(FavShowData.IsLoading):
+                    IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
+                    break;
+                default:
+                    if (e.PropertyName == nameof(FavShowData.Status) || e.PropertyName.StartsWith("NextEpisode") ||
+                        e.PropertyName.StartsWith("PreviousEpisode") || e.PropertyName == nameof(FavShowData.NewEpisodes) || e.PropertyName == nameof(FavShowData.NewUpdates))
+                    {
+                        RecalcNextPrevEpText();
+                    }
+                    break;
             }
         }
 
-        private void RecalcNextPrevEpText()
+        public void RecalcNextPrevEpText()
         {
             String next="";
             String prev = "";
+            Visibility bottomVis = Visibility.Collapsed;
+            String bottomText ="";
             if (_show.Status == null) return;
             if (_show.Status == "Ended" || _show.Status == "Cancelled")
             {
@@ -108,7 +110,9 @@ namespace SjUpdater.ViewModel
                 {
                     next += "in "+ ts.Days/360+" years";
                 }
-
+            
+                bottomText = next;
+                bottomVis = Visibility.Visible;
             }
             else if(_show.Status == "Returning Series")
             {
@@ -142,9 +146,46 @@ namespace SjUpdater.ViewModel
                     prev += ts.Days / 360 + " years ago";
                 }
             }
-            
+
+            const int numEpUpdates = 4;
+
+            if (_show.NewEpisodes)
+            {
+                var eps = _show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewEpisode)).ToList();
+                if (eps.Any())
+                {
+                    bottomText = "New:";
+                    bottomVis = Visibility.Visible;
+                    for (int i = 0; i < Math.Min(numEpUpdates, eps.Count); i++)
+                    {
+                        bottomText += " S" + eps[i].Season.Number + "E" + eps[i].Number;
+                    }
+                    if (eps.Count > numEpUpdates) bottomText += "...";
+
+                    if (Show.NewUpdates)
+                    {
+                        bottomText += " +Updates";
+                    }
+                }
+            } else if (_show.NewUpdates)
+            {
+                var eps = _show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewUpdate)).ToList();
+                if (eps.Any())
+                {
+                    bottomText = "Updated:";
+                    bottomVis = Visibility.Visible;
+                    for (int i = 0; i < Math.Min(numEpUpdates, eps.Count); i++)
+                    {
+                        bottomText += " S" + eps[i].Season.Number + "E" + eps[i].Number;
+                    }
+                    if (eps.Count > numEpUpdates) bottomText += "...";
+                }
+            }
+
             NextText = next;
             PrevText = prev;
+            BottomText = bottomText;
+            BottomVisible = bottomVis;
         }
 
         private void RecalcText()
@@ -157,15 +198,9 @@ namespace SjUpdater.ViewModel
         }
 
 
-        public FavShowData Show
-        {
-            get { return _show; }
-        }
+        public FavShowData Show => _show;
 
-        public ShowViewModel ShowViewModel
-        {
-            get { return _showViewModel ?? (_showViewModel = new ShowViewModel(_show)); }
-        }
+        public ShowViewModel ShowViewModel => _showViewModel ?? (_showViewModel = new ShowViewModel(_show));
 
         public string NumberText
         {
@@ -197,14 +232,22 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        public Visibility NewEpisodesVisible
+        public String BottomText
         {
-            get { return _newEpisodesVisible; }
-
-            private set
+            get { return _bottomText;}
+            set
             {
-                _newEpisodesVisible = value;
+                _bottomText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility BottomVisible
+        {
+            get { return _bottomVisible;}
+            set
+            {
+                _bottomVisible = value;
                 OnPropertyChanged();
             }
         }
@@ -242,11 +285,5 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        public Visibility BackgroundImageVisibility
-        { get { return Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Collapsed; } }
-
-        public Visibility BackgroundRectangleVisibility
-        { get { return Settings.Instance.EnableImages ? Visibility.Collapsed : Visibility.Visible; } }
     }
 }

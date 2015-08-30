@@ -115,7 +115,7 @@ namespace SjUpdater.ViewModel
         public ICommand DownloadCommand { get; private set; }
         public ICommand ShowInfoCommand { get; private set; }
 
-        public FavEpisodeData Episode { get { return _favEpisodeData; } }
+        public FavEpisodeData Episode => _favEpisodeData;
 
 
         public CachedBitmap Photo
@@ -208,10 +208,7 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public int Number
-        {
-            get { return _favEpisodeData.Number; }
-        }
+        public int Number => _favEpisodeData.Number;
 
         public string Languages
         {
@@ -291,13 +288,7 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public bool UseFavorites
-        {
-            get
-            {
-                return Settings.Instance.UseFavorites;   
-            }
-        }
+        public bool UseFavorites => Settings.Instance.UseFavorites;
 
         public Visibility ShowNoFavUploadsWarning
         {
@@ -312,9 +303,8 @@ namespace SjUpdater.ViewModel
             }
         }
 
-        public ObservableCollection<DownloadData> Downloads
-        {
-            get { return _favEpisodeData.Downloads; }
-        }
+        public ObservableCollection<DownloadData> Downloads => _favEpisodeData.Downloads;
+
+        public bool IsExpanded => false;
     }
 }

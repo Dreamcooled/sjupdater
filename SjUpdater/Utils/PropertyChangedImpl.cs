@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
+using SjUpdater.Annotations;
 
 namespace SjUpdater.Utils
 {
@@ -51,6 +52,7 @@ namespace SjUpdater.Utils
         /// Raises this object's PropertyChanged event.
         /// </summary>
         /// <param name="propertyName">The property that has a new value.</param>
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             this.VerifyPropertyName(propertyName);

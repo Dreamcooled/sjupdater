@@ -59,6 +59,11 @@ namespace SjUpdater.ViewModel
                 _lisSeasons.Add(x);
             }
             _lisSeasons.Sort(SeasonComparer);
+            var first = _lisSeasons.FirstOrDefault();
+            if (first != null)
+            {
+                first.IsExpanded = true;
+            }
 
             foreach (DownloadData nonSeason in show.NonSeasons)
             {

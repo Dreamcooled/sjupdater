@@ -153,10 +153,6 @@ namespace SjUpdater
         /// </summary>
         public bool SortEpisodesDesc { get; set; }
 
-        /// <summary>
-        /// Wheather to sort the Shows alphabetically or by new/old
-        /// </summary>
-        public bool SortShowsAlphabetically { get; set; }
 
         /// <summary>
         /// The Numer of Threads used to fetch updates on programm start

@@ -174,6 +174,9 @@ namespace SjUpdater.Model
             ObservableCollection<FavSeasonData> newSeasons = new ObservableCollection<FavSeasonData>();
             ObservableCollection<DownloadData> newNonSeasons = new ObservableCollection<DownloadData>();
 
+            bool setNewEpisodes = false;
+            bool setNewUpdates = false;
+
             if (_isNewShow) notifications = false;
             reset = reset || _isNewShow;
             if (!reset)
@@ -334,7 +337,7 @@ namespace SjUpdater.Model
 
                     if (notifications && !existed) {
                         currentFavEpisode.NewEpisode = true;
-                        NewEpisodes = true;
+                        setNewEpisodes = true;
                     }
             
                     currentFavSeason.Episodes.Add(currentFavEpisode);
@@ -364,7 +367,7 @@ namespace SjUpdater.Model
                         if (notifications && (oldEpisode==null ||  (!oldEpisode.NewEpisode && oldEpisode.Downloads.All(d => d.Title != download.Title))))
                         {
                             currentFavEpisode.NewUpdate = true;
-                            NewUpdates = true;
+                            setNewUpdates = true;
                         }
                         currentFavEpisode.Downloads.Add(download);
                     }
@@ -385,6 +388,8 @@ namespace SjUpdater.Model
                 }
             }
 
+            if (setNewEpisodes) NewEpisodes = true;
+            if (setNewUpdates) NewUpdates = true;
 
             RecalcNumbers();
             _mutexFilter.ReleaseMutex();
