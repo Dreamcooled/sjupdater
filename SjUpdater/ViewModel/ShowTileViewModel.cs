@@ -78,7 +78,7 @@ namespace SjUpdater.ViewModel
             String bottomText ="";
             String newsText = "";
             if (_show.Status == null) return;
-            if (_show.Status == "Ended" || _show.Status == "Cancelled")
+            if (_show.Status == "Ended" || _show.Status == "Canceled")
             {
                 next = "Show Ended";
                 prev = "Final Episode aired ";

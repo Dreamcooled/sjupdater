@@ -119,9 +119,8 @@ namespace SjUpdater.Provider
                         first = false;
                         lastEpisodeNr = seasoninfo.Episodes[curEpisodeIdx].EpisodeNumber;
                         lastEpisodeDateTime = seasoninfo.Episodes[curEpisodeIdx].AirDate;
+                        lastSeasonNr = showinfo.Seasons[curSeasonIdx].SeasonNumber;
                     }
-
-                    lastSeasonNr = showinfo.Seasons[curSeasonIdx].SeasonNumber;
                 }
             }
             return si;
