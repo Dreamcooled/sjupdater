@@ -1,16 +1,22 @@
 #filename:md5hash
 
 Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
+HtmlAgilityPack.dll:ca2b33482d2c53db9b249d21ee97a74b
 MahApps.Metro.dll:e438a28d505850f8f83e312f342d6c53
 RestSharp.dll:33d116ac4b9b681570b805412f242eed
-SjUpdater.exe:6762ee0ca15238cc56f54c563fbec422
+SjUpdater.exe:e0b4377363d58c359fa4e69b2477d94b
 SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
 System.Windows.Interactivity.dll:580244bc805220253a87196913eb3e5e
-TMDbLib.dll:1df26aca1f2c563f1999b4da53e4c329
+TMDbLib.dll:d59c9b8937288d1bf35f28c75cb8bfb7
 
 
 
 [###CHANGELOG###]
+
+v0.40 (2015-08-31)
+- Improved Parser (New Implementation based on Xpath instead of Regex)
+- New Homescreen (Hotfix will follow)
+- Minor other fixes and performance improvements
 
 v0.31.1 (2015-07-19)
 - Hotfix for v0.31 to cope with slow servers.
