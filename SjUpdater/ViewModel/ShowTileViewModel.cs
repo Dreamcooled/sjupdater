@@ -272,11 +272,14 @@ namespace SjUpdater.ViewModel
 
         public Visibility BottomVisible
         {
-            get { return _bottomVisible;}
+            get { return _bottomVisible; }
             set
             {
-                _bottomVisible = value;
-                OnPropertyChanged();
+                if (Settings.Instance.EnableImages)
+                {
+                    _bottomVisible = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -313,5 +316,9 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public Visibility BackgroundImageVisibility => Settings.Instance.EnableImages? Visibility.Visible : Visibility.Collapsed;
+        public Visibility OverlayDefaultVisibility => Settings.Instance.EnableImages? Visibility.Collapsed : Visibility.Visible;
+
     }
 }

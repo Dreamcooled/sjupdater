@@ -476,6 +476,8 @@ namespace SjUpdater
             {
                 var vm = FilterFlyout.DataContext as ShowViewModel;
                 vm.Show.ApplyFilter(true,false);
+                var firstSeason = vm.Seasons.FirstOrDefault();
+                if (firstSeason != null) firstSeason.IsExpanded = true;
                 Stats.TrackAction(Stats.TrackActivity.Filter);
             }
 

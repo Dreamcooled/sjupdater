@@ -212,23 +212,11 @@ namespace SjUpdater.ViewModel
         }
 
 
-        public ObservableCollection<SeasonViewModel> Seasons
-        {
-            get { return _lisSeasons; }
-        }
+        public ObservableCollection<SeasonViewModel> Seasons => _lisSeasons;
 
+        public ObservableCollection<DownloadData> NonSeasons => _lisNonSeasons;
 
-        public ObservableCollection<DownloadData> NonSeasons {
-            get { return _lisNonSeasons; }
-        }
-
-        public String Title
-        {
-            get
-            {
-                return _show.Name;
-            }
-        }
+        public String Title => _show.Name;
 
         public CachedBitmap Cover
         {
@@ -240,6 +228,8 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public Visibility SeasonImageVisibility => Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Collapsed;
 
         public String Description
         {
@@ -328,7 +318,7 @@ namespace SjUpdater.ViewModel
 
   
 
-        public FavShowData Show { get { return _show; } }
+        public FavShowData Show => _show;
 
         public ICommand UnmarkAllCommand { get; private set; }
         public ICommand MarkAllDownloadedCommand { get; private set; }

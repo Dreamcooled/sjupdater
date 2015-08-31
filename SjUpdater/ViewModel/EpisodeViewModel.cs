@@ -117,6 +117,7 @@ namespace SjUpdater.ViewModel
 
         public FavEpisodeData Episode => _favEpisodeData;
 
+        public Visibility EpisodeImageVisibility => Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Collapsed;
 
         public CachedBitmap Photo
         {

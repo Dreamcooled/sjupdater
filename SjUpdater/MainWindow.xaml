@@ -249,14 +249,14 @@
                                                         </Grid.RowDefinitions>
                                                         <Label Grid.Row="0" VerticalAlignment="Center" Content="{Binding Title}" Padding="5,0" FontSize="15px" FontWeight="DemiBold"/>
 
-                                                        <Image Grid.Row="1" Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.85"  />
+                                                        <Image Grid.Row="1" Source="{Binding Background.ImageSource}" Stretch="UniformToFill" Opacity="0.85" Visibility="{Binding BackgroundImageVisibility}" />
                                                         <controls:ProgressRing Grid.Row="1" Margin="25,0,25,0" Visibility="{Binding IsLoadingVisible}" Foreground="White"/>
                                                         
                                                         <Grid Grid.Row="1">
                                                             <Grid.Style>
                                                                 <Style TargetType="{x:Type Grid}">
                                                                     <Style.Setters>
-                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        <Setter Property="Visibility" Value="{Binding OverlayDefaultVisibility}"/>
                                                                     </Style.Setters>
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=IsMouseOver}" Value="True">
@@ -293,7 +293,7 @@
                                                                 </Style>
                                                             </Grid.Style>
                                                             <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8" Height="18pt" />
-                                                            <TextBlock Text="{Binding BottomText}" VerticalAlignment="Center" TextTrimming="WordEllipsis" Padding="5,0" />
+                                                            <TextBlock Text="{Binding BottomText}" VerticalAlignment="Center" Foreground="{DynamicResource BlackColorBrush}" TextTrimming="WordEllipsis" Padding="5,0" />
                                                         </Grid>
                                                     </Grid>
                                             </controls:Tile>
@@ -584,7 +584,7 @@
                                     <RowDefinition Height="Auto" /> <!--- button and header-->
                                     <RowDefinition Height="*"/> <!--- list-->
                                 </Grid.RowDefinitions>
-                                <Image Source="{Binding Cover.ImageSource}" VerticalAlignment="Top" Stretch="Uniform" />
+                                <Image Source="{Binding Cover.ImageSource}" VerticalAlignment="Top" Stretch="Uniform" Visibility="{Binding SeasonImageVisibility}"/>
 
                                 <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Visible">
                                     <TextBlock TextWrapping="Wrap" Text="{Binding Description}"/>
@@ -701,10 +701,10 @@
                                         </Rectangle.OpacityMask>
                                     </Rectangle>
                                 </Grid>
-                                
-                               
 
-                                <Image Grid.Row="1"  Margin="10,5" Source="{Binding Photo.ImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="Uniform" />
+
+
+                                <Image Grid.Row="1"  Margin="10,5" Source="{Binding Photo.ImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="Uniform"  Visibility="{Binding EpisodeImageVisibility}" />
 
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" VerticalAlignment="Top"  Margin="10,5,0,5">
@@ -888,7 +888,7 @@
                         <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2"
                               IsChecked="{Binding MarkSubbedAsGerman}" />
                         
-                        <!--<CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="0,2" />-->
+                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="0,2" />
 
                         <CheckBox Content="Enable Favorizing of Uploads" IsChecked="{Binding UseFavorites}"   Margin="0,2" />
 
