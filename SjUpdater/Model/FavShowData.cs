@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -388,7 +389,11 @@ namespace SjUpdater.Model
                 }
             }
 
-            if (setNewEpisodes) NewEpisodes = true;
+            if (setNewEpisodes)
+            {
+                Notified = false;
+                NewEpisodes = true;
+            }
             if (setNewUpdates) NewUpdates = true;
 
             RecalcNumbers();
@@ -409,6 +414,12 @@ namespace SjUpdater.Model
                 _categories.Remove(cat);
             }
         }
+
+        public void NotifyBigChange()
+        {
+            OnBigChange();
+        }
+
 
         public ShowData Show
         {

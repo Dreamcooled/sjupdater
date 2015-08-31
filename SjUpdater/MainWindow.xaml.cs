@@ -278,11 +278,9 @@ namespace SjUpdater
             OnShowViewClicked(showView);
         }
 
-        private ShowTileViewModel _lastClickedTileVm = null;
         private void OnShowViewClicked(ShowTileViewModel showTileView)
         {
             var showView = showTileView.ShowViewModel;
-            _lastClickedTileVm = showTileView;
             _selectedEpisodeTreeItems.Clear();
             ShowGrid.DataContext = showView;
             FilterFlyout.DataContext = showView;
@@ -370,10 +368,10 @@ namespace SjUpdater
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
             //The following block is a bit hacky. but still easier than to subscribe on the changed events of every episode
-            var show = _lastClickedTileVm.Show;
+            var show = ((ShowViewModel) ShowGrid.DataContext).Show;
             show.NewEpisodes = show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewEpisode));
             show.NewUpdates= show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewUpdate));
-            _lastClickedTileVm.RecalcNextPrevEpText();
+            show.NotifyBigChange();
             SwitchPage(0);
         }
 

@@ -67,8 +67,12 @@ namespace SjUpdater.Utils
              //   _dispatcher.BeginInvoke(new Action(() => handler(this, e)));
         }
 
+        protected void OnBigChange()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+        }
+
         #endregion // INotifyPropertyChanged Members
 
-   
     }
 }

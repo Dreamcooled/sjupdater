@@ -130,7 +130,6 @@
     <Compile Include="Model\FavShowData.cs" />
     <Compile Include="Model\SeasonData.cs" />
     <Compile Include="Model\ShowData.cs" />
-    <Compile Include="Model\SjDeReview.cs" />
     <Compile Include="Model\UploadData.cs" />
     <Compile Include="MultiDownloadSelectionCell.xaml.cs">
       <DependentUpon>MultiDownloadSelectionCell.xaml</DependentUpon>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
@@ -17,6 +19,7 @@ namespace SjUpdater.ViewModel
         private String _nextText;
         private String _prevText;
         private String _bottomText;
+        private String _newsText;
         private Visibility _bottomVisible = Visibility.Collapsed;
         private Visibility _isLoadingVisible = Visibility.Collapsed;
         private ShowViewModel _showViewModel;
@@ -58,7 +61,7 @@ namespace SjUpdater.ViewModel
                     IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
                     break;
                 default:
-                    if (e.PropertyName == nameof(FavShowData.Status) || e.PropertyName.StartsWith("NextEpisode") ||
+                    if (String.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(FavShowData.Status) || e.PropertyName.StartsWith("NextEpisode") ||
                         e.PropertyName.StartsWith("PreviousEpisode") || e.PropertyName == nameof(FavShowData.NewEpisodes) || e.PropertyName == nameof(FavShowData.NewUpdates))
                     {
                         RecalcNextPrevEpText();
@@ -73,6 +76,7 @@ namespace SjUpdater.ViewModel
             String prev = "";
             Visibility bottomVis = Visibility.Collapsed;
             String bottomText ="";
+            String newsText = "";
             if (_show.Status == null) return;
             if (_show.Status == "Ended" || _show.Status == "Cancelled")
             {
@@ -93,23 +97,7 @@ namespace SjUpdater.ViewModel
                 {
                     next = "S" + _show.NextEpisodeSeasonNr + "E" + _show.NextEpisodeEpisodeNr + " airs ";
                 }
-                TimeSpan ts = _show.NextEpisodeDate.Value - DateTime.Today;
-                if (ts.Days == 1)
-                {
-                    next += "tomorrow";
-                }
-                else if (ts.Days < 30)
-                {
-                    next += "in " + ts.Days + " days";
-                }
-                else if (ts.Days < 360)
-                {
-                    next += "in " + ts.Days/30 + " months";
-                }
-                else
-                {
-                    next += "in "+ ts.Days/360+" years";
-                }
+                next += FormatDate(_show.NextEpisodeDate.Value);
             
                 bottomText = next;
                 bottomVis = Visibility.Visible;
@@ -125,46 +113,22 @@ namespace SjUpdater.ViewModel
                 {
                     prev = "S" + _show.PreviousEpisodeSeasonNr + "E" + _show.PreviousEpisodeEpisodeNr + " aired ";
                 }
-                TimeSpan ts = DateTime.Today -_show.PreviousEpisodeDate.Value;
-                if (ts.Days == 0)
-                {
-                    prev = "today";
-                } else if (ts.Days == 1)
-                {
-                    prev += "yesterday";
-                }
-                else if (ts.Days < 30)
-                {
-                    prev += ts.Days + " days ago";
-                }
-                else if (ts.Days < 360)
-                {
-                    prev += ts.Days / 30 + " months ago";
-                }
-                else
-                {
-                    prev += ts.Days / 360 + " years ago";
-                }
+                prev += FormatDate(_show.PreviousEpisodeDate.Value);
             }
-
-            const int numEpUpdates = 4;
 
             if (_show.NewEpisodes)
             {
                 var eps = _show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewEpisode)).ToList();
                 if (eps.Any())
                 {
-                    bottomText = "New:";
+                    bottomText = "New:" + FormatEpisodes(eps, 4);
                     bottomVis = Visibility.Visible;
-                    for (int i = 0; i < Math.Min(numEpUpdates, eps.Count); i++)
-                    {
-                        bottomText += " S" + eps[i].Season.Number + "E" + eps[i].Number;
-                    }
-                    if (eps.Count > numEpUpdates) bottomText += "...";
-
+                    newsText = "New:" + FormatEpisodes(eps, 6);
                     if (Show.NewUpdates)
                     {
                         bottomText += " +Updates";
+                        newsText += "\r\nUpdated:";
+                        newsText += FormatEpisodes(_show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewUpdate)).ToList(), 5);
                     }
                 }
             } else if (_show.NewUpdates)
@@ -172,20 +136,73 @@ namespace SjUpdater.ViewModel
                 var eps = _show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewUpdate)).ToList();
                 if (eps.Any())
                 {
-                    bottomText = "Updated:";
+                    bottomText = "Updated:" + FormatEpisodes(eps, 4);
+                    newsText += "Updated:" + FormatEpisodes(eps, 6);
                     bottomVis = Visibility.Visible;
-                    for (int i = 0; i < Math.Min(numEpUpdates, eps.Count); i++)
-                    {
-                        bottomText += " S" + eps[i].Season.Number + "E" + eps[i].Number;
-                    }
-                    if (eps.Count > numEpUpdates) bottomText += "...";
                 }
             }
 
             NextText = next;
             PrevText = prev;
+            NewsText = newsText;
             BottomText = bottomText;
             BottomVisible = bottomVis;
+        }
+
+        /// <summary>
+        /// Formats a date relativ to today
+        /// Example output: today, tomorrow, yesterday, 5 days ago, in 3 days, in 3 months, 1 year ago, in 10 years
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        private string FormatDate(DateTime t)
+        {
+            string text = "";
+            int days = (DateTime.Today - t.Date).Days;
+            bool future = t.Date > DateTime.Today;
+            if (days==0) return "today";
+            if (future)
+            {
+                text = "in ";
+                days = (t.Date - DateTime.Today).Days;
+            }
+            if (days == 1) return future ? "tomorrow" : "yesterday";
+            if (days < 30)
+            {
+                text += days + " days";
+            } else if (days < 360)
+            {
+                int months = days/30;
+                text += months + " month";
+                if (months > 1) text += "s";
+            }
+            else
+            {
+                int years = days/360;
+                text += years + " year";
+                if (years > 1) text += "s";
+            }
+
+            if (!future) text += " ago";
+            return text;
+        }
+
+        /// <summary>
+        /// Formats the shortnames of a bunch of episodes
+        /// Example output: "S1E2 S3E4 ..."
+        /// </summary>
+        /// <param name="eps"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        private string FormatEpisodes(List<FavEpisodeData> eps, int max)
+        {
+            string text = "";
+            for (int i = 0; i < Math.Min(max, eps.Count); i++)
+            {
+                text += " S" + eps[i].Season.Number + "E" + eps[i].Number;
+            }
+            if (eps.Count > max) text += "...";
+            return text;
         }
 
         private void RecalcText()
@@ -232,6 +249,17 @@ namespace SjUpdater.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public String NewsText
+        {
+            get { return _newsText;}
+            private set
+            {
+                _newsText = value;
+                OnPropertyChanged();
+            }
+        }
+
         public String BottomText
         {
             get { return _bottomText;}
