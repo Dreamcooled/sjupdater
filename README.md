@@ -6,7 +6,7 @@ Any contribution would be highly appreciated.
 
 
 #### Download
-Binaries of current version v0.40 (needs .NET 4.5): 
+Binaries of current version v0.41 (needs .NET 4.5): 
 #####https://github.com/Dreamcooled/sjupdater/releases/
 
 
