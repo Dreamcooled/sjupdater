@@ -272,7 +272,7 @@
                                                             </Grid.RowDefinitions>
                                                             <Rectangle Grid.RowSpan="3" Fill="{DynamicResource WhiteBrush}" Opacity="0.8" />
                                                             <Label Grid.Row="0" HorizontalAlignment="Left" Padding="5,5,5,0" Content="{Binding NumberText}" />
-                                                            <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Content ="{Binding NewsText}" Foreground="LimeGreen" FontWeight="Bold" Padding="5,0" />
+                                                            <TextBlock Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text ="{Binding NewsText}" Foreground="LimeGreen" FontWeight="Bold" Padding="5,0" TextTrimming="WordEllipsis"/>
                                                             <StackPanel Grid.Row="2">
                                                                 <Label HorizontalAlignment="Left" VerticalAlignment="Top"  Padding="5,0" Content="{Binding NextText}" />
                                                                 <Label HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,0,5,5" Content="{Binding PrevText}" />
@@ -292,8 +292,8 @@
                                                                     </Style.Triggers>
                                                                 </Style>
                                                             </Grid.Style>
-                                                            <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8" VerticalAlignment="Bottom" Height="18pt" />
-                                                            <Label Content="{Binding BottomText}"/>
+                                                            <Rectangle Fill="{DynamicResource WhiteBrush}" Opacity="0.8" Height="18pt" />
+                                                            <TextBlock Text="{Binding BottomText}" VerticalAlignment="Center" TextTrimming="WordEllipsis" Padding="5,0" />
                                                         </Grid>
                                                     </Grid>
                                             </controls:Tile>

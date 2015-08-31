@@ -121,14 +121,14 @@ namespace SjUpdater.ViewModel
                 var eps = _show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewEpisode)).ToList();
                 if (eps.Any())
                 {
-                    bottomText = "New:" + FormatEpisodes(eps, 4);
+                    bottomText = "New:" + FormatEpisodes(eps, Show.NewUpdates?4:10);
                     bottomVis = Visibility.Visible;
-                    newsText = "New:" + FormatEpisodes(eps, 6);
+                    newsText = "New:" + FormatEpisodes(eps, 10);
                     if (Show.NewUpdates)
                     {
                         bottomText += " +Updates";
                         newsText += "\r\nUpdated:";
-                        newsText += FormatEpisodes(_show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewUpdate)).ToList(), 5);
+                        newsText += FormatEpisodes(_show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewUpdate)).ToList(), 10);
                     }
                 }
             } else if (_show.NewUpdates)
@@ -136,8 +136,8 @@ namespace SjUpdater.ViewModel
                 var eps = _show.Seasons.SelectMany(s => s.Episodes.Where(e => e.NewUpdate)).ToList();
                 if (eps.Any())
                 {
-                    bottomText = "Updated:" + FormatEpisodes(eps, 4);
-                    newsText += "Updated:" + FormatEpisodes(eps, 6);
+                    bottomText = "Updated:" + FormatEpisodes(eps, 10);
+                    newsText += "Updated:" + FormatEpisodes(eps, 10);
                     bottomVis = Visibility.Visible;
                 }
             }
