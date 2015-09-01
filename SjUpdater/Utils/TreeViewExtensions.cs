@@ -248,7 +248,8 @@ namespace SjUpdater.Utils
 
 		static void ItemClicked(object sender, MouseButtonEventArgs e)
 		{
-			TreeViewItem item = FindTreeViewItem(e.OriginalSource);
+            TreeViewItem item = FindTreeViewItem(e.OriginalSource as FrameworkElement);
+            
 			if(item == null)
 				return;
 			TreeView tree = (TreeView)sender;
@@ -300,14 +301,13 @@ namespace SjUpdater.Utils
 			}
 		}
 
-		private static TreeViewItem FindTreeViewItem(object obj)
+		private static TreeViewItem FindTreeViewItem(FrameworkElement obj)
 		{
-			DependencyObject dpObj = obj as DependencyObject;
-			if(dpObj == null)
+			if(obj == null)
 				return null;
-			if(dpObj is TreeViewItem)
-				return (TreeViewItem)dpObj;
-			return FindTreeViewItem(VisualTreeHelper.GetParent(dpObj));
+			if(obj is TreeViewItem)
+				return (TreeViewItem)obj;
+			return FindTreeViewItem(VisualTreeHelper.GetParent(obj) as FrameworkElement);
 		}
 
 

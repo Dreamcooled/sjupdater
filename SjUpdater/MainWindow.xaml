@@ -529,7 +529,7 @@
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="d" />
                                 </Grid.ColumnDefinitions>
                                 <Label Content="{Binding Number}" Grid.Column="0" Margin="-20,0,0,0" Foreground="{DynamicResource DisabledMenuItemForeground}" />
-                                <Label Content="{Binding Title}" Grid.Column="1" />
+                                <TextBlock Text="{Binding Title}" Padding="5" Grid.Column="1" />
                                 
                                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                                     <Label 
