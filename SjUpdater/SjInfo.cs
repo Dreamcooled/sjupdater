@@ -42,34 +42,45 @@ namespace SjUpdater
 
         public static List<KeyValuePair<String, String>> SearchSjOrg(string Title)
         {
-            byte[] data = Encoding.ASCII.GetBytes(WebUtility.HtmlEncode("string=" + Title));
-
-            HttpWebRequest request = WebRequest.CreateHttp("http://serienjunkies.org/media/ajax/search/search.php");
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = data.Length;
-            Stream requestStream = request.GetRequestStream();
-            requestStream.Write(data,0,data.Length);
-            requestStream.Close();
-
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-            StreamReader responseReader = new StreamReader(response.GetResponseStream());
-            string responseContent = responseReader.ReadToEnd();
-            responseReader.Close();
-            response.Close();
-
-            Regex regex = new Regex(@"\[(\d+),""(.*?)""\]");
-            MatchCollection matches = regex.Matches(responseContent);
-
-            List<KeyValuePair<string, string>> resultList = new List<KeyValuePair<string, string>>();
-            for (int i = 0; i < matches.Count; i++)
+            try
             {
-                resultList.Add(new KeyValuePair<string, string>(WebUtility.HtmlDecode(matches[i].Groups[2].Value),
-                    "http://serienjunkies.org/?cat=" + matches[i].Groups[1].Value));
-            }
 
-            return resultList;
+
+                byte[] data = Encoding.ASCII.GetBytes(WebUtility.HtmlEncode("string=" + Title));
+
+                HttpWebRequest request = WebRequest.CreateHttp("http://serienjunkies.org/media/ajax/search/search.php");
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.Method = "POST";
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentLength = data.Length;
+                Stream requestStream = request.GetRequestStream();
+                requestStream.Write(data, 0, data.Length);
+                requestStream.Close();
+
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                StreamReader responseReader = new StreamReader(response.GetResponseStream());
+                string responseContent = responseReader.ReadToEnd();
+                responseReader.Close();
+                response.Close();
+
+                Regex regex = new Regex(@"\[(\d+),""(.*?)""\]");
+                MatchCollection matches = regex.Matches(responseContent);
+
+                List<KeyValuePair<string, string>> resultList = new List<KeyValuePair<string, string>>();
+                for (int i = 0; i < matches.Count; i++)
+                {
+                    resultList.Add(new KeyValuePair<string, string>(WebUtility.HtmlDecode(matches[i].Groups[2].Value),
+                        "http://serienjunkies.org/?cat=" + matches[i].Groups[1].Value));
+                }
+
+                return resultList;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Show Search Request failed. No internet connection?\n" + ex.ToString());
+                return new List<KeyValuePair<string, string>>();
+            }
         }
 
         public static List<DownloadData> ParseSjOrgSite(ShowData showData, out string firstcover, UploadCache uploadCache = null)
