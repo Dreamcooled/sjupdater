@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Serialization;
 using SjUpdater.Provider;
 using SjUpdater.Utils;
 
 namespace SjUpdater.Model
 {
-    public class FavEpisodeData : PropertyChangedImpl
+    public class FavEpisodeData : PropertyChangedImpl,  Database.IDatabaseCompatibility
     {
+        [Key]
+        public int Id { get; set; }
+
         private int _number;
         private bool _newEpisode;
         private bool _newUpdate;
@@ -38,6 +43,9 @@ namespace SjUpdater.Model
             }
         }
 
+        [Required]
+        public int SeasonId { get; set; }
+        [ForeignKey("SeasonId")]
         public FavSeasonData Season
         {
             get { return _season; }
@@ -116,6 +124,28 @@ namespace SjUpdater.Model
                 _downloads = value;
                 OnPropertyChanged();
             }
+        }
+
+        public void ConvertToDatabase()
+        {
+            foreach (DownloadData download in Downloads)
+            {
+                download.ConvertToDatabase();
+            }
+
+            if (EpisodeInformation != null)
+                EpisodeInformation.ConvertToDatabase();
+        }
+
+        public void ConvertFromDatabase()
+        {
+            foreach (DownloadData download in Downloads)
+            {
+                download.ConvertFromDatabase();
+            }
+
+            if (EpisodeInformation != null)
+                EpisodeInformation.ConvertFromDatabase();
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Xml.Serialization;
 using SjUpdater.Provider;
@@ -6,9 +8,12 @@ using SjUpdater.Utils;
 
 namespace SjUpdater.Model
 {
-    public class FavSeasonData :PropertyChangedImpl
+    public class FavSeasonData : PropertyChangedImpl,  Database.IDatabaseCompatibility
     {
-       // private string _name;
+        [Key]
+        public int Id { get; set; }
+
+        // private string _name;
         private int _number;
         private int _numberNonEpisodes;
         private int _numberEpisodes;
@@ -37,6 +42,9 @@ namespace SjUpdater.Model
             }
         }*/
 
+        [Required]
+        public int ShowId { get; set; }
+        [ForeignKey("ShowId")]
         public FavShowData Show
         {
             get { return _show; }
@@ -128,5 +136,30 @@ namespace SjUpdater.Model
             NumberOfNonEpisodes = _nonEpisodes.Count();
         }
 
+        public void ConvertToDatabase()
+        {
+            foreach (FavEpisodeData episode in Episodes)
+            {
+                episode.ConvertToDatabase();
+            }
+
+            foreach (DownloadData nonEpisode in NonEpisodes)
+            {
+                nonEpisode.ConvertToDatabase();
+            }
+        }
+
+        public void ConvertFromDatabase()
+        {
+            foreach (FavEpisodeData episode in Episodes)
+            {
+                episode.ConvertFromDatabase();
+            }
+
+            foreach (DownloadData nonEpisode in NonEpisodes)
+            {
+                nonEpisode.ConvertFromDatabase();
+            }
+        }
     }
 }

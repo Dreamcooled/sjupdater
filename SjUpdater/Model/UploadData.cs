@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace SjUpdater.Model
@@ -11,7 +12,7 @@ namespace SjUpdater.Model
         English = 2,
         Any = German + English
     }
-    public class UploadData
+    public class UploadData : Database.IDatabaseCompatibility
     {
         public UploadData()
         {
@@ -24,6 +25,9 @@ namespace SjUpdater.Model
             Season = null;
             Favorized = false;
         }
+
+        [Key]
+        public int Id { get; set; }
 
         public String Uploader { get; set; }
         public String Format { get; set; }
@@ -57,6 +61,18 @@ namespace SjUpdater.Model
         {
             return Uploader.GetHashCode() ^ Format.GetHashCode() ^ Size.GetHashCode() ^ Runtime.GetHashCode() ^
                 Language.GetHashCode() ^ ((Season==null)?0:Season.Url.GetHashCode());
+        }
+
+        public void ConvertToDatabase()
+        {
+            if (Season != null)
+                Season.ConvertToDatabase();
+        }
+
+        public void ConvertFromDatabase()
+        {
+            if (Season != null)
+                Season.ConvertFromDatabase();
         }
     }
 }

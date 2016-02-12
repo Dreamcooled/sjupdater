@@ -154,7 +154,7 @@ namespace SjUpdater.Provider
             if (client?.Config == null) return null;
             var episodeinfo = client.GetTvEpisode((int) show, season, episode, withImages ? TvEpisodeMethods.Images : TvEpisodeMethods.Undefined);
             if (episodeinfo?.Name == null) return null;
-           
+
             return new EpisodeInformation
             {
                 AirDate =  episodeinfo.AirDate,

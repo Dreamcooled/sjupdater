@@ -130,12 +130,19 @@ namespace SjUpdater.Utils
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            using (FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            try
             {
-                fs.Write(dataHash, 0, dataHash.Length);
+                using (FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(dataHash, 0, dataHash.Length);
 
-                stream.Position = 0;
-                stream.CopyTo(fs);
+                    stream.Position = 0;
+                    stream.CopyTo(fs);
+                }
+            }
+            catch
+            {
+                // Don't worry if we can't write, doesn't affect application function ~Calvin 11-Feb-2016
             }
         }
 

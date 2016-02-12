@@ -14,7 +14,7 @@ using SjUpdater.XML;
 
 namespace SjUpdater
 {
-    public class Settings
+    public class Settings : Database.IDatabaseCompatibility
     {
 
         #region Static Stuff
@@ -23,6 +23,7 @@ namespace SjUpdater
         private ObservableCollection<FavShowData> _tvShows;
         private const string CONFIG = "config.xml";
         private const string CONFIGBAK = "config.xml.autobackup";
+        private const string DBBAKEXTENSION = ".autobackup";
 
 
         static Settings()
@@ -30,6 +31,7 @@ namespace SjUpdater
             if (File.Exists(CONFIG))
             {
                 bool overwrite =false;
+
                 try
                 {
                     setti = Load(CONFIG, out overwrite);
@@ -73,13 +75,61 @@ namespace SjUpdater
                     File.Copy(CONFIG, CONFIGBAK, true); //backup the successfully loadable file.
                 }
             }
-            if(setti==null) //either the user has started the application for the first time or the config could not be loaded
+
+            if (setti==null) //either the user has started the application for the first time or the config could not be loaded
             {
                 setti = new Settings(); //Create a new settings instance/file
                 setti.Save(CONFIG); //and save it
                 File.Copy(CONFIG, CONFIGBAK, true); //backup the new file (paranoid)
             }
 
+            string dbPath = Database.DatabaseWriter.GetDBPath(); // Load database - Calvin 12-Feb-2016
+            string dbBakPath = dbPath + DBBAKEXTENSION;
+            if (File.Exists(dbPath))
+            {
+                try
+                {
+                    Database.DatabaseWriter.LoadFromDatabase(setti);
+                }
+                catch (Exception ex) //eror while loading config (file broken?)
+                {
+                    if (File.Exists(dbBakPath)) //There's a backup, hurray!
+                    {
+                        try
+                        {
+                            File.Copy(dbPath, dbBakPath, true);
+                            Database.DatabaseWriter.LoadFromDatabase(setti); //try to load backup
+                            MessageBox.Show(
+                                "SjUpdater was not terminated properly (" + dbPath + " broken). Old database restored from backup (" + dbBakPath + "). " +
+                                "Submit a Bugreport if you see this message often. Details:\n" + ex,
+                                "SjUpdater was not terminated properly");
+                        }
+                        catch (Exception ex2) //Loading backup failed as well :(
+                        {
+                            MessageBox.Show(
+                             "SjUpdater was not terminated properly (" + dbPath + " broken). Backup (" + dbBakPath + ") couldn't be restored either. " +
+                             "Your database was deleted and you have to start over again :( . " +
+                             "Report the following to the developer:\n" + ex2,
+                             "SjUpdater was not terminated properly");
+                        }
+                    }
+                    else //No Backup available :(
+                    {
+                        MessageBox.Show(
+                               "SjUpdater was not terminated properly (" + dbPath + " broken) and " +
+                               "there was no backup (" + dbBakPath + ") for your dbBakPath available. " +
+                               "Your config was deleted and you have to start over again :( . " +
+                               "Submit a Bugreport if you see this message often. Details:\n" + ex,
+                               "SjUpdater was not terminated properly");
+                    }
+                }
+
+                if (setti != null) //loading ok
+                {
+                    if (File.Exists(dbPath))
+                        File.Copy(dbPath, dbPath + DBBAKEXTENSION, true);
+                }
+            }
         }
 
         public static void Save()
@@ -251,6 +301,7 @@ namespace SjUpdater
             converted = false;
             int actualVersion;
             Settings s = XmlSerialization.LoadFromXml<Settings>(filename, SettingsVersion,out actualVersion);
+
             if (s == null) //version to new
             {
                 converted = true;
@@ -321,7 +372,52 @@ namespace SjUpdater
 
         public void Save(string filename)
         {
-            XmlSerialization.SaveToXml(this,filename,SettingsVersion);
+            bool dbSaved = false;
+            try
+            {
+                Database.DatabaseWriter.SaveToDatabase(this);
+                dbSaved = true;
+            }
+            catch (Exception ex)
+            {
+                // Problem saving to DB, delete broken DB if it exists and save to XML instead - Calvin 12-Feb-2016
+
+                string dbPath = Database.DatabaseWriter.GetDBPath();
+                MessageBox.Show(
+                    "Could not save shows to database (" + dbPath + "), saving to XML file (" + CONFIG + ") instead. " +
+                    "Submit a Bugreport if you see this message often. Details:\n" + ex,
+                    "SjUpdater was not terminated properly");
+
+                if (File.Exists(dbPath))
+                    File.Delete(dbPath);
+            }
+
+            if (dbSaved)
+            {
+                ObservableCollection<FavShowData> temp = TvShows;
+                TvShows = new ObservableCollection<FavShowData>(); // Skip writing shows to xml since they're already written to database - Calvin 12-Feb-2016
+
+                XmlSerialization.SaveToXml(this, filename, SettingsVersion);
+                TvShows = temp;
+            }
+            else
+                XmlSerialization.SaveToXml(this,filename,SettingsVersion);
+        }
+
+        public void ConvertToDatabase()
+        {
+            foreach (FavShowData tvShow in TvShows)
+            {
+                tvShow.ConvertToDatabase();
+            }
+        }
+
+        public void ConvertFromDatabase()
+        {
+            foreach (FavShowData tvShow in TvShows)
+            {
+                tvShow.ConvertFromDatabase();
+            }
         }
     }
 }

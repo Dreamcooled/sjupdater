@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -18,8 +19,11 @@ using SjUpdater.Utils;
 
 namespace SjUpdater.Model
 {
-    public class FavShowData : PropertyChangedImpl
+    public class FavShowData : PropertyChangedImpl, Database.IDatabaseCompatibility
     {
+        [Key]
+        public int Id { get; set; }
+
         private string _name;
         private string _cover;
         private ObservableCollection<FavSeasonData> _seasons;
@@ -575,7 +579,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if (!_filterLanguage.HasValue)
+                if (!_filterLanguage.HasValue && Settings.Instance != null)
                     return Settings.Instance.FilterLanguage;
                 return _filterLanguage;
             }
@@ -592,7 +596,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if(_filterName==null)
+                if(_filterName == null && Settings.Instance != null)
                     return Settings.Instance.FilterName;
                 return _filterName;
             }
@@ -608,7 +612,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if (_filterHoster == null)
+                if (_filterHoster == null && Settings.Instance != null)
                     return Settings.Instance.FilterHoster;
                 return _filterHoster;
             }
@@ -624,7 +628,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if (_filterFormat == null)
+                if (_filterFormat == null && Settings.Instance != null)
                     return Settings.Instance.FilterFormat; 
                 return _filterFormat;
             }
@@ -640,7 +644,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if (_filterUploader == null)
+                if (_filterUploader == null && Settings.Instance != null)
                     return Settings.Instance.FilterUploader; 
                 return _filterUploader;
             }
@@ -656,7 +660,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if (_filterSize == null)
+                if (_filterSize == null && Settings.Instance != null)
                     return Settings.Instance.FilterSize; 
                 return _filterSize;
             }
@@ -672,7 +676,7 @@ namespace SjUpdater.Model
         {
             get
             {
-                if (_filterRuntime == null)
+                if (_filterRuntime == null && Settings.Instance != null)
                     return Settings.Instance.FilterRuntime; 
                 return _filterRuntime;
             }
@@ -792,6 +796,32 @@ namespace SjUpdater.Model
                 if (_previousEpisodeEpisodeNr == value) return;
                 _previousEpisodeEpisodeNr = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public void ConvertToDatabase()
+        {
+            foreach (FavSeasonData season in Seasons)
+            {
+                season.ConvertToDatabase();
+            }
+
+            foreach (DownloadData nonSeason in NonSeasons)
+            {
+                nonSeason.ConvertToDatabase();
+            }
+        }
+
+        public void ConvertFromDatabase()
+        {
+            foreach (FavSeasonData season in Seasons)
+            {
+                season.ConvertFromDatabase();
+            }
+
+            foreach (DownloadData nonSeason in NonSeasons)
+            {
+                nonSeason.ConvertFromDatabase();
             }
         }
     }

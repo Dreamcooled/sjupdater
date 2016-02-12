@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -8,8 +10,11 @@ using System.Xml.Serialization;
 namespace SjUpdater.Provider
 {
 
-    public class ShowInformation
+    public class ShowInformation : Database.IDatabaseCompatibility
     {
+        [Key]
+        public int Id { get; set; }
+
         public String Title { get; set; }
         public String Status { get; set; }
         public int? NumberEpisodes { get; set; }
@@ -30,10 +35,21 @@ namespace SjUpdater.Provider
         public object Posters { get; set; }
         public String Poster { get; set; }
         public String Backdrop { get; set; }
+
+        public void ConvertToDatabase()
+        {
+        }
+
+        public void ConvertFromDatabase()
+        {
+        }
     }
 
-    public class SeasonInformation
+    public class SeasonInformation : Database.IDatabaseCompatibility
     {
+        [Key]
+        public int Id { get; set; }
+
         public String Title { get; set; }
         public String Overview { get; set; }
         public DateTime? AirDate { get; set; }
@@ -46,10 +62,21 @@ namespace SjUpdater.Provider
         public object Posters { get; set; }
         public String Poster { get; set; }
         public String Backdrop { get; set; }
+
+        public void ConvertToDatabase()
+        {
+        }
+
+        public void ConvertFromDatabase()
+        {
+        }
     }
-    public class EpisodeInformation
+    public class EpisodeInformation : Database.IDatabaseCompatibility
     {
-        public String Title{ get; set; }
+        [Key]
+        public int Id { get; set; }
+
+        public String Title { get; set; }
         [XmlIgnore] //To save storage TODO: remove
         public String Overview { get; set; }
         public DateTime? AirDate{ get; set; }
@@ -61,6 +88,13 @@ namespace SjUpdater.Provider
         public object Images { get; set; }
         public String Image { get; set; }
 
+        public void ConvertToDatabase()
+        {
+        }
+
+        public void ConvertFromDatabase()
+        {
+        }
     }
 
 
