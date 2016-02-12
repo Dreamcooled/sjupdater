@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Reflection;
 using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Win32;
 using SjUpdater.Model;
 using SjUpdater.Utils;
 using SjUpdater.XML;
@@ -174,6 +176,43 @@ namespace SjUpdater
         /// </summary>
         public bool MinimizeToTray { get; set; }
 
+        private static string executablePath => "\"" + Assembly.GetExecutingAssembly().Location + "\"";
+        /// <summary>
+        /// Autostart at windows login
+        /// </summary>
+        public bool Autostart
+        {
+            get
+            {
+                var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+
+                if (key == null)
+                    return false;
+
+                var value = key.GetValue("SjUpdater", null);
+
+                if (value == null)
+                    return false;
+
+                if (key.GetValueKind("SjUpdater") != RegistryValueKind.String || (value as string) != executablePath + " -nogui")
+                    key.SetValue("SjUpdater", executablePath + " -nogui", RegistryValueKind.String);
+
+                return true;
+            }
+            set
+            {
+                var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+
+                if (key == null)
+                    return;
+
+                if (value)
+                    key.SetValue("SjUpdater", executablePath + " -nogui", RegistryValueKind.String);
+                else
+                    key.DeleteValue("SjUpdater", false);
+            }
+        }
+
         /// <summary>
         /// How often to update the TV Shows (in milliseconds)
         /// </summary>
@@ -196,12 +235,12 @@ namespace SjUpdater
         /// <summary>
         /// Theme Color
         /// </summary>
-        public String ThemeAccent { get; set; }
+        public string ThemeAccent { get; set; }
 
         /// <summary>
         /// Theme Base
         /// </summary>
-        public String ThemeBase  { get; set; }
+        public string ThemeBase  { get; set; }
 
         /// <summary>
         /// Whether we are allowed to send personal data to stats server
@@ -219,12 +258,12 @@ namespace SjUpdater
         //Default Filters: See FavShowData.cs
 
         public UploadLanguage FilterLanguage { get; set; }
-        public String FilterName{ get; set; }
-        public String FilterHoster { get; set; }
-        public String FilterFormat { get; set; }
-        public String FilterUploader { get; set; }
-        public String FilterSize { get; set; }
-        public String FilterRuntime { get; set; }
+        public string FilterName { get; set; }
+        public string FilterHoster { get; set; }
+        public string FilterFormat { get; set; }
+        public string FilterUploader { get; set; }
+        public string FilterSize { get; set; }
+        public string FilterRuntime { get; set; }
     
 
         public Settings()

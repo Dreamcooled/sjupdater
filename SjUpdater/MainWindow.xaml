@@ -881,19 +881,19 @@
                                   SelectedValue="{Binding CurrentAccent, ElementName=Window}" />
                         </Grid>
 
-                        <CheckBox Content="Sort Seasons Descending"  Margin="0,2"
+                        <CheckBox Content="Sort Seasons Descending" Margin="5,2"
                               IsChecked="{Binding SortSeasonsDesc}" />
-                        <CheckBox Content="Sort Episodes Descending"  Margin="0,2"
+                        <CheckBox Content="Sort Episodes Descending"   Margin="5,2"
                               IsChecked="{Binding SortEpisodesDesc}" />
-                        <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="0,2"
+                        <CheckBox Content="Mark 'German Subbed' Episodes as German"  Margin="5,2"
                               IsChecked="{Binding MarkSubbedAsGerman}" />
-                        
-                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="0,2" />
 
-                        <CheckBox Content="Enable Favorizing of Uploads" IsChecked="{Binding UseFavorites}"   Margin="0,2" />
+                        <CheckBox Content="Enable Images" IsChecked="{Binding EnableImages}" Margin="5,2" />
 
-                        <StackPanel Orientation="Horizontal" Margin="0,-1,0,0" >
-                            <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications}"/>
+                        <CheckBox Content="Enable Favorizing of Uploads" IsChecked="{Binding UseFavorites}" Margin="5,2" />
+
+                        <StackPanel Orientation="Horizontal"  Margin="5,0" >
+                            <CheckBox Content="Show Notifications" IsChecked="{Binding ShowNotifications}" />
                             <Label VerticalContentAlignment="Center" Content="Timeout for popup:" Margin="20,0,0,0"/>
                             <ComboBox Width="100" ItemsSource="{Binding Source={x:Static local:MainWindow.DictNotifyTimeouts}}"
                                   DisplayMemberPath="Key" SelectedValuePath="Value"
@@ -904,8 +904,10 @@
                 </GroupBox>
                 <GroupBox Header="Other" Grid.Row="3" Margin="10,10,10,10">
                     <StackPanel>
+                        <CheckBox Content="Autostart at windows login"
+        				IsChecked="{Binding Autostart}" Margin="5,2"/>
                         <CheckBox Content="Only Minimize to Tray when closing"
-        				IsChecked="{Binding MinimizeToTray}" />
+        				IsChecked="{Binding MinimizeToTray}" Margin="5,2"/>
                         <Grid Width="500" HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -935,7 +937,7 @@
 
                         </Grid>
                         <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
-        				IsChecked="{Binding NoPersonalData}" />
+        				IsChecked="{Binding NoPersonalData}" Margin="5,2"/>
                         <Separator Margin="0,10,0,5"/>
                         <StackPanel Orientation="Horizontal">
                             <Label>Current Version:</Label>
