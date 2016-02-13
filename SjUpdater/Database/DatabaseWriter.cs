@@ -68,8 +68,8 @@ namespace SjUpdater.Database
                         db.FavShowData.Load();
                         db.FavSeasonData.Load();
                         db.FavEpisodeData.Load();
-                        db.ShowInformation.Load();
-                        db.SeasonInformation.Load();
+                        //db.ShowInformation.Load(); // Not currently used - Calvin 13-Feb-2016
+                        //db.SeasonInformation.Load(); // Not currently used - Calvin 13-Feb-2016
                         db.EpisodeInformation.Load();
                         db.DownloadData.Load();
                         db.UploadData.Load();

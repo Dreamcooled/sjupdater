@@ -20,8 +20,8 @@ namespace SjUpdater.Database
         public DbSet<FavSeasonData> FavSeasonData { get; set; }
         public DbSet<FavEpisodeData> FavEpisodeData { get; set; }
 
-        public DbSet<ShowInformation> ShowInformation { get; set; }
-        public DbSet<SeasonInformation> SeasonInformation { get; set; }
+        //public DbSet<ShowInformation> ShowInformation { get; set; } // Not currently used - Calvin 13-Feb-2016
+        //public DbSet<SeasonInformation> SeasonInformation { get; set; } // Not currently used - Calvin 13-Feb-2016
         public DbSet<EpisodeInformation> EpisodeInformation { get; set; }
 
         public DbSet<DownloadData> DownloadData { get; set; }
