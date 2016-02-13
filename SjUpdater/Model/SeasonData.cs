@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Serialization;
 
 namespace SjUpdater.Model
 {
@@ -7,6 +9,8 @@ namespace SjUpdater.Model
     {
         public SeasonData()
         {
+            InDatabase = false;
+
             Title = "";
             Description = "";
             Url = "";
@@ -16,6 +20,10 @@ namespace SjUpdater.Model
 
         [Key]
         public int Id { get; set; }
+
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
 
         public String Title { get; set; }
         public String Description { get; set; }
@@ -31,8 +39,42 @@ namespace SjUpdater.Model
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+
             if (Show != null)
                 Show.ConvertFromDatabase();
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (!InDatabase)
+            {
+                Database.DatabaseWriter.AddToDatabase<SeasonData>(db.SeasonData, this);
+
+                InDatabase = true;
+            }
+
+            if (Show != null)
+                Show.AddToDatabase(db);
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (InDatabase)
+            {
+                Database.DatabaseWriter.RemoveFromDatabase<SeasonData>(db.SeasonData, this);
+
+                InDatabase = false;
+            }
+
+            if (Show != null)
+                Show.RemoveFromDatabase(db);
         }
     }
 }

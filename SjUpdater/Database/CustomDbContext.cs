@@ -11,7 +11,7 @@ using SjUpdater.Provider;
 
 namespace SjUpdater.Database
 {
-    class CustomDbContext : DbContext
+    public class CustomDbContext : DbContext
     {
         static CustomDbContext() { }
 

@@ -320,7 +320,11 @@ namespace SjUpdater
                 MessageDialogStyle.AffirmativeAndNegative,new MetroDialogSettings{AffirmativeButtonText = "Yes", NegativeButtonText = "No",AnimateShow = false,AnimateHide = false});
             if (res == MessageDialogResult.Affirmative)
             {
-                _setti.TvShows.Remove(((ShowViewModel) ShowGrid.DataContext).Show);
+                FavShowData show = ((ShowViewModel)ShowGrid.DataContext).Show;
+                _setti.TvShows.Remove(show);
+
+                show.RemoveFromDatabase(Database.DatabaseWriter.db);
+
                 SwitchPage(0);
             }
         }
@@ -424,8 +428,13 @@ namespace SjUpdater
 
                     TextBoxAutoComl.Text = "";
                     AddShowFlyout.IsOpen = false;
-                    _setti.TvShows.Add(new FavShowData(new ShowData { Name = selectedShow.Key, Url = selectedShow.Value }, true));
+
+                    FavShowData show = new FavShowData(new ShowData { Name = selectedShow.Key, Url = selectedShow.Value }, true);
+
+                    _setti.TvShows.Add(show);
                     Stats.TrackAction(Stats.TrackActivity.ShowAdd);
+
+                    show.AddToDatabase(Database.DatabaseWriter.db);
                 }
             }
         }

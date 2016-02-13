@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
@@ -207,6 +208,7 @@ namespace SjUpdater.Utils
             return null;
         }
 
+        [NotMapped]
         [XmlIgnore]
         public ImageSource ImageSource
         {
@@ -257,6 +259,7 @@ namespace SjUpdater.Utils
             DependencyProperty.Register("ImageSource", typeof (ImageSource), typeof (CachedBitmap),
                 new PropertyMetadata(default(ImageSource)));
 
+        [NotMapped]
         [XmlIgnore]
         public ImageSource ImageSource
         {
@@ -268,6 +271,7 @@ namespace SjUpdater.Utils
             DependencyProperty.Register("IsLoading", typeof(bool), typeof(CachedBitmap),
                 new PropertyMetadata(default(bool)));
 
+        [NotMapped]
         [XmlIgnore]
         public bool IsLoading
         {

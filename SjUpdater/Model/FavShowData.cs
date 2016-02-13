@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,6 +24,10 @@ namespace SjUpdater.Model
     {
         [Key]
         public int Id { get; set; }
+
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
 
         private string _name;
         private string _cover;
@@ -57,12 +62,13 @@ namespace SjUpdater.Model
         private int? _previousEpisodeEpisodeNr;
         private ObservableCollection<string> _categories; 
 
-
         private List<DownloadData> _allDownloads;
         private readonly bool _isNewShow; //=false
 
         public FavShowData(ShowData show, bool autofetch= false) :this()
         {
+            InDatabase = false;
+
             _show = show;
             _isNewShow = true;
             _name = show.Name;
@@ -74,6 +80,8 @@ namespace SjUpdater.Model
 
         public FavShowData()
         {
+            InDatabase = false;
+
             _seasons = new ObservableCollection<FavSeasonData>();
             _name = "";
             _cover = "";
@@ -472,6 +480,7 @@ namespace SjUpdater.Model
             }
         }
 
+        [NotMapped]
         [XmlIgnore]
         public bool IsLoading
         {
@@ -483,6 +492,7 @@ namespace SjUpdater.Model
             }
         }
 
+        [NotMapped]
         [XmlIgnore]
         public int NumberOfEpisodes
         {
@@ -539,6 +549,7 @@ namespace SjUpdater.Model
             }
         }
 
+        [NotMapped]
         [XmlIgnore]
         public int NumberOfSeasons
         {
@@ -564,13 +575,15 @@ namespace SjUpdater.Model
             NumberOfSeasons = seasons;
         }
 
+        [NotMapped]
         [XmlIgnore]
         public List<DownloadData> AllDownloads
         {
             get { return _allDownloads; }
             set
             {
-                _allDownloads = value; 
+                _allDownloads = value;
+
                 OnPropertyChanged();
             }
         }
@@ -810,10 +823,15 @@ namespace SjUpdater.Model
             {
                 nonSeason.ConvertToDatabase();
             }
+
+            if (Show != null)
+                Show.ConvertToDatabase();
         }
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+
             foreach (FavSeasonData season in Seasons)
             {
                 season.ConvertFromDatabase();
@@ -823,6 +841,67 @@ namespace SjUpdater.Model
             {
                 nonSeason.ConvertFromDatabase();
             }
+
+            if (Show != null)
+                Show.ConvertFromDatabase();
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            _mutexFetch.WaitOne();
+            _mutexFilter.WaitOne();
+
+            if (!InDatabase)
+            {
+                Database.DatabaseWriter.AddToDatabase<FavShowData>(db.FavShowData, this);
+
+                InDatabase = true;
+            }
+
+            foreach (FavSeasonData season in Seasons)
+            {
+                season.AddToDatabase(db);
+            }
+
+            foreach (DownloadData nonSeason in NonSeasons)
+            {
+                nonSeason.AddToDatabase(db);
+            }
+
+            _mutexFetch.ReleaseMutex();
+            _mutexFilter.ReleaseMutex();
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            _mutexFetch.WaitOne();
+            _mutexFilter.WaitOne();
+
+            if (InDatabase)
+            {
+                Database.DatabaseWriter.RemoveFromDatabase<FavShowData>(db.FavShowData, this);
+
+                InDatabase = false;
+            }
+
+            foreach (FavSeasonData season in Seasons)
+            {
+                season.RemoveFromDatabase(db);
+            }
+
+            foreach (DownloadData nonSeason in NonSeasons)
+            {
+                nonSeason.RemoveFromDatabase(db);
+            }
+
+            _mutexFetch.ReleaseMutex();
+            _mutexFilter.ReleaseMutex();
         }
     }
 }

@@ -13,6 +13,10 @@ namespace SjUpdater.Model
         [Key]
         public int Id { get; set; }
 
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
+
         // private string _name;
         private int _number;
         private int _numberNonEpisodes;
@@ -24,6 +28,8 @@ namespace SjUpdater.Model
 
         public FavSeasonData()
         {
+            InDatabase = false;
+
             _episodes = new ObservableCollection<FavEpisodeData>();
             _nonEpisodes = new ObservableCollection<DownloadData>();
             _number = -1;
@@ -102,6 +108,7 @@ namespace SjUpdater.Model
             }
         }
 
+        [NotMapped]
         [XmlIgnore]
         public int NumberOfEpisodes
         {
@@ -115,6 +122,7 @@ namespace SjUpdater.Model
         }
 
 
+        [NotMapped]
         [XmlIgnore]
         public int NumberOfNonEpisodes
         {
@@ -151,6 +159,8 @@ namespace SjUpdater.Model
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+
             foreach (FavEpisodeData episode in Episodes)
             {
                 episode.ConvertFromDatabase();
@@ -159,6 +169,52 @@ namespace SjUpdater.Model
             foreach (DownloadData nonEpisode in NonEpisodes)
             {
                 nonEpisode.ConvertFromDatabase();
+            }
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (!InDatabase)
+            {
+                Database.DatabaseWriter.AddToDatabase<FavSeasonData>(db.FavSeasonData, this);
+
+                InDatabase = true;
+            }
+
+            foreach (FavEpisodeData episode in Episodes)
+            {
+                episode.AddToDatabase(db);
+            }
+
+            foreach (DownloadData nonEpisode in NonEpisodes)
+            {
+                nonEpisode.AddToDatabase(db);
+            }
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (InDatabase)
+            {
+                Database.DatabaseWriter.RemoveFromDatabase<FavSeasonData>(db.FavSeasonData, this);
+
+                InDatabase = false;
+            }
+
+            foreach (FavEpisodeData episode in Episodes)
+            {
+                episode.RemoveFromDatabase(db);
+            }
+
+            foreach (DownloadData nonEpisode in NonEpisodes)
+            {
+                nonEpisode.RemoveFromDatabase(db);
             }
         }
     }

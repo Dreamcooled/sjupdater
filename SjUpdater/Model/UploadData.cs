@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace SjUpdater.Model
 {
@@ -16,6 +18,8 @@ namespace SjUpdater.Model
     {
         public UploadData()
         {
+            InDatabase = false;
+
             Uploader = "";
             Format = "";
             Size = "";
@@ -28,6 +32,10 @@ namespace SjUpdater.Model
 
         [Key]
         public int Id { get; set; }
+
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
 
         public String Uploader { get; set; }
         public String Format { get; set; }
@@ -71,8 +79,42 @@ namespace SjUpdater.Model
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+
             if (Season != null)
                 Season.ConvertFromDatabase();
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (!InDatabase)
+            {
+                Database.DatabaseWriter.AddToDatabase<UploadData>(db.UploadData, this);
+
+                InDatabase = true;
+            }
+
+            if (Season != null)
+                Season.AddToDatabase(db);
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (InDatabase)
+            {
+                Database.DatabaseWriter.RemoveFromDatabase<UploadData>(db.UploadData, this);
+
+                InDatabase = false;
+            }
+
+            if (Season != null)
+                Season.RemoveFromDatabase(db);
         }
     }
 }

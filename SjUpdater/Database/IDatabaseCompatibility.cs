@@ -13,5 +13,7 @@ namespace SjUpdater.Database
     {
         void ConvertToDatabase();
         void ConvertFromDatabase();
+        void AddToDatabase(CustomDbContext db);
+        void RemoveFromDatabase(CustomDbContext db);
     }
 }

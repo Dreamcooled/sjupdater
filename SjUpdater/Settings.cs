@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -79,8 +80,6 @@ namespace SjUpdater
             if (setti==null) //either the user has started the application for the first time or the config could not be loaded
             {
                 setti = new Settings(); //Create a new settings instance/file
-                setti.Save(CONFIG); //and save it
-                File.Copy(CONFIG, CONFIGBAK, true); //backup the new file (paranoid)
             }
 
             string dbPath = Database.DatabaseWriter.GetDBPath(); // Load database - Calvin 12-Feb-2016
@@ -149,9 +148,11 @@ namespace SjUpdater
         private const int SettingsVersion = 2;
 
         private readonly UploadCache uploadCache = new UploadCache();
+        [NotMapped]
         [XmlIgnore]
         private uint numFetchThreads;
 
+        [NotMapped]
         [XmlIgnore]
         public UploadCache UploadCache
         {
@@ -418,6 +419,24 @@ namespace SjUpdater
             {
                 tvShow.ConvertFromDatabase();
             }
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            foreach (FavShowData favShowData in TvShows)
+                favShowData.AddToDatabase(db);
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            foreach (FavShowData favShowData in TvShows)
+                favShowData.RemoveFromDatabase(db);
         }
     }
 }

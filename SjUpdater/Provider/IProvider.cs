@@ -12,8 +12,17 @@ namespace SjUpdater.Provider
 
     public class ShowInformation : Database.IDatabaseCompatibility
     {
+        public ShowInformation()
+        {
+            InDatabase = false;
+        }
+
         [Key]
         public int Id { get; set; }
+
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
 
         public String Title { get; set; }
         public String Status { get; set; }
@@ -42,13 +51,49 @@ namespace SjUpdater.Provider
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (!InDatabase)
+            {
+                //Database.DatabaseWriter.AddToDatabase<ShowInformation>(db.ShowInformation, this);
+
+                InDatabase = true;
+            }
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (InDatabase)
+            {
+               //Database.DatabaseWriter.RemoveFromDatabase<ShowInformation>(db.ShowInformation, this);
+
+                InDatabase = false;
+            }
         }
     }
 
     public class SeasonInformation : Database.IDatabaseCompatibility
     {
+        public SeasonInformation()
+        {
+            InDatabase = false;
+        }
+
         [Key]
         public int Id { get; set; }
+
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
 
         public String Title { get; set; }
         public String Overview { get; set; }
@@ -69,12 +114,48 @@ namespace SjUpdater.Provider
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (!InDatabase)
+            {
+                //Database.DatabaseWriter.AddToDatabase<SeasonInformation>(db.SeasonInformation, this);
+
+                InDatabase = true;
+            }
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (InDatabase)
+            {
+                //Database.DatabaseWriter.RemoveFromDatabase<SeasonInformation>(db.SeasonInformation, this);
+
+                InDatabase = false;
+            }
         }
     }
     public class EpisodeInformation : Database.IDatabaseCompatibility
     {
+        public EpisodeInformation()
+        {
+            InDatabase = false;
+        }
+
         [Key]
         public int Id { get; set; }
+
+        [NotMapped]
+        [XmlIgnore]
+        public bool InDatabase { get; set; }
 
         public String Title { get; set; }
         [XmlIgnore] //To save storage TODO: remove
@@ -94,6 +175,33 @@ namespace SjUpdater.Provider
 
         public void ConvertFromDatabase()
         {
+            InDatabase = true;
+        }
+
+        public void AddToDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (!InDatabase)
+            {
+                Database.DatabaseWriter.AddToDatabase<EpisodeInformation>(db.EpisodeInformation, this);
+
+                InDatabase = true;
+            }
+        }
+
+        public void RemoveFromDatabase(Database.CustomDbContext db)
+        {
+            if (db == null)
+                return;
+
+            if (InDatabase)
+            {
+                Database.DatabaseWriter.AddToDatabase<EpisodeInformation>(db.EpisodeInformation, this);
+
+                InDatabase = false;
+            }
         }
     }
 
