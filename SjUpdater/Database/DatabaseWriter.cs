@@ -22,7 +22,7 @@ namespace SjUpdater.Database
             return ConfigurationManager.ConnectionStrings["SjUpdater.Database.CustomDbContext"].ConnectionString.Split('=')[1];
         }
 
-        static string mutexName = "";
+        //static string mutexName = ""; // For debugging
 
         static Mutex dbMutex = new Mutex();
 
@@ -30,7 +30,7 @@ namespace SjUpdater.Database
         {
             dbMutex.WaitOne();
 
-            mutexName = entity.ToString() + "-add-hold";
+            //mutexName = entity.ToString() + "-add-hold";
             try
             {
                 set.Add(entity);
@@ -42,7 +42,7 @@ namespace SjUpdater.Database
             }
             finally
             {
-                mutexName = entity.ToString() + "-add-release";
+                //mutexName = entity.ToString() + "-add-release";
 
                 dbMutex.ReleaseMutex();
             }
@@ -52,7 +52,7 @@ namespace SjUpdater.Database
         {
             dbMutex.WaitOne();
 
-            mutexName = entity.ToString() + "-rem-hold";
+            //mutexName = entity.ToString() + "-rem-hold";
             try
             {
                 set.Remove(entity);
@@ -64,7 +64,7 @@ namespace SjUpdater.Database
             }
             finally
             {
-                mutexName = entity.ToString() + "-rem-release";
+                //mutexName = entity.ToString() + "-rem-release";
 
                 dbMutex.ReleaseMutex();
             }
@@ -73,7 +73,7 @@ namespace SjUpdater.Database
         public static void SaveToDatabase(Settings settings)
         {
             dbMutex.WaitOne();
-            mutexName = "savetodb";
+            //mutexName = "savetodb";
 
             try
             {
@@ -127,7 +127,7 @@ namespace SjUpdater.Database
             bool result = false;
 
             dbMutex.WaitOne();
-            mutexName = "savetodb";
+            //mutexName = "savetodb";
 
             try
             {
