@@ -936,8 +936,11 @@
                                   SelectedValue="{Binding UpdateTime}"/>
 
                         </Grid>
-                        <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Don't send any personal data (your favorite tv shows) to stats server"
         				IsChecked="{Binding NoPersonalData}" Margin="5,2"/>
+                            <Button Click="StatsInfoButtonClicked" Margin="5,4" Width="20">?</Button>
+                        </StackPanel>
                         <Separator Margin="0,10,0,5"/>
                         <StackPanel Orientation="Horizontal">
                             <Label>Current Version:</Label>

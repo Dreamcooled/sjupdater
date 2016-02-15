@@ -510,6 +510,10 @@ namespace SjUpdater
                                                                                 {"5 m", 1000 * 60 * 5}
                                                                             };
 
+        private void StatsInfoButtonClicked(object sender, RoutedEventArgs e)
+        {
+            this.ShowMessageAsync("Info about Stats", Stats.GetInfoForUser());
+        }
 
         private void ChangeLogButtonClicked(object sender, RoutedEventArgs e)
         {

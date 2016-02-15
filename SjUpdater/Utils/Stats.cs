@@ -2,27 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.ServiceModel;
-using System.ServiceModel.Description;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
 using RestSharp;
-using SjUpdater.Updater;
-using DataFormat = RestSharp.DataFormat;
 
 namespace SjUpdater.Utils
 {
     public class Stats
     {
-
-        public class SimpleResponse<T> {
-
+        public class SimpleResponse<T>
+        {
             public T Value { get; set; }
         }
 
@@ -33,17 +24,18 @@ namespace SjUpdater.Utils
             AppUpdate,
             ShowAdd,
             Download,
-           /* Review,*/
+            /* Review,*/
             Browse,
             Filter
         };
 
-        public static String StatsUrl;
+        public static string StatsUrl;
         public static bool AllowCustom;
 
-        public static void TrackAction(TrackActivity action, String comment=null)
+        public static void TrackAction(TrackActivity action, string comment = null)
         {
-            StaticInstance.ThreadPool.QueueWorkItem(delegate {
+            StaticInstance.ThreadPool.QueueWorkItem(delegate
+            {
                 try
                 {
                     var client = new RestClient(StatsUrl);
@@ -54,12 +46,12 @@ namespace SjUpdater.Utils
                     request.AddParameter("id", getUniqueID());
                     request.AddParameter("version", GetVersionString());
                     request.AddParameter("action", action.ToString());
-                    if (!String.IsNullOrEmpty(comment))
+                    if (!string.IsNullOrEmpty(comment))
                     {
                         request.AddParameter("comment", comment);
                     }
 
-                    var response = client.Execute<SimpleResponse<String>>(request);
+                    var response = client.Execute<SimpleResponse<string>>(request);
 
                     if (response.Data.Value == "ok")
                     {
@@ -71,13 +63,14 @@ namespace SjUpdater.Utils
                     //sorry
                 }
             }, true, ThreadPriority.BelowNormal);
-
         }
 
-        public static void TrackCustomVariable(String key, object value, String comment=null)
+        public static void TrackCustomVariable(string key, object value, string comment = null)
         {
             if (!AllowCustom) return;
-            StaticInstance.ThreadPool.QueueWorkItem(delegate {
+
+            StaticInstance.ThreadPool.QueueWorkItem(delegate
+            {
                 try
                 {
                     var client = new RestClient(StatsUrl);
@@ -89,64 +82,91 @@ namespace SjUpdater.Utils
                     request.AddParameter("version", GetVersionString());
                     request.AddParameter("key", key);
                     request.AddParameter("value", SimpleJson.SerializeObject(value));
-                    if (!String.IsNullOrEmpty(comment))
+                    if (!string.IsNullOrEmpty(comment))
                     {
                         request.AddParameter("comment", comment);
                     }
 
-                    var response = client.Execute<SimpleResponse<String>>(request);
+                    var response = client.Execute<SimpleResponse<string>>(request);
 
                     if (response.Data.Value == "ok")
                     {
                         //good
                     }
                 }
-                catch 
+                catch
                 {
                     //sorry
                 }
             }, true, ThreadPriority.BelowNormal);
-
         }
 
         public static string GetVersionString()
         {
-            Version v = Assembly.GetExecutingAssembly().GetName().Version;
-            var sli  = new List<String>();
-            sli.Add(v.Major.ToString());
-            if (v.Minor != 0 || v.Revision != 0 || v.Build != 0)
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+
+            var sli = new List<string>();
+            sli.Add(version.Major.ToString());
+
+            if (version.Minor != 0 || version.Revision != 0 || version.Build != 0)
             {
-                sli.Add(v.Minor.ToString());
-                if (v.Revision != 0 || v.Build != 0)
+                sli.Add(version.Minor.ToString());
+                if (version.Revision != 0 || version.Build != 0)
                 {
-                    sli.Add(v.Build.ToString());
-                    if (v.Revision != 0)
+                    sli.Add(version.Build.ToString());
+                    if (version.Revision != 0)
                     {
-                        sli.Add(v.Revision.ToString());
+                        sli.Add(version.Revision.ToString());
                     }
                 }
             }
-            return "v"+String.Join(".", sli);
+
+            return "v" + string.Join(".", sli);
         }
 
         private static string getUniqueID()
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SjUpdater", "uid.uid");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SjUpdater", "uid.uid");
 
             if (!Directory.Exists(Path.GetDirectoryName(path)))
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
             if (!File.Exists(path) || File.ReadAllText(path).Length != 16)
             {
-                RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
-                byte[] data = new byte[8];
+                var random = new RNGCryptoServiceProvider();
+                var data = new byte[8];
                 random.GetBytes(data);
-                string uid = BitConverter.ToString(data).ToLower().Replace("-", "");
+                var uid = BitConverter.ToString(data).ToLower().Replace("-", "");
 
                 File.WriteAllText(path, uid);
             }
 
             return File.ReadAllText(path);
+        }
+
+        public static string GetInfoForUser()
+        {
+            var sample = new StringBuilder();
+            sample.AppendLine("A sample of what we collect:\n");
+            sample.AppendLine("id: " + getUniqueID());
+            sample.AppendLine("version: " + GetVersionString());
+            sample.AppendLine("action: " + TrackActivity.AppStart);
+
+            sample.AppendLine("\nAnd if you have that Checkbox enabled, we also collect:");
+            var shows = Settings.Instance.TvShows.Select(s => s.Name);
+            sample.Append("shows: ");
+
+            foreach (var show in shows)
+            {
+                sample.Append(show + ", ");
+            }
+            sample.Remove(sample.Length - 1, 1);
+
+            sample.Append("\n\nWe collect this data, because it's interesting for us to see, how many people we reach and how many have updated to latest version.\n\n" +
+                          "Even though we collect which shows you have added, we don't analyze that (as it is kind of uselss) and probably remove it next release.\n\n" +
+                          "Using a ID, which is completely randomly generated, it's impossible for us to identify you. We need it for counting users.");
+
+            return sample.ToString();
         }
     }
 }
