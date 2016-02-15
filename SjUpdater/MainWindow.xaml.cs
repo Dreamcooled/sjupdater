@@ -1,11 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using Amib.Threading;
 using MahApps.Metro;
 using MahApps.Metro.Controls.Dialogs;
 using SjUpdater.Model;
-using SjUpdater.Provider;
 using SjUpdater.Updater;
 using SjUpdater.Utils;
 using SjUpdater.ViewModel;
@@ -57,7 +55,7 @@ namespace SjUpdater
 
             updateTimer = new Timer();
             //Updater
-            _updater = new UpdateWindow("http://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "-uf " + Stats.GetVersionString());
+            _updater = new UpdateWindow("https://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "-uf " + Stats.GetVersionString());
             _updater.updateStartedEvent += (a, dsa) =>
                                            {
                                                Terminate(null);
@@ -95,7 +93,7 @@ namespace SjUpdater
 
             //Stats
 
-            Stats.StatsUrl = "http://sjupdater.batrick.de/stats";
+            Stats.StatsUrl = "https://sjupdater.batrick.de/stats";
             Stats.AllowCustom = !_setti.NoPersonalData;
             Stats.TrackAction(Stats.TrackActivity.AppStart);
             Stats.TrackCustomVariable("Shows", _setti.TvShows.Select(s => s.Name));
