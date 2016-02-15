@@ -48,7 +48,6 @@ namespace SjUpdater.Model
             }
         }*/
 
-        [Required]
         public int ShowId { get; set; }
         [ForeignKey("ShowId")]
         public FavShowData Show
@@ -179,19 +178,22 @@ namespace SjUpdater.Model
 
             if (!InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<FavSeasonData>(db.FavSeasonData, this);
-
                 InDatabase = true;
-            }
 
-            foreach (FavEpisodeData episode in Episodes)
-            {
-                episode.AddToDatabase(db);
-            }
+                if (Show != null)
+                    Show.AddToDatabase(db);
 
-            foreach (DownloadData nonEpisode in NonEpisodes)
-            {
-                nonEpisode.AddToDatabase(db);
+                foreach (FavEpisodeData episode in Episodes)
+                {
+                    episode.AddToDatabase(db);
+                }
+
+                foreach (DownloadData nonEpisode in NonEpisodes)
+                {
+                    nonEpisode.AddToDatabase(db);
+                }
+
+                Database.DatabaseWriter.AddToDatabase<FavSeasonData>(db.FavSeasonData, this);
             }
         }
 
@@ -202,19 +204,22 @@ namespace SjUpdater.Model
 
             if (InDatabase)
             {
-                Database.DatabaseWriter.RemoveFromDatabase<FavSeasonData>(db.FavSeasonData, this);
-
                 InDatabase = false;
-            }
 
-            foreach (FavEpisodeData episode in Episodes)
-            {
-                episode.RemoveFromDatabase(db);
-            }
+                if (Show != null)
+                    Show.RemoveFromDatabase(db);
 
-            foreach (DownloadData nonEpisode in NonEpisodes)
-            {
-                nonEpisode.RemoveFromDatabase(db);
+                foreach (FavEpisodeData episode in Episodes.ToList())
+                {
+                    episode.RemoveFromDatabase(db);
+                }
+
+                foreach (DownloadData nonEpisode in NonEpisodes.ToList())
+                {
+                    nonEpisode.RemoveFromDatabase(db);
+                }
+
+                Database.DatabaseWriter.RemoveFromDatabase<FavSeasonData>(db.FavSeasonData, this);
             }
         }
     }

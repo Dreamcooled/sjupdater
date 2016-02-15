@@ -42,6 +42,9 @@ namespace SjUpdater.Model
         public String Size { get; set; }
         public String Runtime { get; set; }
         public UploadLanguage Language { get; set; }
+
+        public int SeasonId { get; set; }
+        [ForeignKey("SeasonId")]
         public SeasonData Season { get; set; }
         public bool Subbed { get; set; }
 
@@ -92,13 +95,13 @@ namespace SjUpdater.Model
 
             if (!InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<UploadData>(db.UploadData, this);
-
                 InDatabase = true;
-            }
 
-            if (Season != null)
-                Season.AddToDatabase(db);
+                if (Season != null)
+                    Season.AddToDatabase(db);
+
+                Database.DatabaseWriter.AddToDatabase<UploadData>(db.UploadData, this);
+            }
         }
 
         public void RemoveFromDatabase(Database.CustomDbContext db)
@@ -108,13 +111,17 @@ namespace SjUpdater.Model
 
             if (InDatabase)
             {
+                InDatabase = false;
+
+                if (Season != null)
+                {
+                    Season.RemoveFromDatabase(db);
+                    Season = null;
+                }
+
                 Database.DatabaseWriter.RemoveFromDatabase<UploadData>(db.UploadData, this);
 
-                InDatabase = false;
             }
-
-            if (Season != null)
-                Season.RemoveFromDatabase(db);
         }
     }
 }

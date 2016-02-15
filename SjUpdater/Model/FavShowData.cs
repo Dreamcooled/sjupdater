@@ -64,10 +64,12 @@ namespace SjUpdater.Model
 
         private List<DownloadData> _allDownloads;
         private readonly bool _isNewShow; //=false
+        private bool _isDeleted; // Show has been deleted from UI, don't add seasons/episodes/etc. to it or it'll cause dirty entries in the database
 
         public FavShowData(ShowData show, bool autofetch= false) :this()
         {
             InDatabase = false;
+            _isDeleted = false;
 
             _show = show;
             _isNewShow = true;
@@ -81,6 +83,7 @@ namespace SjUpdater.Model
         public FavShowData()
         {
             InDatabase = false;
+            _isDeleted = false;
 
             _seasons = new ObservableCollection<FavSeasonData>();
             _name = "";
@@ -144,20 +147,32 @@ namespace SjUpdater.Model
                 IsLoading = true;
                 String cover;
                 var episodes = SjInfo.ParseSjOrgSite(_show, out cover, Settings.Instance.UploadCache);
-                AllDownloads = episodes;
-                if (cover != "")
+
+                _mutexDelete.WaitOne();
+                if (!_isDeleted)
                 {
-                    Cover = cover;
-                }
-                _mutexFetch.ReleaseMutex();
-                if (_resetOnRefresh)
-                {
-                    _resetOnRefresh = false;
-                    ApplyFilter(true);
+                    _mutexDelete.ReleaseMutex();
+                    AllDownloads = episodes;
+                    if (cover != "")
+                    {
+                        Cover = cover;
+                    }
+
+                    _mutexFetch.ReleaseMutex();
+                    if (_resetOnRefresh)
+                    {
+                        _resetOnRefresh = false;
+                        ApplyFilter(true);
+                    }
+                    else
+                    {
+                        ApplyFilter(false);
+                    }
                 }
                 else
                 {
-                    ApplyFilter(false);
+                    _mutexDelete.ReleaseMutex();
+                    _mutexFetch.ReleaseMutex();
                 }
             }
             catch (Exception ex)
@@ -325,80 +340,91 @@ namespace SjUpdater.Model
                     }
                     continue;
                 }
-
-                FavEpisodeData currentFavEpisode = currentFavSeason.Episodes.FirstOrDefault(episodeData => episodeData.Number == episodeNr);
-
-                if (currentFavEpisode == null)
+                _mutexDelete.WaitOne();
+                if (!_isDeleted)
                 {
-                    currentFavEpisode = new FavEpisodeData();
-                    currentFavEpisode.Season = currentFavSeason;
-                    currentFavEpisode.Number = episodeNr;
-                    bool existed = false;
+                    FavEpisodeData currentFavEpisode = currentFavSeason.Episodes.FirstOrDefault(episodeData => episodeData.Number == episodeNr);
 
-                    var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
-                    if (oldSeason != null)
+                    if (currentFavEpisode == null)
                     {
-                        var oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
-                        if (oldEpisode != null) //we can copy old data to current episode
+
+                        currentFavEpisode = new FavEpisodeData();
+                        currentFavEpisode.Season = currentFavSeason;
+                        currentFavEpisode.Number = episodeNr;
+                        bool existed = false;
+
+                        var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
+                        if (oldSeason != null)
                         {
-                            currentFavEpisode.Watched = oldEpisode.Watched;
-                            currentFavEpisode.Downloaded = oldEpisode.Downloaded;
-                            currentFavEpisode.EpisodeInformation = oldEpisode.EpisodeInformation;
-                            existed = true;
+                            var oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
+                            if (oldEpisode != null) //we can copy old data to current episode
+                            {
+                                currentFavEpisode.Watched = oldEpisode.Watched;
+                                currentFavEpisode.Downloaded = oldEpisode.Downloaded;
+                                currentFavEpisode.EpisodeInformation = oldEpisode.EpisodeInformation;
+                                existed = true;
+                            }
                         }
-                    }
 
-                    if (notifications && !existed) {
-                        currentFavEpisode.NewEpisode = true;
-                        setNewEpisodes = true;
-                    }
-            
-                    currentFavSeason.Episodes.Add(currentFavEpisode);
-
-                    currentFavEpisode.Downloads.Add(download);
-
-                    if (ProviderData != null && (currentFavEpisode.EpisodeInformation == null || reset))
-                    {
-                        StaticInstance.ThreadPool.QueueWorkItem(() =>
+                        if (notifications && !existed)
                         {
+                            currentFavEpisode.NewEpisode = true;
+                            setNewEpisodes = true;
+                        }
+
+                        currentFavSeason.Episodes.Add(currentFavEpisode);
+
+                        currentFavEpisode.Downloads.Add(download);
+
+                        if (ProviderData != null && currentFavEpisode.Season != null && (currentFavEpisode.EpisodeInformation == null || reset))
+                        {
+                            StaticInstance.ThreadPool.QueueWorkItem(() =>
+                            {
                             //currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl, currentFavEpisode.Season.Number, currentFavEpisode.Number);
                             currentFavEpisode.EpisodeInformation = ProviderManager.GetProvider().GetEpisodeInformation(ProviderData, currentFavEpisode.Season.Number, currentFavEpisode.Number);
-                        });
+                            });
+                        }
+                    }
+                    else
+                    {
+                        FavEpisodeData oldEpisode = null;
+                        var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
+                        if (oldSeason != null)
+                        {
+                            oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
+                        }
+
+                        if (currentFavEpisode.Downloads.All(d => d.Title != download.Title))
+                        {
+                            if (notifications && (oldEpisode == null || (!oldEpisode.NewEpisode && oldEpisode.Downloads.All(d => d.Title != download.Title))))
+                            {
+                                currentFavEpisode.NewUpdate = true;
+                                setNewUpdates = true;
+                            }
+                            currentFavEpisode.Downloads.Add(download);
+                        }
                     }
                 }
-                else
-                {
-                    FavEpisodeData oldEpisode = null;
-                    var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
-                    if (oldSeason != null)
-                    {
-                        oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
-                    }
-                    
-                    if (currentFavEpisode.Downloads.All(d => d.Title != download.Title))
-                    {
-                        if (notifications && (oldEpisode==null ||  (!oldEpisode.NewEpisode && oldEpisode.Downloads.All(d => d.Title != download.Title))))
-                        {
-                            currentFavEpisode.NewUpdate = true;
-                            setNewUpdates = true;
-                        }
-                        currentFavEpisode.Downloads.Add(download);
-                    }
-                }  
+                _mutexDelete.ReleaseMutex();
             }
 
             if (reset)
             {
-                Seasons.Clear();
-                foreach (var season in newSeasons)
+                _mutexDelete.WaitOne();
+                if (!_isDeleted)
                 {
-                    Seasons.Add(season);
+                    Seasons.Clear();
+                    foreach (var season in newSeasons)
+                    {
+                        Seasons.Add(season);
+                    }
+                    NonSeasons.Clear();
+                    foreach (var nonSeason in newNonSeasons)
+                    {
+                        NonSeasons.Add(nonSeason);
+                    }
                 }
-                NonSeasons.Clear();
-                foreach (var nonSeason in newNonSeasons)
-                {
-                    NonSeasons.Add(nonSeason);
-                }
+                _mutexDelete.ReleaseMutex();
             }
 
             if (setNewEpisodes)
@@ -415,16 +441,22 @@ namespace SjUpdater.Model
 
         private void SetCategory(String cat, bool active)
         {
-            if (active)
+            _mutexDelete.WaitOne();
+            if (!_isDeleted)
             {
-                if (!_categories.Contains(cat))
+                if (active)
                 {
-                    _categories.Add(cat);
-                } 
-            } else if (_categories.Contains(cat))
-            {
-                _categories.Remove(cat);
+                    if (!_categories.Contains(cat))
+                    {
+                        _categories.Add(cat);
+                    }
+                }
+                else if (_categories.Contains(cat))
+                {
+                    _categories.Remove(cat);
+                }
             }
+            _mutexDelete.ReleaseMutex();
         }
 
         public void NotifyBigChange()
@@ -432,14 +464,15 @@ namespace SjUpdater.Model
             OnBigChange();
         }
 
-
+        public int ShowId { get; set; }
+        [ForeignKey("ShowId")]
         public ShowData Show
         {
             get { return _show; }
             set
             {
-                _show = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<ShowData>(ref _show, value, true))
+                    OnPropertyChanged();
             }
         }
 
@@ -448,10 +481,8 @@ namespace SjUpdater.Model
             get { return _name; }
             set
             {
-                if (value == _name)
-                    return;
-                _name = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _name, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -460,10 +491,8 @@ namespace SjUpdater.Model
             get { return _cover; }
             set
             {
-                if (value == _cover)
-                    return;
-                _cover = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _cover, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -472,11 +501,8 @@ namespace SjUpdater.Model
             get { return _providerData; }
             set
             {
-                if (value == _providerData)
-                    return;
-                _providerData = value;
-                OnPropertyChanged();
-                
+                if (SetMemberVariable<object>(ref _providerData, value))
+                    OnPropertyChanged();                
             }
         }
 
@@ -487,8 +513,8 @@ namespace SjUpdater.Model
             get { return _isLoading; }
             internal set
             {
-                _isLoading = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<bool>(ref _isLoading, value, true))
+                    OnPropertyChanged();
             }
         }
 
@@ -499,9 +525,8 @@ namespace SjUpdater.Model
             get { return _nrEpisodes; }
             internal set
             {
-                if (value == _nrEpisodes) return;
-                _nrEpisodes = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<int>(ref _nrEpisodes, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -513,10 +538,11 @@ namespace SjUpdater.Model
             get { return _newEpisodes; }
             internal set
             {
-                if (value == _newEpisodes) return;
-                _newEpisodes = value;
-                SetCategory("new",value);
-                OnPropertyChanged();
+                if (SetMemberVariable<bool>(ref _newEpisodes, value))
+                {
+                    SetCategory("new", value);
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -528,10 +554,11 @@ namespace SjUpdater.Model
             get { return _newUpdates; }
             internal set
             {
-                if (value == _newUpdates) return;
-                _newUpdates = value;
-                SetCategory("update", value);
-                OnPropertyChanged();
+                if (SetMemberVariable<bool>(ref _newUpdates, value))
+                {
+                    SetCategory("update", value);
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -543,9 +570,8 @@ namespace SjUpdater.Model
             get { return _notified; }
             internal set
             {
-                if (value == _notified) return;
-                _notified = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<bool>(ref _notified, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -556,9 +582,8 @@ namespace SjUpdater.Model
             get { return _nrSeasons; }
             internal set
             {
-                if (value == _nrSeasons) return;
-                _nrSeasons = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<int>(ref _nrSeasons, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -582,9 +607,8 @@ namespace SjUpdater.Model
             get { return _allDownloads; }
             set
             {
-                _allDownloads = value;
-
-                OnPropertyChanged();
+                if (SetMemberVariable<List<DownloadData>>(ref _allDownloads, value, true))
+                    OnPropertyChanged();
             }
         }
 
@@ -598,10 +622,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterLanguage)
-                    return;
-                _filterLanguage = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<UploadLanguage?>(ref _filterLanguage, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -615,9 +637,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterName) return;
-                _filterName = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _filterName, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -631,9 +652,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterHoster) return;
-                _filterHoster = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _filterHoster, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -647,9 +667,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterFormat) return;
-                _filterFormat = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _filterFormat, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -663,9 +682,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterUploader) return;
-                _filterUploader = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _filterUploader, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -679,9 +697,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterSize) return;
-                _filterSize = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _filterSize, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -695,9 +712,8 @@ namespace SjUpdater.Model
             }
             set
             {
-                if (value == _filterRuntime) return;
-                _filterRuntime = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _filterRuntime, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -706,9 +722,11 @@ namespace SjUpdater.Model
             get { return _seasons; }
             internal set
             {
-                _seasons = value;
-                RecalcNumbers();
-                OnPropertyChanged();
+                if (SetMemberVariable<ObservableCollection<FavSeasonData>>(ref _seasons, value, true))
+                {
+                    RecalcNumbers();
+                    OnPropertyChanged();
+                }
             }
         }
         public ObservableCollection<DownloadData> NonSeasons
@@ -716,9 +734,11 @@ namespace SjUpdater.Model
             get { return _nonSeasons; }
             internal set
             {
-                _nonSeasons = value;
-                RecalcNumbers();
-                OnPropertyChanged();
+                if (SetMemberVariable<ObservableCollection<DownloadData>>(ref _nonSeasons, value, true))
+                {
+                    RecalcNumbers();
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -727,8 +747,8 @@ namespace SjUpdater.Model
             get { return _categories; }
             internal set
             {
-                _categories = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<ObservableCollection<String>>(ref _categories, value, true))
+                    OnPropertyChanged();
             }
         } 
 
@@ -737,12 +757,13 @@ namespace SjUpdater.Model
             get { return _status; }
             set
             {
-                if (_status == value) return;
-                _status = value;
-                SetCategory("active",_status=="Returning Series");
-                SetCategory("ended",_status=="Ended" || _status=="Canceled");
-                SetCategory("unknown", _status != "Returning Series"  && _status != "Ended" && _status != "Canceled");
-                OnPropertyChanged();
+                if (SetMemberVariable<String>(ref _status, value))
+                {
+                    SetCategory("active", _status == "Returning Series");
+                    SetCategory("ended", _status == "Ended" || _status == "Canceled");
+                    SetCategory("unknown", _status != "Returning Series" && _status != "Ended" && _status != "Canceled");
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -751,9 +772,8 @@ namespace SjUpdater.Model
             get { return _nextEpisodeDate; }
             set
             {
-                if (_nextEpisodeDate == value) return;
-                _nextEpisodeDate = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<DateTime?>(ref _nextEpisodeDate, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -762,9 +782,8 @@ namespace SjUpdater.Model
             get { return _previousEpisodeDate; }
             set
             {
-                if (_previousEpisodeDate == value) return;
-                _previousEpisodeDate = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<DateTime?>(ref _previousEpisodeDate, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -773,9 +792,8 @@ namespace SjUpdater.Model
             get { return _nextEpisodeSeasonNr; }
             set
             {
-                if (_nextEpisodeSeasonNr == value) return;
-                _nextEpisodeSeasonNr = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<int?>(ref _nextEpisodeSeasonNr, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -784,9 +802,8 @@ namespace SjUpdater.Model
             get { return _nextEpisodeEpisodeNr; }
             set
             {
-                if (_nextEpisodeEpisodeNr == value) return;
-                _nextEpisodeEpisodeNr = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<int?>(ref _nextEpisodeEpisodeNr, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -795,9 +812,8 @@ namespace SjUpdater.Model
             get { return _previousEpisodeSeasonNr; }
             set
             {
-                if (_previousEpisodeSeasonNr == value) return;
-                _previousEpisodeSeasonNr = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<int?>(ref _previousEpisodeSeasonNr, value))
+                    OnPropertyChanged();
             }
         }
 
@@ -806,10 +822,34 @@ namespace SjUpdater.Model
             get { return _previousEpisodeEpisodeNr; }
             set
             {
-                if (_previousEpisodeEpisodeNr == value) return;
-                _previousEpisodeEpisodeNr = value;
-                OnPropertyChanged();
+                if (SetMemberVariable<int?>(ref _previousEpisodeEpisodeNr, value))
+                    OnPropertyChanged();
             }
+        }
+
+        readonly Mutex _mutexDelete = new Mutex();
+
+        // Returns true if the member variable was set, false otherwise
+        private bool SetMemberVariable<T>(ref T member, T value, bool forceSet = false /* if false, do not set if current and new values are equal */)
+        {
+            bool result = false;
+
+            _mutexDelete.WaitOne();
+
+            if (!_isDeleted)
+            {
+                if (forceSet ||
+                    (member != null && !member.Equals(value)) ||
+                     (value != null && !value.Equals(member)))
+                {
+                    member = value;
+                    result = true;
+                }
+            }
+
+            _mutexDelete.ReleaseMutex();
+
+            return result;
         }
 
         public void ConvertToDatabase()
@@ -851,28 +891,32 @@ namespace SjUpdater.Model
             if (db == null)
                 return;
 
-            _mutexFetch.WaitOne();
-            _mutexFilter.WaitOne();
+            _mutexDelete.WaitOne();
 
-            if (!InDatabase)
+            if (!_isDeleted)
             {
-                Database.DatabaseWriter.AddToDatabase<FavShowData>(db.FavShowData, this);
+                if (!InDatabase)
+                {
+                    InDatabase = true;
 
-                InDatabase = true;
+                    if (Show != null)
+                        Show.AddToDatabase(db);
+
+                    foreach (FavSeasonData season in Seasons)
+                    {
+                        season.AddToDatabase(db);
+                    }
+
+                    foreach (DownloadData nonSeason in NonSeasons)
+                    {
+                        nonSeason.AddToDatabase(db);
+                    }
+
+                    Database.DatabaseWriter.AddToDatabase<FavShowData>(db.FavShowData, this);
+                }
             }
 
-            foreach (FavSeasonData season in Seasons)
-            {
-                season.AddToDatabase(db);
-            }
-
-            foreach (DownloadData nonSeason in NonSeasons)
-            {
-                nonSeason.AddToDatabase(db);
-            }
-
-            _mutexFetch.ReleaseMutex();
-            _mutexFilter.ReleaseMutex();
+            _mutexDelete.ReleaseMutex();
         }
 
         public void RemoveFromDatabase(Database.CustomDbContext db)
@@ -880,28 +924,34 @@ namespace SjUpdater.Model
             if (db == null)
                 return;
 
-            _mutexFetch.WaitOne();
-            _mutexFilter.WaitOne();
+            _mutexDelete.WaitOne();
+
+            _isDeleted = true;
 
             if (InDatabase)
             {
-                Database.DatabaseWriter.RemoveFromDatabase<FavShowData>(db.FavShowData, this);
-
                 InDatabase = false;
+
+                foreach (FavSeasonData season in Seasons.ToList())
+                {
+                    season.RemoveFromDatabase(db);
+                }
+
+                foreach (DownloadData nonSeason in NonSeasons.ToList())
+                {
+                    nonSeason.RemoveFromDatabase(db);
+                }
+
+                if (Show != null)
+                {
+                    Show.RemoveFromDatabase(db);
+                    _show = null;
+                }
+
+                Database.DatabaseWriter.RemoveFromDatabase<FavShowData>(db.FavShowData, this);
             }
 
-            foreach (FavSeasonData season in Seasons)
-            {
-                season.RemoveFromDatabase(db);
-            }
-
-            foreach (DownloadData nonSeason in NonSeasons)
-            {
-                nonSeason.RemoveFromDatabase(db);
-            }
-
-            _mutexFetch.ReleaseMutex();
-            _mutexFilter.ReleaseMutex();
+            _mutexDelete.ReleaseMutex();
         }
     }
 }

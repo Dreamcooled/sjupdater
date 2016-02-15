@@ -29,6 +29,9 @@ namespace SjUpdater.Model
         public String Description { get; set; }
         public String Url { get; set; }
         public String CoverUrl { get; set; }
+
+        public int ShowId { get; set; }
+        [ForeignKey("ShowId")]
         public ShowData Show { get; set; }
 
         public void ConvertToDatabase()
@@ -52,13 +55,13 @@ namespace SjUpdater.Model
 
             if (!InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<SeasonData>(db.SeasonData, this);
-
                 InDatabase = true;
-            }
 
-            if (Show != null)
-                Show.AddToDatabase(db);
+                if (Show != null)
+                    Show.AddToDatabase(db);
+
+                Database.DatabaseWriter.AddToDatabase<SeasonData>(db.SeasonData, this);
+            }
         }
 
         public void RemoveFromDatabase(Database.CustomDbContext db)
@@ -68,13 +71,16 @@ namespace SjUpdater.Model
 
             if (InDatabase)
             {
+                InDatabase = false;
+
                 Database.DatabaseWriter.RemoveFromDatabase<SeasonData>(db.SeasonData, this);
 
-                InDatabase = false;
+                if (Show != null)
+                {
+                    Show.RemoveFromDatabase(db);
+                    Show = null;
+                }
             }
-
-            if (Show != null)
-                Show.RemoveFromDatabase(db);
         }
     }
 }

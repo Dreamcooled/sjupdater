@@ -34,7 +34,7 @@ namespace SjUpdater.Database
             try
             {
                 set.Add(entity);
-                db.SaveChanges();
+                //db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace SjUpdater.Database
             try
             {
                 set.Remove(entity);
-                db.SaveChanges();
+                //db.SaveChanges();
             }
             catch (Exception ex)
             {

@@ -41,9 +41,9 @@ namespace SjUpdater.Model
 
             if (!InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<ShowData>(db.ShowData, this);
-
                 InDatabase = true;
+
+                Database.DatabaseWriter.AddToDatabase<ShowData>(db.ShowData, this);
             }
         }
 
@@ -54,9 +54,9 @@ namespace SjUpdater.Model
 
             if (InDatabase)
             {
-                Database.DatabaseWriter.RemoveFromDatabase<ShowData>(db.ShowData, this);
-
                 InDatabase = false;
+
+                Database.DatabaseWriter.RemoveFromDatabase<ShowData>(db.ShowData, this);
             }
         }
     }

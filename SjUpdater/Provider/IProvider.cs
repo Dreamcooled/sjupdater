@@ -198,7 +198,7 @@ namespace SjUpdater.Provider
 
             if (InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<EpisodeInformation>(db.EpisodeInformation, this);
+                Database.DatabaseWriter.RemoveFromDatabase<EpisodeInformation>(db.EpisodeInformation, this);
 
                 InDatabase = false;
             }

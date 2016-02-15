@@ -27,6 +27,9 @@ namespace SjUpdater.Model
         public String Title { get; set; }
 
         public Dictionary<String,String> Links { get; internal set; }
+
+        public int UploadId { get; set; }
+        [ForeignKey("UploadId")]
         public UploadData Upload { get; set; }
 
         // Used by DatabaseWriter because SQLCE doesn't seem to recognise Dictionary - Calvin 12-Feb-2016
@@ -79,15 +82,15 @@ namespace SjUpdater.Model
 
             if (!InDatabase)
             {
-                ConvertToDatabase();
-                
-                Database.DatabaseWriter.AddToDatabase<DownloadData>(db.DownloadData, this);
-
                 InDatabase = true;
-            }
 
-            //if (Upload != null)
-            //    Upload.AddToDatabase(db); // Causes "adding a relationship with an entity which is in the deleted state is not allowed" errors - Calvin 13-Feb-2016
+                ConvertToDatabase();
+
+                if (Upload != null)
+                    Upload.AddToDatabase(db); // Causes "adding a relationship with an entity which is in the deleted state is not allowed" errors - Calvin 13-Feb-2016
+
+                Database.DatabaseWriter.AddToDatabase<DownloadData>(db.DownloadData, this);
+            }
         }
 
         public void RemoveFromDatabase(Database.CustomDbContext db)
@@ -97,13 +100,17 @@ namespace SjUpdater.Model
 
             if (InDatabase)
             {
+                InDatabase = false;
+
+                if (Upload != null)
+                {
+                    Upload.RemoveFromDatabase(db); // Causes "adding a relationship with an entity which is in the deleted state is not allowed" errors - Calvin 13-Feb-2016
+                    Upload = null;
+                }
+
                 Database.DatabaseWriter.RemoveFromDatabase<DownloadData>(db.DownloadData, this);
 
-                InDatabase = false;
             }
-
-            //if (Upload != null)
-            //    Upload.RemoveFromDatabase(db); // Causes "adding a relationship with an entity which is in the deleted state is not allowed" errors - Calvin 13-Feb-2016
         }
     }
 }

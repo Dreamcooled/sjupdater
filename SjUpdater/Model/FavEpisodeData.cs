@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Xml.Serialization;
 using SjUpdater.Provider;
 using SjUpdater.Utils;
@@ -49,7 +50,6 @@ namespace SjUpdater.Model
             }
         }
 
-        [Required]
         public int SeasonId { get; set; }
         [ForeignKey("SeasonId")]
         public FavSeasonData Season
@@ -154,7 +154,7 @@ namespace SjUpdater.Model
         {
             InDatabase = true;
 
-            foreach (DownloadData download in Downloads)
+            foreach (DownloadData download in Downloads.ToList())
             {
                 download.ConvertFromDatabase();
             }
@@ -170,13 +170,21 @@ namespace SjUpdater.Model
 
             if (!InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<FavEpisodeData>(db.FavEpisodeData, this);
-
                 InDatabase = true;
-            }
 
-            if (EpisodeInformation != null)
-                EpisodeInformation.AddToDatabase(db);
+                foreach (DownloadData download in Downloads.ToList())
+                {
+                    download.AddToDatabase(db);
+                }
+
+                if (Season != null)
+                    Season.AddToDatabase(db);
+
+                if (EpisodeInformation != null)
+                    EpisodeInformation.AddToDatabase(db);
+
+                Database.DatabaseWriter.AddToDatabase<FavEpisodeData>(db.FavEpisodeData, this);
+            }
         }
 
         public void RemoveFromDatabase(Database.CustomDbContext db)
@@ -186,13 +194,24 @@ namespace SjUpdater.Model
 
             if (InDatabase)
             {
-                Database.DatabaseWriter.RemoveFromDatabase<FavEpisodeData>(db.FavEpisodeData, this);
-
                 InDatabase = false;
-            }
 
-            if (EpisodeInformation != null)
-                EpisodeInformation.RemoveFromDatabase(db);
+                foreach (DownloadData download in Downloads.ToList())
+                {
+                    download.RemoveFromDatabase(db);
+                }
+
+                if (Season != null)
+                {
+                    Season.RemoveFromDatabase(db);
+                    Season = null;
+                }
+
+                if (EpisodeInformation != null)
+                    EpisodeInformation.RemoveFromDatabase(db);
+
+                Database.DatabaseWriter.RemoveFromDatabase<FavEpisodeData>(db.FavEpisodeData, this);
+            }
         }
     }
 }
