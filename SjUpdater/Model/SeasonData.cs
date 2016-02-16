@@ -34,18 +34,24 @@ namespace SjUpdater.Model
         [ForeignKey("ShowId")]
         public ShowData Show { get; set; }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
-            if (Show != null)
-                Show.ConvertToDatabase();
+            if (cascade)
+            {
+                if (Show != null)
+                    Show.ConvertToDatabase();
+            }
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
 
-            if (Show != null)
-                Show.ConvertFromDatabase();
+            if (cascade)
+            {
+                if (Show != null)
+                    Show.ConvertFromDatabase();
+            }
         }
 
         public void AddToDatabase(Database.CustomDbContext db)
@@ -56,6 +62,7 @@ namespace SjUpdater.Model
             if (!InDatabase)
             {
                 InDatabase = true;
+                ConvertToDatabase(false);
 
                 if (Show != null)
                     Show.AddToDatabase(db);

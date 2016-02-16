@@ -141,8 +141,9 @@ namespace SjUpdater.Utils
                     stream.CopyTo(fs);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                throw ex;
                 // Don't worry if we can't write, doesn't affect application function ~Calvin 11-Feb-2016
             }
         }

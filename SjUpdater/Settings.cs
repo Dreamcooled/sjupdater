@@ -405,19 +405,25 @@ namespace SjUpdater
                 XmlSerialization.SaveToXml(this,filename,SettingsVersion);
         }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
-            foreach (FavShowData tvShow in TvShows)
+            if (cascade)
             {
-                tvShow.ConvertToDatabase();
+                foreach (FavShowData tvShow in TvShows)
+                {
+                    tvShow.ConvertToDatabase();
+                }
             }
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
-            foreach (FavShowData tvShow in TvShows)
+            if (cascade)
             {
-                tvShow.ConvertFromDatabase();
+                foreach (FavShowData tvShow in TvShows)
+                {
+                    tvShow.ConvertFromDatabase();
+                }
             }
         }
 

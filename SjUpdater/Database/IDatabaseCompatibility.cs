@@ -11,8 +11,8 @@ namespace SjUpdater.Database
     /// </summary>
     interface IDatabaseCompatibility
     {
-        void ConvertToDatabase();
-        void ConvertFromDatabase();
+        void ConvertToDatabase(bool cascade = true);
+        void ConvertFromDatabase(bool cascade = true);
         void AddToDatabase(CustomDbContext db);
         void RemoveFromDatabase(CustomDbContext db);
     }

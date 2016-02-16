@@ -26,6 +26,15 @@ namespace SjUpdater.Database
 
         static Mutex dbMutex = new Mutex();
 
+        public static void Commit()
+        {
+            dbMutex.WaitOne();
+
+            db.SaveChanges();
+
+            dbMutex.ReleaseMutex();
+        }
+
         public static void AddToDatabase<T>(DbSet<T> set, T entity) where T : class
         {
             dbMutex.WaitOne();
@@ -34,7 +43,6 @@ namespace SjUpdater.Database
             try
             {
                 set.Add(entity);
-                //db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -56,7 +64,6 @@ namespace SjUpdater.Database
             try
             {
                 set.Remove(entity);
-                //db.SaveChanges();
             }
             catch (Exception ex)
             {

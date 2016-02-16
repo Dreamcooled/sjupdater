@@ -25,11 +25,11 @@ namespace SjUpdater.Model
         public String Name { get; set; }
         public String Url { get; set; }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
         }
@@ -42,6 +42,7 @@ namespace SjUpdater.Model
             if (!InDatabase)
             {
                 InDatabase = true;
+                ConvertToDatabase(false);
 
                 Database.DatabaseWriter.AddToDatabase<ShowData>(db.ShowData, this);
             }

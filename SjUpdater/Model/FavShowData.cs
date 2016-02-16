@@ -852,38 +852,46 @@ namespace SjUpdater.Model
             return result;
         }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
-            foreach (FavSeasonData season in Seasons)
+            if (cascade)
             {
-                season.ConvertToDatabase();
-            }
+                foreach (FavSeasonData season in Seasons)
+                {
+                    season.ConvertToDatabase();
+                }
 
-            foreach (DownloadData nonSeason in NonSeasons)
-            {
-                nonSeason.ConvertToDatabase();
-            }
+                foreach (DownloadData nonSeason in NonSeasons)
+                {
+                    nonSeason.ConvertToDatabase();
+                }
 
-            if (Show != null)
-                Show.ConvertToDatabase();
+                if (Show != null)
+                    Show.ConvertToDatabase();
+            }
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
 
-            foreach (FavSeasonData season in Seasons)
+            if (cascade)
             {
-                season.ConvertFromDatabase();
+                foreach (FavSeasonData season in Seasons)
+                {
+                    season.ConvertFromDatabase();
+                }
+
+                foreach (DownloadData nonSeason in NonSeasons)
+                {
+                    nonSeason.ConvertFromDatabase();
+                }
+
+                if (Show != null)
+                    Show.ConvertFromDatabase();
             }
 
-            foreach (DownloadData nonSeason in NonSeasons)
-            {
-                nonSeason.ConvertFromDatabase();
-            }
-
-            if (Show != null)
-                Show.ConvertFromDatabase();
+            RecalcNumbers();
         }
 
         public void AddToDatabase(Database.CustomDbContext db)
@@ -898,6 +906,7 @@ namespace SjUpdater.Model
                 if (!InDatabase)
                 {
                     InDatabase = true;
+                    ConvertToDatabase(false);
 
                     if (Show != null)
                         Show.AddToDatabase(db);

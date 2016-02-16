@@ -139,28 +139,34 @@ namespace SjUpdater.Model
             }
         }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
-            foreach (DownloadData download in Downloads)
+            if (cascade)
             {
-                download.ConvertToDatabase();
-            }
+                foreach (DownloadData download in Downloads)
+                {
+                    download.ConvertToDatabase();
+                }
 
-            if (EpisodeInformation != null)
-                EpisodeInformation.ConvertToDatabase();
+                if (EpisodeInformation != null)
+                    EpisodeInformation.ConvertToDatabase();
+            }
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
 
-            foreach (DownloadData download in Downloads.ToList())
+            if (cascade)
             {
-                download.ConvertFromDatabase();
-            }
+                foreach (DownloadData download in Downloads.ToList())
+                {
+                    download.ConvertFromDatabase();
+                }
 
-            if (EpisodeInformation != null)
-                EpisodeInformation.ConvertFromDatabase();
+                if (EpisodeInformation != null)
+                    EpisodeInformation.ConvertFromDatabase();
+            }
         }
 
         public void AddToDatabase(Database.CustomDbContext db)
@@ -171,6 +177,7 @@ namespace SjUpdater.Model
             if (!InDatabase)
             {
                 InDatabase = true;
+                ConvertToDatabase(false);
 
                 foreach (DownloadData download in Downloads.ToList())
                 {

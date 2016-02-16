@@ -45,11 +45,11 @@ namespace SjUpdater.Provider
         public String Poster { get; set; }
         public String Backdrop { get; set; }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
         }
@@ -61,9 +61,10 @@ namespace SjUpdater.Provider
 
             if (!InDatabase)
             {
-                //Database.DatabaseWriter.AddToDatabase<ShowInformation>(db.ShowInformation, this);
-
                 InDatabase = true;
+                ConvertToDatabase(false);
+
+                //Database.DatabaseWriter.AddToDatabase<ShowInformation>(db.ShowInformation, this); // not used at the moment
             }
         }
 
@@ -74,9 +75,9 @@ namespace SjUpdater.Provider
 
             if (InDatabase)
             {
-               //Database.DatabaseWriter.RemoveFromDatabase<ShowInformation>(db.ShowInformation, this);
-
                 InDatabase = false;
+
+                //Database.DatabaseWriter.RemoveFromDatabase<ShowInformation>(db.ShowInformation, this); // not used at the moment
             }
         }
     }
@@ -108,11 +109,11 @@ namespace SjUpdater.Provider
         public String Poster { get; set; }
         public String Backdrop { get; set; }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
         }
@@ -124,9 +125,10 @@ namespace SjUpdater.Provider
 
             if (!InDatabase)
             {
-                //Database.DatabaseWriter.AddToDatabase<SeasonInformation>(db.SeasonInformation, this);
-
                 InDatabase = true;
+                ConvertToDatabase(false);
+
+                //Database.DatabaseWriter.AddToDatabase<SeasonInformation>(db.SeasonInformation, this); // not used at the moment
             }
         }
 
@@ -137,9 +139,9 @@ namespace SjUpdater.Provider
 
             if (InDatabase)
             {
-                //Database.DatabaseWriter.RemoveFromDatabase<SeasonInformation>(db.SeasonInformation, this);
-
                 InDatabase = false;
+
+                //Database.DatabaseWriter.RemoveFromDatabase<SeasonInformation>(db.SeasonInformation, this); // not used at the moment
             }
         }
     }
@@ -169,11 +171,11 @@ namespace SjUpdater.Provider
         public object Images { get; set; }
         public String Image { get; set; }
 
-        public void ConvertToDatabase()
+        public void ConvertToDatabase(bool cascade = true)
         {
         }
 
-        public void ConvertFromDatabase()
+        public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
         }
@@ -185,9 +187,9 @@ namespace SjUpdater.Provider
 
             if (!InDatabase)
             {
-                Database.DatabaseWriter.AddToDatabase<EpisodeInformation>(db.EpisodeInformation, this);
-
                 InDatabase = true;
+
+                Database.DatabaseWriter.AddToDatabase<EpisodeInformation>(db.EpisodeInformation, this);
             }
         }
 
@@ -198,9 +200,10 @@ namespace SjUpdater.Provider
 
             if (InDatabase)
             {
-                Database.DatabaseWriter.RemoveFromDatabase<EpisodeInformation>(db.EpisodeInformation, this);
-
                 InDatabase = false;
+                ConvertToDatabase(false);
+
+                Database.DatabaseWriter.RemoveFromDatabase<EpisodeInformation>(db.EpisodeInformation, this);
             }
         }
     }
