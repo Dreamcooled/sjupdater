@@ -30,11 +30,9 @@ namespace SjUpdater
         private readonly Settings _setti;
         private readonly MainWindowViewModel _viewModel;
         private readonly UpdateWindow _updater;
-        private readonly Timer updateTimer;
+        private readonly Timer _updateTimer;
 
         private readonly List<object> _selectedEpisodeTreeItems = new List<object>();
-
-  
 
         public MainWindow()
         {
@@ -53,14 +51,14 @@ namespace SjUpdater
             _currentTheme = ThemeManager.GetAppTheme(_setti.ThemeBase);
             CurrentAccent = _setti.ThemeAccent;
 
-            updateTimer = new Timer();
+            _updateTimer = new Timer();
             //Updater
             _updater = new UpdateWindow("https://dreamcooled.github.io/sjupdater/latest", true, "SjUpdater.exe", "-uf " + Stats.GetVersionString());
-            _updater.updateStartedEvent += (a, dsa) =>
-                                           {
-                                               Terminate(null);
-                                               Stats.TrackAction(Stats.TrackActivity.AppUpdate);
-                                           };
+            _updater.UpdateStartedEvent += (a, dsa) =>
+            {
+                Terminate(null);
+                Stats.TrackAction(Stats.TrackActivity.AppUpdate);
+            };
 
             //Start!
             InitializeComponent();
@@ -71,12 +69,11 @@ namespace SjUpdater
             _viewModel = new MainWindowViewModel(_setti.TvShows);
             DataContext = _viewModel;
 
-
             //Enhance TreeView with Multiselection Extension
             //Note: We could also pass a observable collection to the first method, and get changes from the CollectionChanged Event on the observablecollection
             //But this way (custom event) we get less Events, which speeds up the GUI
             TreeViewExtensions.SetSelectedItems(ShowTreeView, _selectedEpisodeTreeItems);
-            TreeViewExtensions.AddSelectionChangedListener(ShowTreeView,_selectedEpisodeTreeItems_CollectionChanged); 
+            TreeViewExtensions.AddSelectionChangedListener(ShowTreeView, _selectedEpisodeTreeItems_CollectionChanged);
 
             SwitchPage(0);
 
@@ -101,13 +98,11 @@ namespace SjUpdater
             if (_setti.CheckForUpdates)
             {
                 _updater.Show(false, true);
-                updateTimer = new Timer(1000 * 60 * 30); // 30 minutes
-                updateTimer.Elapsed += (o, args) => Dispatcher.Invoke(() => _updater.Show(false, true));
-                updateTimer.Start();
+                _updateTimer = new Timer(1000 * 60 * 30); // 30 minutes
+                _updateTimer.Elapsed += (o, args) => Dispatcher.Invoke(() => _updater.Show(false, true));
+                _updateTimer.Start();
             }
         }
-
-
 
         private void t_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -128,33 +123,33 @@ namespace SjUpdater
             var stp = StaticInstance.ThreadPool;
             //stp.MaxThreads = (int) _setti.NumFetchThreads;
             var results = new List<IWaitableResult>();
-            foreach (FavShowData t in _setti.TvShows)
+            foreach (var t in _setti.TvShows)
             {
-                results.Add(stp.QueueWorkItem(data => data.Fetch(), t,true,ThreadPriority.AboveNormal)); //schedule update of show (executed paralell)
+                results.Add(stp.QueueWorkItem(data => data.Fetch(), t, true, WorkItemPriority.BelowNormal)); //schedule update of show (executed paralell)
             }
             //wait for completion
             stp.QueueWorkItem(() =>
-                              {
-                                  SmartThreadPool.WaitAll(results.ToArray());
-                                  _sema.Release();
+            {
+                SmartThreadPool.WaitAll(results.ToArray());
+                _sema.Release();
 
-                                  var updates = _setti.TvShows.Where(show => show.NewEpisodes && !show.Notified).ToList();
-                                  if (updates.Count > 0)
-                                  {
-                                      updates.ForEach(show => show.Notified = true);
+                var updates = _setti.TvShows.Where(show => show.NewEpisodes && !show.Notified).ToList();
+                if (updates.Count > 0)
+                {
+                    updates.ForEach(show => show.Notified = true);
 
-                                      if (_setti.ShowNotifications)
-                                      {
-                                          Dispatcher.Invoke(() =>
-                                                            {
-                                                                var n = new NotificationBalloon(updates);
-                                                                n.ShowViewClicked += on_ShowViewClicked;
+                    if (_setti.ShowNotifications)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            var n = new NotificationBalloon(updates);
+                            n.ShowViewClicked += on_ShowViewClicked;
 
-                                                                NotifyIcon.ShowCustomBalloon(n, PopupAnimation.Slide, _setti.NotificationTimeout <= 0 ? (int?) null : _setti.NotificationTimeout);
-                                                            });
-                                      }
-                                  }
-                              }, true, ThreadPriority.AboveNormal);
+                            NotifyIcon.ShowCustomBalloon(n, PopupAnimation.Slide, _setti.NotificationTimeout <= 0 ? (int?)null : _setti.NotificationTimeout);
+                        });
+                    }
+                }
+            }, true, WorkItemPriority.BelowNormal);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -188,10 +183,9 @@ namespace SjUpdater
                 Activate(); //"Bring to front"
         }
 
-
         private Accent _currentAccent;
 
-        public String CurrentAccent
+        public string CurrentAccent
         {
             get { return _currentAccent.Name; }
             set
@@ -204,7 +198,7 @@ namespace SjUpdater
 
         private AppTheme _currentTheme;
 
-        public String CurrentTheme
+        public string CurrentTheme
         {
             get { return _currentTheme.Name; }
             set
@@ -215,7 +209,10 @@ namespace SjUpdater
             }
         }
 
-        public String CurrentVersionString { get { return Stats.GetVersionString(); } }
+        public string CurrentVersionString
+        {
+            get { return Stats.GetVersionString(); }
+        }
 
         public ICommand AddShowCommand { get; private set; }
         public ICommand ShowClickedCommand { get; private set; }
@@ -241,11 +238,11 @@ namespace SjUpdater
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string searchString = TextBoxAutoComl.Text;
+            var searchString = TextBoxAutoComl.Text;
 
             if (_currentWorkItem == null || _currentWorkItem.IsCompleted)
             {
-                _currentWorkItem = StaticInstance.ThreadPool.QueueWorkItem(UpdateShowSearch, searchString, true, ThreadPriority.Highest);
+                _currentWorkItem = StaticInstance.ThreadPool.QueueWorkItem(UpdateShowSearch, searchString, true, WorkItemPriority.Highest);
             }
             else
             {
@@ -255,19 +252,18 @@ namespace SjUpdater
 
         private void UpdateShowSearch(string query)
         {
-            List<KeyValuePair<string, string>> result = SjInfo.SearchSjOrg(query);
+            var result = SjInfo.SearchSjOrg(query);
 
             Dispatcher.Invoke(() =>
-                              {
-                                  ListViewAutoCompl.ItemsSource = result;
-                              });
+            {
+                ListViewAutoCompl.ItemsSource = result;
+            });
 
             if (!string.IsNullOrEmpty(_nextSearchString) && _nextSearchString != query)
             {
-                _currentWorkItem = StaticInstance.ThreadPool.QueueWorkItem(UpdateShowSearch, _nextSearchString, true, ThreadPriority.Highest);
+                _currentWorkItem = StaticInstance.ThreadPool.QueueWorkItem(UpdateShowSearch, _nextSearchString, true, WorkItemPriority.Highest);
             }
         }
-
 
         private void on_ShowViewClicked(object sender, ShowTileViewModel showView)
         {
@@ -287,7 +283,7 @@ namespace SjUpdater
 
         private void ShowGotoPage(object sender, RoutedEventArgs e)
         {
-            var vm = ((ShowViewModel) ShowGrid.DataContext).Show;
+            var vm = ((ShowViewModel)ShowGrid.DataContext).Show;
             var url = vm.Show.Url;
             var p = new Process();
             p.StartInfo = new ProcessStartInfo(url);
@@ -311,20 +307,20 @@ namespace SjUpdater
             Stats.TrackAction(Stats.TrackActivity.Browse, "Github");
         }
 
-
         private async void ShowDelete(object sender, RoutedEventArgs e)
         {
             var res = await this.ShowMessageAsync("Remove Show?", "Do you really want to remove this show from your favorites?",
-                MessageDialogStyle.AffirmativeAndNegative,new MetroDialogSettings{AffirmativeButtonText = "Yes", NegativeButtonText = "No",AnimateShow = false,AnimateHide = false});
+                MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings {AffirmativeButtonText = "Yes", NegativeButtonText = "No", AnimateShow = false, AnimateHide = false});
             if (res == MessageDialogResult.Affirmative)
             {
-                _setti.TvShows.Remove(((ShowViewModel) ShowGrid.DataContext).Show);
+                _setti.TvShows.Remove(((ShowViewModel)ShowGrid.DataContext).Show);
                 SwitchPage(0);
             }
         }
 
-        private MultiSelectionViewModel _multiSelectionViewModel = new MultiSelectionViewModel();
-        void _selectedEpisodeTreeItems_CollectionChanged(object sender)
+        private readonly MultiSelectionViewModel _multiSelectionViewModel = new MultiSelectionViewModel();
+
+        private void _selectedEpisodeTreeItems_CollectionChanged(object sender)
         {
             var first = _selectedEpisodeTreeItems.FirstOrDefault();
             if (_selectedEpisodeTreeItems.Count == 1 && first is SeasonViewModel)
@@ -347,7 +343,7 @@ namespace SjUpdater
             }
             else
             {
-                var selectedEpisodes = _selectedEpisodeTreeItems.OfType<EpisodeViewModel>().Select(ev=>ev.Episode).ToList();
+                var selectedEpisodes = _selectedEpisodeTreeItems.OfType<EpisodeViewModel>().Select(ev => ev.Episode).ToList();
                 _multiSelectionViewModel.SelectedEpisodes = selectedEpisodes;
                 EpisodeTabControl_Multi.DataContext = _multiSelectionViewModel;
                 EpisodeTabControl.SelectedIndex = 3;
@@ -356,23 +352,19 @@ namespace SjUpdater
 
         private void CleanShow(object sender, RoutedEventArgs e)
         {
-            var s = ((ShowViewModel) ShowGrid.DataContext).Show;
-            StaticInstance.ThreadPool.QueueWorkItem(() => s.ApplyFilter(true,false), true, ThreadPriority.AboveNormal);
+            var s = ((ShowViewModel)ShowGrid.DataContext).Show;
+            StaticInstance.ThreadPool.QueueWorkItem(() => s.ApplyFilter(true, false), true, WorkItemPriority.AboveNormal);
         }
-
-
-
 
         private void EpisodesBack(object sender, RoutedEventArgs e)
         {
             //The following block is a bit hacky. but still easier than to subscribe on the changed events of every episode
-            var show = ((ShowViewModel) ShowGrid.DataContext).Show;
+            var show = ((ShowViewModel)ShowGrid.DataContext).Show;
             show.NewEpisodes = show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewEpisode));
-            show.NewUpdates= show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewUpdate));
+            show.NewUpdates = show.Seasons.Any(s => s.Episodes.Any(ep => ep.NewUpdate));
             show.NotifyBigChange();
             SwitchPage(0);
         }
-
 
         private void NavBack(object sender, ExecutedRoutedEventArgs e)
         {
@@ -422,7 +414,7 @@ namespace SjUpdater
 
                     TextBoxAutoComl.Text = "";
                     AddShowFlyout.IsOpen = false;
-                    _setti.TvShows.Add(new FavShowData(new ShowData { Name = selectedShow.Key, Url = selectedShow.Value }, true));
+                    _setti.TvShows.Add(new FavShowData(new ShowData {Name = selectedShow.Key, Url = selectedShow.Value}, true));
                     Stats.TrackAction(Stats.TrackActivity.ShowAdd);
                 }
             }
@@ -432,7 +424,7 @@ namespace SjUpdater
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
-            if (!_forceClose && _setti.MinimizeToTray  && !Debugger.IsAttached)
+            if (!_forceClose && _setti.MinimizeToTray && !Debugger.IsAttached)
             {
                 e.Cancel = true; //abort closing
                 Hide(); // hide instead
@@ -473,42 +465,41 @@ namespace SjUpdater
             if (!FilterFlyout.IsOpen)
             {
                 var vm = FilterFlyout.DataContext as ShowViewModel;
-                vm.Show.ApplyFilter(true,false);
+                vm.Show.ApplyFilter(true, false);
                 var firstSeason = vm.Seasons.FirstOrDefault();
                 if (firstSeason != null) firstSeason.IsExpanded = true;
                 Stats.TrackAction(Stats.TrackActivity.Filter);
             }
-
         }
 
-        public static readonly Dictionary<String, int> DictUpdateTimes = new Dictionary<string, int>()
-                                                                         {
-                                                                             {"Never", -1},
-                                                                             {"5 min", 1000 * 60 * 5},
-                                                                             {"15 min", 1000 * 60 * 15},
-                                                                             {"30 min", 1000 * 60 * 30},
-                                                                             {"1 h", 1000 * 3600 * 1},
-                                                                             {"2 h", 1000 * 3600 * 2},
-                                                                             {"3 h", 1000 * 3600 * 3},
-                                                                             {"6 h", 1000 * 3600 * 6},
-                                                                             {"12 h", 1000 * 3600 * 12},
-                                                                             {"24 h", 1000 * 3600 * 24}
-                                                                         };
+        public static readonly Dictionary<string, int> DictUpdateTimes = new Dictionary<string, int>()
+        {
+            {"Never", - 1},
+            {"5 min", 1000 * 60 * 5},
+            {"15 min", 1000 * 60 * 15},
+            {"30 min", 1000 * 60 * 30},
+            {"1 h", 1000 * 3600 * 1},
+            {"2 h", 1000 * 3600 * 2},
+            {"3 h", 1000 * 3600 * 3},
+            {"6 h", 1000 * 3600 * 6},
+            {"12 h", 1000 * 3600 * 12},
+            {"24 h", 1000 * 3600 * 24}
+        };
 
-        public static readonly Dictionary<String, int> DictNotifyTimeouts = new Dictionary<string, int>()
-                                                                            {
-                                                                                {"Never", -1},
-                                                                                {"2 sec", 1000 * 2},
-                                                                                {"3 sec", 1000 * 3},
-                                                                                {"5 sec", 1000 * 5},
-                                                                                {"10 sec", 1000 * 10},
-                                                                                {"20 sec", 1000 * 20},
-                                                                                {"30 sec", 1000 * 30},
-                                                                                {"1 m", 1000 * 60},
-                                                                                {"2 m", 1000 * 60 * 2},
-                                                                                {"3 m", 1000 * 60 * 3},
-                                                                                {"5 m", 1000 * 60 * 5}
-                                                                            };
+        public static readonly Dictionary<string, int> DictNotifyTimeouts = new Dictionary<string, int>()
+        {
+            {"Never", - 1},
+            {"2 sec", 1000 * 2},
+            {"3 sec", 1000 * 3},
+            {"5 sec", 1000 * 5},
+            {"10 sec", 1000 * 10},
+            {"20 sec", 1000 * 20},
+            {"30 sec", 1000 * 30},
+            {"1 m", 1000 * 60},
+            {"2 m", 1000 * 60 * 2},
+            {"3 m", 1000 * 60 * 3},
+            {"5 m", 1000 * 60 * 5}
+        };
 
         private void StatsInfoButtonClicked(object sender, RoutedEventArgs e)
         {
@@ -522,19 +513,17 @@ namespace SjUpdater
 
         private void restartButton_Click(object sender, RoutedEventArgs e)
         {
-            string exectuable = "SjUpdater.exe";
-
-            string parameter = "";
-
-            string command =
+            var exectuable = "SjUpdater.exe";
+            var parameter = "";
+            var command =
                 "/C @echo off & for /l %a in (0) do TaskList /FI \"IMAGENAME eq " + exectuable + "\" 2>NUL | Find \"" + exectuable + "\" >NUL || " + //Waits on app termination
                 "( start " + exectuable + " " + parameter + " & EXIT)";
-            ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", command);
+            var psi = new ProcessStartInfo("cmd.exe", command);
             psi.CreateNoWindow = true;
             psi.UseShellExecute = false;
             psi.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            Process cmd = new Process();
+            var cmd = new Process();
             cmd.StartInfo = psi;
             cmd.Start();
             Terminate(null);
@@ -590,9 +579,5 @@ namespace SjUpdater
         {
             NonePopup.IsOpen = false;
         }
-
-
-
-   
     }
 }

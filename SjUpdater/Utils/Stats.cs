@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
+using Amib.Threading;
 using RestSharp;
 
 namespace SjUpdater.Utils
@@ -24,7 +24,6 @@ namespace SjUpdater.Utils
             AppUpdate,
             ShowAdd,
             Download,
-            /* Review,*/
             Browse,
             Filter
         };
@@ -62,7 +61,7 @@ namespace SjUpdater.Utils
                 {
                     //sorry
                 }
-            }, true, ThreadPriority.BelowNormal);
+            }, true, WorkItemPriority.Lowest);
         }
 
         public static void TrackCustomVariable(string key, object value, string comment = null)
@@ -98,7 +97,7 @@ namespace SjUpdater.Utils
                 {
                     //sorry
                 }
-            }, true, ThreadPriority.BelowNormal);
+            }, true, WorkItemPriority.Lowest);
         }
 
         public static string GetVersionString()

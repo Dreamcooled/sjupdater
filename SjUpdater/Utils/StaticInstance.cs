@@ -1,15 +1,12 @@
-﻿using Amib.Threading;
-
-namespace SjUpdater.Utils
+﻿namespace SjUpdater.Utils
 {
     public static class StaticInstance
     {
-        private static readonly ThreadPool threadPool;
-        public static ThreadPool ThreadPool { get { return threadPool; } }
+        public static ThreadPool ThreadPool { get; }
 
         static StaticInstance()
         {
-            threadPool = new ThreadPool();
+            ThreadPool = new ThreadPool();
         }
     }
 }

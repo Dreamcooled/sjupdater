@@ -23,9 +23,9 @@ namespace SjUpdater.Model
         private string _name;
         private string _cover;
         private ObservableCollection<FavSeasonData> _seasons;
-        private ObservableCollection<DownloadData> _nonSeasons; 
+        private ObservableCollection<DownloadData> _nonSeasons;
         private ShowData _show;
-        private int _nrSeasons ;
+        private int _nrSeasons;
         private int _nrEpisodes;
         private bool _newEpisodes;
         private bool _newUpdates;
@@ -51,20 +51,20 @@ namespace SjUpdater.Model
         private int? _nextEpisodeEpisodeNr;
         private int? _previousEpisodeSeasonNr;
         private int? _previousEpisodeEpisodeNr;
-        private ObservableCollection<string> _categories; 
+        private ObservableCollection<string> _categories;
 
 
         private List<DownloadData> _allDownloads;
         private readonly bool _isNewShow; //=false
 
-        public FavShowData(ShowData show, bool autofetch= false) :this()
+        public FavShowData(ShowData show, bool autofetch = false) : this()
         {
             _show = show;
             _isNewShow = true;
             _name = show.Name;
             if (autofetch)
             {
-                StaticInstance.ThreadPool.QueueWorkItem(Fetch,true, ThreadPriority.BelowNormal);
+                StaticInstance.ThreadPool.QueueWorkItem(Fetch, true, WorkItemPriority.BelowNormal);
             }
         }
 
@@ -77,7 +77,7 @@ namespace SjUpdater.Model
             _allDownloads = new List<DownloadData>();
             _providerData = null;
             _categories = new ObservableCollection<string>();
-           // _showInformation = null; //TODO: fill & use this info
+            // _showInformation = null; //TODO: fill & use this info
 
             //the getters will return the default filter if the value is a null string
             _filterName = null;
@@ -95,8 +95,9 @@ namespace SjUpdater.Model
             _resetOnRefresh = true;
         }
 
-        readonly Mutex _mutexFetch = new Mutex();
-        readonly Mutex _mutexFilter = new Mutex();
+        private readonly Mutex _mutexFetch = new Mutex();
+        private readonly Mutex _mutexFilter = new Mutex();
+
         public void Fetch()
         {
             if (!_mutexFetch.WaitOne(0)) //try get mutex
@@ -112,9 +113,9 @@ namespace SjUpdater.Model
                 ProviderData = ProviderManager.GetProvider().FindShow(Name);
                 Status = "Unknown";
             }
-            if(_providerData!=null)
+            if (_providerData != null)
             {
-                ShowInformation si = ProviderManager.GetProvider().GetShowInformation(ProviderData,false,true);
+                var si = ProviderManager.GetProvider().GetShowInformation(ProviderData, false, true);
                 if (si != null)
                 {
                     Status = si.Status;
@@ -130,7 +131,7 @@ namespace SjUpdater.Model
             try
             {
                 IsLoading = true;
-                String cover;
+                string cover;
                 var episodes = SjInfo.ParseSjOrgSite(_show, out cover, Settings.Instance.UploadCache);
                 AllDownloads = episodes;
                 if (cover != "")
@@ -158,7 +159,7 @@ namespace SjUpdater.Model
             }
         }
 
-        public void ApplyFilter(bool reset,bool notifications=true)
+        public void ApplyFilter(bool reset, bool notifications = true)
         {
             if (AllDownloads == null || !AllDownloads.Any())
             {
@@ -170,13 +171,13 @@ namespace SjUpdater.Model
 
             FavSeasonData currentFavSeason = null;
             SeasonData currentSeasonData = null;
-            int seasonNr = -1;
+            var seasonNr = - 1;
 
-            ObservableCollection<FavSeasonData> newSeasons = new ObservableCollection<FavSeasonData>();
-            ObservableCollection<DownloadData> newNonSeasons = new ObservableCollection<DownloadData>();
+            var newSeasons = new ObservableCollection<FavSeasonData>();
+            var newNonSeasons = new ObservableCollection<DownloadData>();
 
-            bool setNewEpisodes = false;
-            bool setNewUpdates = false;
+            var setNewEpisodes = false;
+            var setNewUpdates = false;
 
             if (_isNewShow) notifications = false;
             reset = reset || _isNewShow;
@@ -187,7 +188,7 @@ namespace SjUpdater.Model
             }
 
             UploadData currentUpload = null;
-            bool ignoreCurrentUpload = false;
+            var ignoreCurrentUpload = false;
             foreach (var download in AllDownloads)
             {
                 //upload stuff --------------------------------------------------------------------
@@ -198,32 +199,32 @@ namespace SjUpdater.Model
                     do
                     {
 
-                        UploadLanguage language = currentUpload.Language;
+                        var language = currentUpload.Language;
                         if (!Settings.Instance.MarkSubbedAsGerman && currentUpload.Subbed) //dont mark german-subbed as german
                         {
-                            language&=~UploadLanguage.German; //remove german
+                            language &= ~UploadLanguage.German; //remove german
                         }
 
                         if ((language & FilterLanguage) == 0) //Filter: Language
                             break;
 
-                        if (!String.IsNullOrWhiteSpace(FilterRuntime) &&     //Filter: Runtime
+                        if (!string.IsNullOrWhiteSpace(FilterRuntime) && //Filter: Runtime
                             !(new Regex(FilterRuntime).Match(currentUpload.Runtime).Success))
                             break;
-                        
 
-                        if (!String.IsNullOrWhiteSpace(FilterSize) &&     //Filter: Size
+
+                        if (!string.IsNullOrWhiteSpace(FilterSize) && //Filter: Size
                             !(new Regex(FilterSize).Match(currentUpload.Size).Success))
                             break;
-                        
-                        if (!String.IsNullOrWhiteSpace(FilterUploader) &&     //Filter: Uploader
+
+                        if (!string.IsNullOrWhiteSpace(FilterUploader) && //Filter: Uploader
                             !(new Regex(FilterUploader).Match(currentUpload.Uploader).Success))
                             break;
-                        
-                        if (!String.IsNullOrWhiteSpace(FilterFormat) &&     //Filter: Format
+
+                        if (!string.IsNullOrWhiteSpace(FilterFormat) && //Filter: Format
                             !(new Regex(FilterFormat).Match(currentUpload.Format).Success))
                             break;
-                       
+
                         ignoreCurrentUpload = false;
 
                     } while (false);
@@ -236,19 +237,19 @@ namespace SjUpdater.Model
 
                 //episode stuff ---------------------
 
-                if (!String.IsNullOrWhiteSpace(FilterName) && //Filter: Name
+                if (!string.IsNullOrWhiteSpace(FilterName) && //Filter: Name
                     !(new Regex(FilterName).Match(download.Title).Success))
                     continue;
 
-                if (!String.IsNullOrWhiteSpace(FilterHoster))
+                if (!string.IsNullOrWhiteSpace(FilterHoster))
                 {
                     var r = new Regex(FilterHoster);
                     var dls = download.Links.Keys.Where(hoster => r.Match(hoster).Success).ToList(); //all keys that match the regex
                     if (!dls.Any()) //Filter: Hoster
                         continue;
-                    for (int i = download.Links.Keys.Count - 1; i >= 0; i--)
+                    for (var i = download.Links.Keys.Count - 1; i >= 0; i--)
                     {
-                        string key = download.Links.Keys.ElementAt(i);
+                        var key = download.Links.Keys.ElementAt(i);
                         if (!dls.Contains(key))
                         {
                             download.Links.Remove(key);
@@ -262,15 +263,15 @@ namespace SjUpdater.Model
                 if (currentSeasonData == null || currentSeasonData != download.Upload.Season)
                 {
                     currentSeasonData = download.Upload.Season;
-                    seasonNr = -1;
-                    Match m2 = new Regex("(?:season|staffel)\\s*(\\d+)", RegexOptions.IgnoreCase).Match(currentSeasonData.Title);
+                    seasonNr = - 1;
+                    var m2 = new Regex("(?:season|staffel)\\s*(\\d+)", RegexOptions.IgnoreCase).Match(currentSeasonData.Title);
                     if (m2.Success)
                     {
                         int.TryParse(m2.Groups[1].Value, out seasonNr);
                     }
                 }
 
-                if (seasonNr == -1)
+                if (seasonNr == - 1)
                 {
                     if (newNonSeasons.All(d => d.Title != download.Title))
                     {
@@ -282,7 +283,7 @@ namespace SjUpdater.Model
                 if (currentFavSeason == null || currentFavSeason.Number != seasonNr)
                 {
                     currentFavSeason = newSeasons.FirstOrDefault(favSeasonData => favSeasonData.Number == seasonNr) ??
-                                       new FavSeasonData() { Number = seasonNr, Show = this };
+                                       new FavSeasonData() {Number = seasonNr, Show = this};
 
                     if (!newSeasons.Contains(currentFavSeason)) //season not yet added?
                     {
@@ -290,22 +291,24 @@ namespace SjUpdater.Model
                     }
                 }
 
-                int episodeNr = -1;
-            
-                MatchCollection mts = new Regex("S0{0,4}" + seasonNr + "\\.?E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
-                MatchCollection mts_ep = new Regex("[^A-Z]E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
-                MatchCollection mts_alt = new Regex("\\bE(\\d+)\\b", RegexOptions.IgnoreCase).Matches(download.Title);
+                var episodeNr = - 1;
+
+                var mts = new Regex("S0{0,4}" + seasonNr + "\\.?E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                var mts_ep = new Regex("[^A-Z]E(\\d+)", RegexOptions.IgnoreCase).Matches(download.Title);
+                var mts_alt = new Regex("\\bE(\\d+)\\b", RegexOptions.IgnoreCase).Matches(download.Title);
                 if (mts.Count == 1 && mts_ep.Count == 1)
                     //if there is exactly one match for "S<xx>E<yy>" and there is no second "E<zz>" (e.g. S01E01-E12) 
                 {
                     int.TryParse(mts[0].Groups[1].Value, out episodeNr);
                 }
-                else if (mts_alt.Count==1) { //if there's exactly one match for the alternative regex 
+                else if (mts_alt.Count == 1)
+                {
+                    //if there's exactly one match for the alternative regex 
                     int.TryParse(mts_alt[0].Groups[1].Value, out episodeNr);
                 }
 
 
-                if (episodeNr == -1)
+                if (episodeNr == - 1)
                 {
                     if (currentFavSeason.NonEpisodes.All(d => d.Title != download.Title))
                     {
@@ -314,14 +317,14 @@ namespace SjUpdater.Model
                     continue;
                 }
 
-                FavEpisodeData currentFavEpisode = currentFavSeason.Episodes.FirstOrDefault(episodeData => episodeData.Number == episodeNr);
+                var currentFavEpisode = currentFavSeason.Episodes.FirstOrDefault(episodeData => episodeData.Number == episodeNr);
 
                 if (currentFavEpisode == null)
                 {
                     currentFavEpisode = new FavEpisodeData();
                     currentFavEpisode.Season = currentFavSeason;
                     currentFavEpisode.Number = episodeNr;
-                    bool existed = false;
+                    var existed = false;
 
                     var oldSeason = Seasons.FirstOrDefault(s => s.Number == currentFavSeason.Number);
                     if (oldSeason != null)
@@ -336,11 +339,12 @@ namespace SjUpdater.Model
                         }
                     }
 
-                    if (notifications && !existed) {
+                    if (notifications && !existed)
+                    {
                         currentFavEpisode.NewEpisode = true;
                         setNewEpisodes = true;
                     }
-            
+
                     currentFavSeason.Episodes.Add(currentFavEpisode);
 
                     currentFavEpisode.Downloads.Add(download);
@@ -351,7 +355,7 @@ namespace SjUpdater.Model
                         {
                             //currentFavEpisode.ReviewInfoReview = SjInfo.ParseSjDeSite(InfoUrl, currentFavEpisode.Season.Number, currentFavEpisode.Number);
                             currentFavEpisode.EpisodeInformation = ProviderManager.GetProvider().GetEpisodeInformation(ProviderData, currentFavEpisode.Season.Number, currentFavEpisode.Number);
-                        });
+                        }, true, WorkItemPriority.BelowNormal);
                     }
                 }
                 else
@@ -362,17 +366,17 @@ namespace SjUpdater.Model
                     {
                         oldEpisode = oldSeason.Episodes.FirstOrDefault(e => e.Number == currentFavEpisode.Number);
                     }
-                    
+
                     if (currentFavEpisode.Downloads.All(d => d.Title != download.Title))
                     {
-                        if (notifications && (oldEpisode==null ||  (!oldEpisode.NewEpisode && oldEpisode.Downloads.All(d => d.Title != download.Title))))
+                        if (notifications && (oldEpisode == null || (!oldEpisode.NewEpisode && oldEpisode.Downloads.All(d => d.Title != download.Title))))
                         {
                             currentFavEpisode.NewUpdate = true;
                             setNewUpdates = true;
                         }
                         currentFavEpisode.Downloads.Add(download);
                     }
-                }  
+                }
             }
 
             if (reset)
@@ -401,15 +405,16 @@ namespace SjUpdater.Model
 
         }
 
-        private void SetCategory(String cat, bool active)
+        private void SetCategory(string cat, bool active)
         {
             if (active)
             {
                 if (!_categories.Contains(cat))
                 {
                     _categories.Add(cat);
-                } 
-            } else if (_categories.Contains(cat))
+                }
+            }
+            else if (_categories.Contains(cat))
             {
                 _categories.Remove(cat);
             }
@@ -431,7 +436,7 @@ namespace SjUpdater.Model
             }
         }
 
-        public String Name
+        public string Name
         {
             get { return _name; }
             set
@@ -443,7 +448,7 @@ namespace SjUpdater.Model
             }
         }
 
-        public String Cover
+        public string Cover
         {
             get { return _cover; }
             set
@@ -464,7 +469,7 @@ namespace SjUpdater.Model
                     return;
                 _providerData = value;
                 OnPropertyChanged();
-                
+
             }
         }
 
@@ -501,7 +506,7 @@ namespace SjUpdater.Model
             {
                 if (value == _newEpisodes) return;
                 _newEpisodes = value;
-                SetCategory("new",value);
+                SetCategory("new", value);
                 OnPropertyChanged();
             }
         }
@@ -549,12 +554,12 @@ namespace SjUpdater.Model
 
         private void RecalcNumbers()
         {
-            int episodes = 0;
-            int seasons = 0;
-            foreach (FavSeasonData season in _seasons)
+            var episodes = 0;
+            var seasons = 0;
+            foreach (var season in _seasons)
             {
-                    seasons++;
-                    episodes += season.NumberOfEpisodes;
+                seasons++;
+                episodes += season.NumberOfEpisodes;
             }
             NumberOfEpisodes = episodes;
             NumberOfSeasons = seasons;
@@ -566,7 +571,7 @@ namespace SjUpdater.Model
             get { return _allDownloads; }
             set
             {
-                _allDownloads = value; 
+                _allDownloads = value;
                 OnPropertyChanged();
             }
         }
@@ -588,11 +593,11 @@ namespace SjUpdater.Model
             }
         }
 
-        public String FilterName
+        public string FilterName
         {
             get
             {
-                if(_filterName==null)
+                if (_filterName == null)
                     return Settings.Instance.FilterName;
                 return _filterName;
             }
@@ -604,7 +609,7 @@ namespace SjUpdater.Model
             }
         }
 
-        public String FilterHoster
+        public string FilterHoster
         {
             get
             {
@@ -620,12 +625,12 @@ namespace SjUpdater.Model
             }
         }
 
-        public String FilterFormat
+        public string FilterFormat
         {
             get
             {
                 if (_filterFormat == null)
-                    return Settings.Instance.FilterFormat; 
+                    return Settings.Instance.FilterFormat;
                 return _filterFormat;
             }
             set
@@ -636,12 +641,12 @@ namespace SjUpdater.Model
             }
         }
 
-        public String FilterUploader
+        public string FilterUploader
         {
             get
             {
                 if (_filterUploader == null)
-                    return Settings.Instance.FilterUploader; 
+                    return Settings.Instance.FilterUploader;
                 return _filterUploader;
             }
             set
@@ -652,12 +657,12 @@ namespace SjUpdater.Model
             }
         }
 
-        public String FilterSize
+        public string FilterSize
         {
             get
             {
                 if (_filterSize == null)
-                    return Settings.Instance.FilterSize; 
+                    return Settings.Instance.FilterSize;
                 return _filterSize;
             }
             set
@@ -668,12 +673,12 @@ namespace SjUpdater.Model
             }
         }
 
-        public String FilterRuntime
+        public string FilterRuntime
         {
             get
             {
                 if (_filterRuntime == null)
-                    return Settings.Instance.FilterRuntime; 
+                    return Settings.Instance.FilterRuntime;
                 return _filterRuntime;
             }
             set
@@ -694,6 +699,7 @@ namespace SjUpdater.Model
                 OnPropertyChanged();
             }
         }
+
         public ObservableCollection<DownloadData> NonSeasons
         {
             get { return _nonSeasons; }
@@ -705,7 +711,7 @@ namespace SjUpdater.Model
             }
         }
 
-        public ObservableCollection<String> Categories
+        public ObservableCollection<string> Categories
         {
             get { return _categories; }
             internal set
@@ -713,18 +719,18 @@ namespace SjUpdater.Model
                 _categories = value;
                 OnPropertyChanged();
             }
-        } 
+        }
 
-        public String Status
+        public string Status
         {
             get { return _status; }
             set
             {
                 if (_status == value) return;
                 _status = value;
-                SetCategory("active",_status=="Returning Series");
-                SetCategory("ended",_status=="Ended" || _status=="Canceled");
-                SetCategory("unknown", _status != "Returning Series"  && _status != "Ended" && _status != "Canceled");
+                SetCategory("active", _status == "Returning Series");
+                SetCategory("ended", _status == "Ended" || _status == "Canceled");
+                SetCategory("unknown", _status != "Returning Series" && _status != "Ended" && _status != "Canceled");
                 OnPropertyChanged();
             }
         }
