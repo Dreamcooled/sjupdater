@@ -33,6 +33,7 @@ namespace SjUpdater.Model
         public UploadData Upload { get; set; }
 
         // Used by DatabaseWriter because SQLCE doesn't seem to recognise Dictionary - Calvin 12-Feb-2016
+        [XmlIgnore]
         public string LinkString { get; set; }
         
         public void ConvertToDatabase(bool cascade = true)

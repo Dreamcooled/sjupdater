@@ -852,8 +852,28 @@ namespace SjUpdater.Model
             return result;
         }
 
+        // Used by DatabaseWriter because SQLCE doesn't know how to store objects with an undefined class - Calvin 17-Feb-2016
+        [XmlIgnore]
+        public int? ProviderInt { get; set; }
+
+        // Used by DatabaseWriter because SQLCE doesn't seem to recognise string lists - Calvin 17-Feb-2016
+        [XmlIgnore]
+        public string CatString { get; set; }
+
         public void ConvertToDatabase(bool cascade = true)
         {
+            CatString = "";
+
+            foreach (string cat in Categories)
+            {
+                CatString += cat + "\n";
+            }
+
+            if (ProviderData is int)
+                ProviderInt = ProviderData as int?;
+            else
+                ProviderInt = null;
+
             if (cascade)
             {
                 foreach (FavSeasonData season in Seasons)
@@ -875,6 +895,20 @@ namespace SjUpdater.Model
         {
             InDatabase = true;
 
+            Categories.Clear();
+
+            foreach (string cat in CatString.Split('\n'))
+            {
+                if (cat.Length > 0)
+                {
+                    Categories.Add(cat);
+                }
+            }
+
+            CatString = null;
+
+            ProviderData = ProviderInt;
+
             if (cascade)
             {
                 foreach (FavSeasonData season in Seasons)
@@ -891,7 +925,11 @@ namespace SjUpdater.Model
                     Show.ConvertFromDatabase();
             }
 
-            RecalcNumbers();
+            // The following, seemingly redundant sets are done because loading from database seems to skip the Set command on these variables, which in turn skips actions needed to display them properly - Calvin 17-Feb-2016
+            Categories = Categories;
+            Seasons = Seasons;
+            NextEpisodeDate = NextEpisodeDate;
+            PreviousEpisodeDate = PreviousEpisodeDate;
         }
 
         public void AddToDatabase(Database.CustomDbContext db)
