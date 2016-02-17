@@ -34,23 +34,45 @@ namespace SjUpdater.Model
 
         // Used by DatabaseWriter because SQLCE doesn't seem to recognise Dictionary - Calvin 12-Feb-2016
         [XmlIgnore]
-        public string LinkString { get; set; }
+        [Required]
+        public string LinkString {
+            get
+            {
+                string result = "";
+
+                if (Links != null)
+                {
+                    string[] LinkKeys = new string[Links.Keys.Count];
+                    string[] LinkValues = new string[Links.Values.Count];
+
+                    Links.Keys.CopyTo(LinkKeys, 0);
+                    Links.Values.CopyTo(LinkValues, 0);
+
+                    for (int i = 0; i < Links.Keys.Count; i++)
+                    {
+                        result += LinkKeys[i] + "\t" + LinkValues[i] + "\n";
+                    }
+                }
+
+                return result;
+            }
+            set
+            {
+                Links.Clear();
+
+                foreach (string keyValue in value.Split('\n'))
+                {
+                    if (keyValue.Length > 0)
+                    {
+                        string[] keyValueSplit = keyValue.Split('\t');
+                        Links.Add(keyValueSplit[0], keyValueSplit[1]);
+                    }
+                }
+            }
+        }
         
         public void ConvertToDatabase(bool cascade = true)
         {
-            string[] LinkKeys = new string[Links.Keys.Count];
-            string[] LinkValues = new string[Links.Values.Count];
-
-            LinkString = "";
-
-            Links.Keys.CopyTo(LinkKeys, 0);
-            Links.Values.CopyTo(LinkValues, 0);
-
-            for (int i = 0; i < Links.Keys.Count; i++)
-            {
-                LinkString += LinkKeys[i] + "\t" + LinkValues[i] + "\n";
-            }
-
             if (cascade)
             {
                 if (Upload != null)
@@ -61,19 +83,6 @@ namespace SjUpdater.Model
         public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
-
-            Links.Clear();
-
-            foreach (string keyValue in LinkString.Split('\n'))
-            {
-                if (keyValue.Length > 0)
-                { 
-                    string[] keyValueSplit = keyValue.Split('\t');
-                    Links.Add(keyValueSplit[0], keyValueSplit[1]);
-                }
-            }
-
-            LinkString = null;
 
             if (cascade)
             {

@@ -854,26 +854,45 @@ namespace SjUpdater.Model
 
         // Used by DatabaseWriter because SQLCE doesn't know how to store objects with an undefined class - Calvin 17-Feb-2016
         [XmlIgnore]
-        public int? ProviderInt { get; set; }
+        [Required]
+        public int? ProviderInt {
+            get
+            {
+                if (ProviderData is int)
+                    return ProviderData as int?;
+                else
+                    return null;
+            }
+            set
+            {
+                ProviderData = value;
+            }
+        }
 
         // Used by DatabaseWriter because SQLCE doesn't seem to recognise string lists - Calvin 17-Feb-2016
         [XmlIgnore]
-        public string CatString { get; set; }
+        [Required]
+        public string CatString {
+            get
+            {
+                return String.Join("\n", Categories);
+            }
+            set
+            {
+                Categories.Clear();
+
+                foreach (string cat in value.Split('\n'))
+                {
+                    if (cat.Length > 0)
+                    {
+                        Categories.Add(cat);
+                    }
+                }
+            }
+        }
 
         public void ConvertToDatabase(bool cascade = true)
         {
-            CatString = "";
-
-            foreach (string cat in Categories)
-            {
-                CatString += cat + "\n";
-            }
-
-            if (ProviderData is int)
-                ProviderInt = ProviderData as int?;
-            else
-                ProviderInt = null;
-
             if (cascade)
             {
                 foreach (FavSeasonData season in Seasons)
@@ -894,20 +913,6 @@ namespace SjUpdater.Model
         public void ConvertFromDatabase(bool cascade = true)
         {
             InDatabase = true;
-
-            Categories.Clear();
-
-            foreach (string cat in CatString.Split('\n'))
-            {
-                if (cat.Length > 0)
-                {
-                    Categories.Add(cat);
-                }
-            }
-
-            CatString = null;
-
-            ProviderData = ProviderInt;
 
             if (cascade)
             {
