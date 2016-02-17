@@ -925,11 +925,8 @@ namespace SjUpdater.Model
                     Show.ConvertFromDatabase();
             }
 
-            // The following, seemingly redundant sets are done because loading from database seems to skip the Set command on these variables, which in turn skips actions needed to display them properly - Calvin 17-Feb-2016
-            Categories = Categories;
+            // The following is done because loading from database seems to skip the Set command on lists, which in turn skips actions needed to display them properly - Calvin 17-Feb-2016
             Seasons = Seasons;
-            NextEpisodeDate = NextEpisodeDate;
-            PreviousEpisodeDate = PreviousEpisodeDate;
         }
 
         public void AddToDatabase(Database.CustomDbContext db)
