@@ -128,13 +128,13 @@ namespace SjUpdater.ViewModel
         }
 
 
-         public CachedBitmap Cover
+         public CachedImage Cover
         {
              get
              {
                  //TODO: fix
-                 String url = _season.Episodes.First().Downloads.First().Upload.Season.CoverUrl;
-                 return new CachedBitmap(url);
+                 string url = _season.Episodes.First().Downloads.First().Upload.Season.CoverUrl;
+                 return new CachedImage(url);
              }
         }
 

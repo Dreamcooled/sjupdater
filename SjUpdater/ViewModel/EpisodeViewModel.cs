@@ -17,7 +17,7 @@ namespace SjUpdater.ViewModel
     public class EpisodeViewModel : PropertyChangedImpl
     {
         private readonly FavEpisodeData _favEpisodeData;
-        private CachedBitmap _photo;
+        private CachedImage _photo;
         private readonly Dispatcher _dispatcher;
         private Visibility _newEpisodeVisible;
         private Visibility _newUpdateVisible;
@@ -27,7 +27,7 @@ namespace SjUpdater.ViewModel
         public EpisodeViewModel(FavEpisodeData favEpisodeData)
         {
             _favEpisodeData = favEpisodeData;
-            Photo = (_favEpisodeData.EpisodeInformation == null || String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedBitmap(_favEpisodeData.EpisodeInformation.Image);
+            Photo = (_favEpisodeData.EpisodeInformation == null || string.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedImage(_favEpisodeData.EpisodeInformation.Image);
             NewEpisodeVisible = (_favEpisodeData.NewEpisode) ? Visibility.Visible : Visibility.Collapsed;
             NewUpdateVisible = (_favEpisodeData.NewUpdate) ? Visibility.Visible : Visibility.Collapsed;
             DownloadedCheckVisibility = (_favEpisodeData.Downloaded) ? Visibility.Visible : Visibility.Collapsed;
@@ -89,7 +89,7 @@ namespace SjUpdater.ViewModel
             {
                 _dispatcher.Invoke(delegate
                 {
-                    Photo = (_favEpisodeData.EpisodeInformation == null || String.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedBitmap(_favEpisodeData.EpisodeInformation.Image);
+                    Photo = (_favEpisodeData.EpisodeInformation == null || string.IsNullOrWhiteSpace(_favEpisodeData.EpisodeInformation.Image)) ? null : new CachedImage(_favEpisodeData.EpisodeInformation.Image);
                 });
                 OnPropertyChanged(nameof(Title));
                 OnPropertyChanged(nameof(ShowInfoCommand));
@@ -119,7 +119,7 @@ namespace SjUpdater.ViewModel
 
         public Visibility EpisodeImageVisibility => Settings.Instance.EnableImages ? Visibility.Visible : Visibility.Collapsed;
 
-        public CachedBitmap Photo
+        public CachedImage Photo
         {
             get
             {

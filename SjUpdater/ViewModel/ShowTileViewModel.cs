@@ -13,7 +13,7 @@ namespace SjUpdater.ViewModel
     public class ShowTileViewModel : PropertyChangedImpl
     {
         private readonly FavShowData _show;
-        private CachedBitmap _bitmap;
+        private CachedImage _bitmap;
         private String _title;
         private String _numberText;
         private String _nextText;
@@ -35,7 +35,7 @@ namespace SjUpdater.ViewModel
             IsLoadingVisible = (_show.IsLoading) ? Visibility.Visible : Visibility.Collapsed;
             RecalcText();
             RecalcNextPrevEpText();
-            Background = !String.IsNullOrWhiteSpace(_show.Cover) ? new CachedBitmap(_show.Cover) : null;
+            Background = !string.IsNullOrWhiteSpace(_show.Cover) ? new CachedImage(_show.Cover) : null;
             _show.PropertyChanged += _show_PropertyChanged;
 
         }
@@ -50,7 +50,7 @@ namespace SjUpdater.ViewModel
                 case nameof(FavShowData.Cover):
                     _dispatcher.Invoke(delegate
                     {
-                        Background = new CachedBitmap(_show.Cover);
+                        Background = new CachedImage(_show.Cover);
                     });
                     break;
                 case nameof(FavShowData.NumberOfEpisodes):
@@ -306,7 +306,7 @@ namespace SjUpdater.ViewModel
         }
 
 
-        public CachedBitmap Background
+        public CachedImage Background
         {
             get { return _bitmap; }
 

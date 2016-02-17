@@ -29,7 +29,7 @@ namespace SjUpdater.Utils
             foreach (var file in files)
             {
                 var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
-                var bitmap = CachedBitmap.BitmapImageFromStream(fs);
+                var bitmap = BitmapImageFromStream(fs);
                 _dictCache.Add(Path.GetFileNameWithoutExtension(file), bitmap);
                 fs.Close();
             }
@@ -109,7 +109,7 @@ namespace SjUpdater.Utils
             var ms = new MemoryStream();
             bmp.Save(ms, ImageFormat.Png);
             ms.Position = 0;
-            return CachedBitmap.BitmapImageFromStream(ms);
+            return BitmapImageFromStream(ms);
         }
 
         private static BitmapImage GetFromCache(string value)
@@ -188,9 +188,30 @@ namespace SjUpdater.Utils
 
             f.Close();
             ms.Position = 0;
-            var bmap = CachedBitmap.BitmapImageFromStream(ms);
+            var bmap = BitmapImageFromStream(ms);
             _dictCache.Add(key, bmap);
             return bmap;
+        }
+
+        public static BitmapImage BitmapImageFromStream(Stream stream, bool freeze = true)
+        {
+            try
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = stream;
+                image.EndInit();
+                if (freeze)
+                    image.Freeze();
+
+                return image;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            return null;
         }
     }
 }

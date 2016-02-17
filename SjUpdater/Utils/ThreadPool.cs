@@ -25,7 +25,7 @@ namespace SjUpdater.Utils
             }
         }
 
-        public ThreadPool(int maxWorkerThreads = 10)
+        public ThreadPool(int maxWorkerThreads = 12)
         {
             _maxThreads = maxWorkerThreads;
         }

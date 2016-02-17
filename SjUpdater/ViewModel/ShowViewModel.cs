@@ -19,7 +19,7 @@ namespace SjUpdater.ViewModel
         private readonly ObservableCollection<SeasonViewModel> _lisSeasons;
         private readonly ObservableCollection<DownloadData> _lisNonSeasons;
         private readonly Dispatcher _dispatcher;
-        private CachedBitmap _bitmap;
+        private CachedImage _bitmap;
         private String _description;
 
 
@@ -49,7 +49,7 @@ namespace SjUpdater.ViewModel
             _lisSeasons = new ObservableCollection<SeasonViewModel>();
             _lisNonSeasons = new ObservableCollection<DownloadData>();
 
-            Cover = !String.IsNullOrWhiteSpace(_show.Cover) ? new CachedBitmap(_show.Cover) : null;
+            Cover = !string.IsNullOrWhiteSpace(_show.Cover) ? new CachedImage(_show.Cover) : null;
             Description = (_show.Seasons.Any(s => s.Episodes.Any(e => e.Downloads.Any()))) ?
                 _show.Seasons.First(s => s.Episodes.Any(e => e.Downloads.Any())).Episodes.First(e => e.Downloads.Any()).Downloads.First().Upload.Season.Description : "";
 
@@ -218,7 +218,7 @@ namespace SjUpdater.ViewModel
 
         public String Title => _show.Name;
 
-        public CachedBitmap Cover
+        public CachedImage Cover
         {
             get { return _bitmap; }
 
