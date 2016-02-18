@@ -93,7 +93,7 @@ namespace SjUpdater
             Stats.StatsUrl = "https://sjupdater.batrick.de/stats";
             Stats.AllowCustom = !_setti.NoPersonalData;
             Stats.TrackAction(Stats.TrackActivity.AppStart);
-            Stats.TrackCustomVariable("Shows", _setti.TvShows.Select(s => s.Name));
+            //Stats.TrackCustomVariable("Shows", _setti.TvShows.Select(s => s.Name)); //useless, as we don't even do anything with that data
 
             if (_setti.CheckForUpdates)
             {
@@ -288,7 +288,6 @@ namespace SjUpdater
             var p = new Process();
             p.StartInfo = new ProcessStartInfo(url);
             p.Start();
-            Stats.TrackAction(Stats.TrackActivity.Browse, "Show");
         }
 
         private void OpenHomepage(object sender, RoutedEventArgs e)
@@ -296,7 +295,6 @@ namespace SjUpdater
             var p = new Process();
             p.StartInfo = new ProcessStartInfo("http://serienjunkies.org");
             p.Start();
-            Stats.TrackAction(Stats.TrackActivity.Browse, "Home");
         }
 
         private void GithubClicked(object sender, RoutedEventArgs e)
@@ -304,7 +302,6 @@ namespace SjUpdater
             var p = new Process();
             p.StartInfo = new ProcessStartInfo("https://github.com/Dreamcooled/sjupdater");
             p.Start();
-            Stats.TrackAction(Stats.TrackActivity.Browse, "Github");
         }
 
         private async void ShowDelete(object sender, RoutedEventArgs e)
@@ -415,7 +412,6 @@ namespace SjUpdater
                     TextBoxAutoComl.Text = "";
                     AddShowFlyout.IsOpen = false;
                     _setti.TvShows.Add(new FavShowData(new ShowData {Name = selectedShow.Key, Url = selectedShow.Value}, true));
-                    Stats.TrackAction(Stats.TrackActivity.ShowAdd);
                 }
             }
         }
@@ -468,7 +464,6 @@ namespace SjUpdater
                 vm.Show.ApplyFilter(true, false);
                 var firstSeason = vm.Seasons.FirstOrDefault();
                 if (firstSeason != null) firstSeason.IsExpanded = true;
-                Stats.TrackAction(Stats.TrackActivity.Filter);
             }
         }
 

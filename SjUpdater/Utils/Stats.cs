@@ -21,11 +21,7 @@ namespace SjUpdater.Utils
         {
             AppStart,
             AppTerm,
-            AppUpdate,
-            ShowAdd,
-            Download,
-            Browse,
-            Filter
+            AppUpdate
         };
 
         public static string StatsUrl;
@@ -147,11 +143,11 @@ namespace SjUpdater.Utils
         {
             var sample = new StringBuilder();
             sample.AppendLine("A sample of what we collect:\n");
-            sample.AppendLine("id: " + getUniqueID());
+            sample.AppendLine("id: " + getUniqueID() + "    (yes, that's your id)");
             sample.AppendLine("version: " + GetVersionString());
             sample.AppendLine("action: " + TrackActivity.AppStart);
 
-            sample.AppendLine("\nAnd if you have that Checkbox enabled, we also collect:");
+            /*sample.AppendLine("\nAnd if you have that Checkbox enabled, we also collect:");
             var shows = Settings.Instance.TvShows.Select(s => s.Name);
             sample.Append("shows: ");
 
@@ -159,11 +155,11 @@ namespace SjUpdater.Utils
             {
                 sample.Append(show + ", ");
             }
-            sample.Remove(sample.Length - 1, 1);
+            sample.Remove(sample.Length - 1, 1);*/
 
-            sample.Append("\n\nWe collect this data, because it's interesting for us to see, how many people we reach and how many have updated to latest version.\n\n" +
-                          "Even though we collect which shows you have added, we don't analyze that (as it is kind of uselss) and probably remove it next release.\n\n" +
-                          "Using a ID, which is completely randomly generated, it's impossible for us to identify you. We need it for counting users.");
+            sample.Append("\n\nWe are collecting this data because it's interesting for us seeing how many people we reach and how many have updated to latest version.\n\n" +
+                          /*"Even though we collect which shows you have added, we don't analyze that (as it is kind of uselss) and probably remove it next release.\n\n" +*/
+                          "Using a ID which is completely randomly generated, it's impossible for us to identify you. We need it to count unique users.");
 
             return sample.ToString();
         }

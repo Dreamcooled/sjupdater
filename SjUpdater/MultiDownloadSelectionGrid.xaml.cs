@@ -329,7 +329,6 @@ namespace SjUpdater
                 {
                     Clipboard.SetText(linkstring);
                     Clipboard.Flush();
-                    Stats.TrackAction(Stats.TrackActivity.Download);
                     return;
                 }
                 catch

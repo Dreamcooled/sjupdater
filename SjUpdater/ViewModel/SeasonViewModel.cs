@@ -52,7 +52,6 @@ namespace SjUpdater.ViewModel
                     {
                         Clipboard.SetText(s);
                         Clipboard.Flush();
-                        Stats.TrackAction(Stats.TrackActivity.Download);
                         return;
                     }
                     catch
