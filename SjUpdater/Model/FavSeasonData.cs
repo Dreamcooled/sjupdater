@@ -143,40 +143,6 @@ namespace SjUpdater.Model
             NumberOfNonEpisodes = _nonEpisodes.Count();
         }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-            if (cascade)
-            {
-                foreach (FavEpisodeData episode in Episodes)
-                {
-                    episode.ConvertToDatabase();
-                }
-
-                foreach (DownloadData nonEpisode in NonEpisodes)
-                {
-                    nonEpisode.ConvertToDatabase();
-                }
-            }
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-
-            if (cascade)
-            {
-                foreach (FavEpisodeData episode in Episodes)
-                {
-                    episode.ConvertFromDatabase();
-                }
-
-                foreach (DownloadData nonEpisode in NonEpisodes)
-                {
-                    nonEpisode.ConvertFromDatabase();
-                }
-            }
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -185,7 +151,6 @@ namespace SjUpdater.Model
             if (!InDatabase)
             {
                 InDatabase = true;
-                ConvertToDatabase(false);
 
                 if (Show != null)
                     Show.AddToDatabase(db);

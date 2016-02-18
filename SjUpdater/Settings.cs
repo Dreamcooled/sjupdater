@@ -405,28 +405,6 @@ namespace SjUpdater
                 XmlSerialization.SaveToXml(this,filename,SettingsVersion);
         }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-            if (cascade)
-            {
-                foreach (FavShowData tvShow in TvShows)
-                {
-                    tvShow.ConvertToDatabase();
-                }
-            }
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            if (cascade)
-            {
-                foreach (FavShowData tvShow in TvShows)
-                {
-                    tvShow.ConvertFromDatabase();
-                }
-            }
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)

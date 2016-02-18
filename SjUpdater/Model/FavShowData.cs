@@ -854,7 +854,6 @@ namespace SjUpdater.Model
 
         // Used by DatabaseWriter because SQLCE doesn't know how to store objects with an undefined class - Calvin 17-Feb-2016
         [XmlIgnore]
-        [Required]
         public int? ProviderInt {
             get
             {
@@ -871,7 +870,6 @@ namespace SjUpdater.Model
 
         // Used by DatabaseWriter because SQLCE doesn't seem to recognise string lists - Calvin 17-Feb-2016
         [XmlIgnore]
-        [Required]
         public string CatString {
             get
             {
@@ -891,49 +889,6 @@ namespace SjUpdater.Model
             }
         }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-            if (cascade)
-            {
-                foreach (FavSeasonData season in Seasons)
-                {
-                    season.ConvertToDatabase();
-                }
-
-                foreach (DownloadData nonSeason in NonSeasons)
-                {
-                    nonSeason.ConvertToDatabase();
-                }
-
-                if (Show != null)
-                    Show.ConvertToDatabase();
-            }
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-
-            if (cascade)
-            {
-                foreach (FavSeasonData season in Seasons)
-                {
-                    season.ConvertFromDatabase();
-                }
-
-                foreach (DownloadData nonSeason in NonSeasons)
-                {
-                    nonSeason.ConvertFromDatabase();
-                }
-
-                if (Show != null)
-                    Show.ConvertFromDatabase();
-            }
-
-            // The following is done because loading from database seems to skip the Set command on lists, which in turn skips actions needed to display them properly - Calvin 17-Feb-2016
-            Seasons = Seasons;
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -946,7 +901,6 @@ namespace SjUpdater.Model
                 if (!InDatabase)
                 {
                     InDatabase = true;
-                    ConvertToDatabase(false);
 
                     if (Show != null)
                         Show.AddToDatabase(db);

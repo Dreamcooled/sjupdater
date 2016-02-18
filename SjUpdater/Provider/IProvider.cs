@@ -45,15 +45,6 @@ namespace SjUpdater.Provider
         public String Poster { get; set; }
         public String Backdrop { get; set; }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -62,7 +53,6 @@ namespace SjUpdater.Provider
             if (!InDatabase)
             {
                 InDatabase = true;
-                ConvertToDatabase(false);
 
                 //Database.DatabaseWriter.AddToDatabase<ShowInformation>(db.ShowInformation, this); // not used at the moment
             }
@@ -109,15 +99,6 @@ namespace SjUpdater.Provider
         public String Poster { get; set; }
         public String Backdrop { get; set; }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -126,7 +107,6 @@ namespace SjUpdater.Provider
             if (!InDatabase)
             {
                 InDatabase = true;
-                ConvertToDatabase(false);
 
                 //Database.DatabaseWriter.AddToDatabase<SeasonInformation>(db.SeasonInformation, this); // not used at the moment
             }
@@ -171,15 +151,6 @@ namespace SjUpdater.Provider
         public object Images { get; set; }
         public String Image { get; set; }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -201,7 +172,6 @@ namespace SjUpdater.Provider
             if (InDatabase)
             {
                 InDatabase = false;
-                ConvertToDatabase(false);
 
                 Database.DatabaseWriter.RemoveFromDatabase<EpisodeInformation>(db.EpisodeInformation, this);
             }

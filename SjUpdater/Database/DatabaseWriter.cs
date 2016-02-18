@@ -94,8 +94,6 @@ namespace SjUpdater.Database
                     db = new CustomDbContext();
                 }
 
-                settings.ConvertToDatabase();
-
                 if (File.Exists(path))
                 {
                     // If we have an existing db, we should already have some pending changes to save - Calvin 13-Feb-2016
@@ -148,23 +146,46 @@ namespace SjUpdater.Database
 
                     db.Database.Initialize(false);
 
-                    db.FavShowData.Load();
-                    db.FavSeasonData.Load();
-                    db.FavEpisodeData.Load();
+                    // No longer needed since we now go through the lists to set InDatabase
+                    //db.FavShowData.Load();
+                    //db.FavSeasonData.Load();
+                    //db.FavEpisodeData.Load();
                     //db.ShowInformation.Load(); // Not currently used - Calvin 13-Feb-2016
                     //db.SeasonInformation.Load(); // Not currently used - Calvin 13-Feb-2016
-                    db.EpisodeInformation.Load();
-                    db.DownloadData.Load();
-                    db.UploadData.Load();
-                    db.SeasonData.Load();
-                    db.ShowData.Load();
+                    //db.EpisodeInformation.Load();
+                    //db.DownloadData.Load();
+                    //db.UploadData.Load();
+                    //db.SeasonData.Load();
+                    //db.ShowData.Load();
 
                     settings.TvShows.Clear();
 
-                    foreach (FavShowData favShowData in db.FavShowData)
+                    foreach (FavShowData favShowData in db.FavShowData.ToList())
+                    {
+                        favShowData.InDatabase = true;
                         settings.TvShows.Add(favShowData);
+                    }
 
-                    settings.ConvertFromDatabase();
+                    foreach (FavSeasonData favSeasonData in db.FavSeasonData.ToList())
+                        favSeasonData.InDatabase = true;
+
+                    foreach (FavEpisodeData favEpisodeData in db.FavEpisodeData.ToList())
+                        favEpisodeData.InDatabase = true;
+
+                    foreach (Provider.EpisodeInformation episodeInformation in db.EpisodeInformation.ToList())
+                        episodeInformation.InDatabase = true;
+
+                    foreach (DownloadData downloadData in db.DownloadData.ToList())
+                        downloadData.InDatabase = true;
+
+                    foreach (UploadData uploadData in db.UploadData.ToList())
+                        uploadData.InDatabase = true;
+
+                    foreach (SeasonData seasonData in db.SeasonData.ToList())
+                        seasonData.InDatabase = true;
+
+                    foreach (ShowData showData in db.ShowData.ToList())
+                        showData.InDatabase = true;
                 }
             }
             catch (Exception ex)

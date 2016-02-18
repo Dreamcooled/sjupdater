@@ -34,7 +34,6 @@ namespace SjUpdater.Model
 
         // Used by DatabaseWriter because SQLCE doesn't seem to recognise Dictionary - Calvin 12-Feb-2016
         [XmlIgnore]
-        [Required]
         public string LinkString {
             get
             {
@@ -71,26 +70,6 @@ namespace SjUpdater.Model
             }
         }
         
-        public void ConvertToDatabase(bool cascade = true)
-        {
-            if (cascade)
-            {
-                if (Upload != null)
-                    Upload.ConvertToDatabase();
-            }
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-
-            if (cascade)
-            {
-                if (Upload != null)
-                    Upload.ConvertFromDatabase();
-            }
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -99,7 +78,6 @@ namespace SjUpdater.Model
             if (!InDatabase)
             {
                 InDatabase = true;
-                ConvertToDatabase(false);
 
                 if (Upload != null)
                     Upload.AddToDatabase(db); // Causes "adding a relationship with an entity which is in the deleted state is not allowed" errors - Calvin 13-Feb-2016

@@ -74,26 +74,6 @@ namespace SjUpdater.Model
                 Language.GetHashCode() ^ ((Season==null)?0:Season.Url.GetHashCode());
         }
 
-        public void ConvertToDatabase(bool cascade = true)
-        {
-            if (cascade)
-            {
-                if (Season != null)
-                    Season.ConvertToDatabase();
-            }
-        }
-
-        public void ConvertFromDatabase(bool cascade = true)
-        {
-            InDatabase = true;
-
-            if (cascade)
-            {
-                if (Season != null)
-                    Season.ConvertFromDatabase();
-            }
-        }
-
         public void AddToDatabase(Database.CustomDbContext db)
         {
             if (db == null)
@@ -102,7 +82,6 @@ namespace SjUpdater.Model
             if (!InDatabase)
             {
                 InDatabase = true;
-                ConvertToDatabase(false);
 
                 if (Season != null)
                     Season.AddToDatabase(db);
