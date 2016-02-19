@@ -38,35 +38,34 @@ namespace SjUpdater
             return new Regex(@"[ ]{2,}", RegexOptions.None).Replace(stringBuilder.ToString().Normalize(NormalizationForm.FormC),@" ").Trim();
 
         }
-       
 
-        public static List<KeyValuePair<String, String>> SearchSjOrg(string Title)
+
+        public static List<KeyValuePair<string, string>> SearchSjOrg(string title)
         {
-            byte[] data = Encoding.ASCII.GetBytes(WebUtility.HtmlEncode("string=" + Title));
+            var data = Encoding.UTF8.GetBytes("string=" + WebUtility.UrlEncode(title));
 
-            HttpWebRequest request = WebRequest.CreateHttp("http://serienjunkies.org/media/ajax/search/search.php");
+            var request = WebRequest.CreateHttp("http://serienjunkies.org/media/ajax/search/search.php");
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
-            Stream requestStream = request.GetRequestStream();
-            requestStream.Write(data,0,data.Length);
+            var requestStream = request.GetRequestStream();
+            requestStream.Write(data, 0, data.Length);
             requestStream.Close();
 
-            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-            StreamReader responseReader = new StreamReader(response.GetResponseStream());
-            string responseContent = responseReader.ReadToEnd();
+            var response = request.GetResponse() as HttpWebResponse;
+            var responseReader = new StreamReader(response.GetResponseStream());
+            var responseContent = responseReader.ReadToEnd();
             responseReader.Close();
             response.Close();
 
-            Regex regex = new Regex(@"\[(\d+),""(.*?)""\]");
-            MatchCollection matches = regex.Matches(responseContent);
+            var regex = new Regex(@"\[(\d+),""(.*?)""\]");
+            var matches = regex.Matches(responseContent);
 
-            List<KeyValuePair<string, string>> resultList = new List<KeyValuePair<string, string>>();
-            for (int i = 0; i < matches.Count; i++)
+            var resultList = new List<KeyValuePair<string, string>>();
+            for (var i = 0; i < matches.Count; i++)
             {
-                resultList.Add(new KeyValuePair<string, string>(WebUtility.HtmlDecode(matches[i].Groups[2].Value),
-                    "http://serienjunkies.org/?cat=" + matches[i].Groups[1].Value));
+                resultList.Add(new KeyValuePair<string, string>(WebUtility.HtmlDecode(matches[i].Groups[2].Value), "http://serienjunkies.org/?cat=" + matches[i].Groups[1].Value));
             }
 
             return resultList;
