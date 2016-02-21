@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using SjUpdater.Model;
 using SjUpdater.Utils;
 
 namespace SjUpdater.ViewModel
 {
-    public class ShowCategory
-    {
-        public String Title { get; internal set; }
-        public string Description { get; internal set; }
-        public ObservableCollection<ShowTileViewModel> Shows { get; } = new ObservableCollection<ShowTileViewModel>();
-    }
+
 
     public class MainWindowViewModel
     {
@@ -24,13 +21,12 @@ namespace SjUpdater.ViewModel
         {
 
             _dispatcher = Dispatcher.CurrentDispatcher;
+            _shows = shows;
             shows.CollectionChanged += update_source;
-
             foreach (FavShowData favShowData in shows)
             {
 
                 UpdateCategoriesForShow(favShowData,favShowData.Categories.ToList());
-                favShowData.PropertyChanged += OnFavShowDataOnPropertyChanged ;
          
                 favShowData.Categories.CollectionChanged +=
                     delegate
@@ -42,126 +38,42 @@ namespace SjUpdater.ViewModel
                             });
                     };   
             }
-        }
 
-        private void OnFavShowDataOnPropertyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            if (args.PropertyName == nameof(FavShowData.NextEpisodeDate) || args.PropertyName == nameof(FavShowData.PreviousEpisodeDate))
+            Settings.CategorySettings.CollectionChanged += CategorySettings_CollectionChanged;
+            foreach (var categorySetting in Settings.CategorySettings)
             {
-                _dispatcher.Invoke(delegate
-                {
-                    foreach (var showCategory in _categories)
-                    {
-                        showCategory.Shows.Sort(CategoryInnerOrders[showCategory.Title]);
-                    }
-                });
+                categorySetting.PropertyChanged += CategorySetting_PropertyChanged;
             }
         }
 
+        private void CategorySetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var sett = sender as ShowCategorySettings;
+            Debug.Assert(sett != null, "sett != null");
+            foreach (FavShowData favShowData in _shows)
+            {
+                UpdateCategoriesForShow(favShowData, favShowData.Categories.ToList());
+            }
+        }
+
+        private void CategorySettings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            _categories.Sort(CategoryComparer);
+        }
 
         private readonly ObservableCollection<ShowCategory> _categories = new ObservableCollection<ShowCategory>();
 
-        private static readonly List<String> CategoryOrders = new List<string>(new []{
-            "new",
-            "update",
-            "active",
-            "ended",
-            "unknown",
-            "all"
-        }) ;
+         private static readonly Comparer<ShowCategory> CategoryComparer = Comparer<ShowCategory>.Create((c1, c2) =>
+         {
+             var settings = Settings.Instance.CategorySettings;
+             int cind1 = settings.IndexOf(c1.Settings);
+             int cind2 = settings.IndexOf(c2.Settings);
+             if (cind1 > cind2) return 1;
+             return -1;
+         });
 
-        private static readonly Dictionary<String, String> CategoryDescriptions = new Dictionary<string, string>()
-        {
-            {"new","Shows with new Episodes"},
-            {"update", "Shows with updated Episodes" },
-            {"active","Active Shows"},
-            {"ended","Shows that have ended"},
-            {"unknown","Shows with unknown state" },
-            {"all","All your Tv Shows"}
-        };
+        private readonly ObservableCollection<FavShowData> _shows;
 
-
-        private static readonly Comparer<ShowTileViewModel> AlphabeticalShowComparer = Comparer<ShowTileViewModel>.Create((m1, m2) => String.CompareOrdinal(m1.Title, m2.Title));
-        private static readonly Comparer<ShowTileViewModel> DateShowComparer = Comparer<ShowTileViewModel>.Create(
-            (vm1, vm2) =>
-            {
-                if (vm1.Show.NextEpisodeDate.HasValue && vm2.Show.NextEpisodeDate.HasValue) //both have next ep date
-                {
-                    if (vm1.Show.NextEpisodeDate.Value.Date != vm2.Show.NextEpisodeDate.Value.Date)
-                    {
-                        if (vm1.Show.NextEpisodeDate.Value.Date < vm2.Show.NextEpisodeDate.Value.Date)
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return 1;
-                        }
-                    }
-                       
-                } else if (vm1.Show.NextEpisodeDate.HasValue)
-                {
-                    return -1;
-                } else if (vm2.Show.NextEpisodeDate.HasValue)
-                {
-                    return 1;
-                }
-
-
-                if (vm1.Show.PreviousEpisodeDate.HasValue && vm2.Show.PreviousEpisodeDate.HasValue) //both have prev ep date
-                {
-                    if (vm1.Show.PreviousEpisodeDate.Value.Date != vm2.Show.PreviousEpisodeDate.Value.Date)
-                    {
-                        if (vm1.Show.PreviousEpisodeDate.Value.Date > vm2.Show.PreviousEpisodeDate.Value.Date)
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return 1;
-                        }
-                    }
-
-                }
-                else if (vm1.Show.PreviousEpisodeDate.HasValue)
-                {
-                    return -1;
-                }
-                else if (vm2.Show.PreviousEpisodeDate.HasValue)
-                {
-                    return 1;
-                }
-
-                return AlphabeticalShowComparer.Compare(vm1, vm2);
-
-            }); 
-
-
-        private static readonly  Dictionary<String,Comparer<ShowTileViewModel>> CategoryInnerOrders = new Dictionary<string, Comparer<ShowTileViewModel>>()
-        {
-            {"new", DateShowComparer },
-            {"update", DateShowComparer },
-            {"active", DateShowComparer },
-            {"ended", DateShowComparer },
-            {"unknown", AlphabeticalShowComparer },
-            {"all", AlphabeticalShowComparer }
-
-        }; 
-
-
-
-        private static readonly Comparer<ShowCategory> CategoryComparer = Comparer<ShowCategory>.Create((c1, c2) =>
-        {
-            if (c1.Title == c2.Title) return 0;
-            foreach (var cat in CategoryOrders)
-            {
-                if (c1.Title == cat) return -1;
-                if (c2.Title == cat) return 1;
-            }
-            return 0;
-        });
-
-  
 
         private void update_source(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -176,7 +88,6 @@ namespace SjUpdater.ViewModel
                             _dispatcher.Invoke(
                                 delegate { UpdateCategoriesForShow(n, n.Categories.ToList()); });
                         };
-                       n.PropertyChanged += OnFavShowDataOnPropertyChanged;
 
                         _dispatcher.Invoke(delegate {
                                UpdateCategoriesForShow(n, n.Categories.ToList());
@@ -208,7 +119,6 @@ namespace SjUpdater.ViewModel
                 default:
                     throw new InvalidOperationException(e.Action.ToString());
 
-
             }
         }
 
@@ -221,29 +131,36 @@ namespace SjUpdater.ViewModel
             //Check existing cats
             foreach (var cat in _categories)
             {
+                if(!cat.Settings.Enabled) continue;
+         
                 var vm = cat.Shows.FirstOrDefault(v => v.Show == show);
                 if (!categories.Contains(cat.Title) && vm!=null ) //should not be there, but is there
                 {
-                    cat.Shows.Remove(vm);
+                    cat.RemoveShow(vm);
                 } else if (categories.Contains(cat.Title) && vm == null) //should be there, but isn't
                 {
-                    cat.Shows.Add(new ShowTileViewModel(show));
-                    cat.Shows.Sort(CategoryInnerOrders[cat.Title]);
+                    cat.AddShow(new ShowTileViewModel(show));
+                }
+                else
+                {
+                    cat.Sort();
                 }
             }
 
-            //Remove empty cats
-            _categories.Where(c => !c.Shows.Any()).ToList().ForEach(c=> _categories.Remove(c));
+            //Remove empty cats or disabled cats
+            _categories.Where(c => !c.Shows.Any() || !c.Settings.Enabled).ToList().ForEach(c=> _categories.Remove(c));
 
 
             //Add non existing cats
             foreach (var cat in categories)
             {
                 if (_categories.Any(c => c.Title == cat)) continue;
+                var settings = Settings.Instance.CategorySettings.First(s => s.Title == cat);
+                if(!settings.Enabled) continue;
                 var newCat = new ShowCategory();
                 newCat.Title = cat;
-                newCat.Description = CategoryDescriptions[cat];
-                newCat.Shows.Add(new ShowTileViewModel(show));
+                newCat.Settings = settings;
+                newCat.AddShow(new ShowTileViewModel(show));
 
                 _categories.Add(newCat);
             }

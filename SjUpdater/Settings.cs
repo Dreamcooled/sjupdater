@@ -145,6 +145,8 @@ namespace SjUpdater
             }
         }
 
+        public ObservableCollection<ShowCategorySettings> CategorySettings { get; set; } 
+
         /// <summary>
         /// Wheather to sort the Seasons inside a Show asc or desc
         /// </summary>
@@ -269,6 +271,7 @@ namespace SjUpdater
         public Settings()
         {
             TvShows = new ObservableCollection<FavShowData>();
+            CategorySettings =new ObservableCollection<ShowCategorySettings>( ShowCategory.DefaultSettings);
             SortSeasonsDesc = false;
             SortEpisodesDesc = false;
             NumFetchThreads = 5;
