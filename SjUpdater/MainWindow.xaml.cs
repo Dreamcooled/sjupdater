@@ -622,7 +622,7 @@ namespace SjUpdater
         private void CategorySettingsButtonUp_OnClick(object sender, RoutedEventArgs e)
         {
             var catSettings = _setti.CategorySettings;
-            var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySettings;
+            var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySetting;
             if (selCatSetting == null) return;
             if (CategorySettingsDataGrid.SelectedIndex > 0)
             {
@@ -633,7 +633,7 @@ namespace SjUpdater
         private void CategorySettingsButtonDown_OnClick(object sender, RoutedEventArgs e)
         {
             var catSettings = _setti.CategorySettings;
-            var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySettings;
+            var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySetting;
             if (selCatSetting == null) return;
             if (CategorySettingsDataGrid.SelectedIndex < catSettings.Count - 1)
             {

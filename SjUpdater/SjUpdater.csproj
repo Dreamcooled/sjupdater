@@ -130,7 +130,7 @@
     <Compile Include="Model\FavShowData.cs" />
     <Compile Include="Model\SeasonData.cs" />
     <Compile Include="Model\ShowCategory.cs" />
-    <Compile Include="Model\ShowCategorySettings.cs" />
+    <Compile Include="Model\ShowCategorySetting.cs" />
     <Compile Include="Model\ShowData.cs" />
     <Compile Include="Model\UploadData.cs" />
     <Compile Include="MultiDownloadSelectionCell.xaml.cs">

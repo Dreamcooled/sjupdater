@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -104,6 +105,8 @@ namespace SjUpdater
         [XmlIgnore]
         private uint numFetchThreads;
 
+        private ObservableCollection<ShowCategorySetting> _categorySettings;
+
         [XmlIgnore]
         public UploadCache UploadCache
         {
@@ -145,7 +148,32 @@ namespace SjUpdater
             }
         }
 
-        public ObservableCollection<ShowCategorySettings> CategorySettings { get; set; } 
+        public ObservableCollection<ShowCategorySetting> CategorySettings
+        {
+            get { return _categorySettings; }
+            set
+            {
+                if(value==null) throw new ArgumentException();
+                //Remove values that are not in the default settings
+                for (int i = value.Count-1; i>=0; i--)
+                {
+                    var showCategorySetting = value[i];
+                    if (ShowCategory.DefaultSettings.All(s => s.Title != showCategorySetting.Title))
+                    {
+                        value.Remove(showCategorySetting);
+                    }
+                }
+                //Add missing values
+                foreach (var showCategorySetting in ShowCategory.DefaultSettings)
+                {
+                    if(value.All(s => s.Title!=showCategorySetting.Title))
+                    {
+                        value.Add(showCategorySetting);
+                    }
+                }
+                _categorySettings = value;
+            }
+        }
 
         /// <summary>
         /// Wheather to sort the Seasons inside a Show asc or desc
@@ -269,7 +297,7 @@ namespace SjUpdater
         public Settings()
         {
             TvShows = new ObservableCollection<FavShowData>();
-            CategorySettings =new ObservableCollection<ShowCategorySettings>( ShowCategory.DefaultSettings);
+            CategorySettings =new ObservableCollection<ShowCategorySetting>( ShowCategory.DefaultSettings);
             SortSeasonsDesc = false;
             SortEpisodesDesc = false;
             NumFetchThreads = 5;

@@ -19,14 +19,14 @@ namespace SjUpdater.Model
         }
 
 
-        public static readonly List<ShowCategorySettings> DefaultSettings  = new List<ShowCategorySettings>()
+        public static readonly List<ShowCategorySetting> DefaultSettings  = new List<ShowCategorySetting>()
         {
-            new ShowCategorySettings("new",CategoryOrderingType.DatePrev),
-            new ShowCategorySettings("update",CategoryOrderingType.DatePrev),
-            new ShowCategorySettings("active",CategoryOrderingType.DateNextPrev),
-            new ShowCategorySettings("ended",CategoryOrderingType.DatePrev),
-            new ShowCategorySettings("unknown",CategoryOrderingType.Alphabetical),
-            new ShowCategorySettings("all",CategoryOrderingType.Alphabetical)
+            new ShowCategorySetting("new",CategoryOrderingType.DatePrev),
+            new ShowCategorySetting("update",CategoryOrderingType.DatePrev),
+            new ShowCategorySetting("active",CategoryOrderingType.DateNextPrev),
+            new ShowCategorySetting("ended",CategoryOrderingType.DatePrev),
+            new ShowCategorySetting("unknown",CategoryOrderingType.Alphabetical),
+            new ShowCategorySetting("all",CategoryOrderingType.Alphabetical)
         };
 
 
@@ -34,7 +34,7 @@ namespace SjUpdater.Model
         public String Title { get; internal set; }
 
         public ObservableCollection<ShowTileViewModel> Shows { get; } = new ObservableCollection<ShowTileViewModel>();
-        public ShowCategorySettings Settings { get; internal set; }
+        public ShowCategorySetting Setting { get; internal set; }
 
         public void AddShow(ShowTileViewModel show)
         {
@@ -42,13 +42,13 @@ namespace SjUpdater.Model
             {
                 Shows.Add(show);
                 show.Show.PropertyChanged += Show_PropertyChanged;
-                Settings.Sort(Shows);
+                Setting.Sort(Shows);
             }
         }
 
         public void Sort()
         {
-            Settings.Sort(Shows);
+            Setting.Sort(Shows);
         }
 
         private void Show_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs args)
@@ -57,7 +57,7 @@ namespace SjUpdater.Model
             {
                 _dispatcher.Invoke(delegate
                 {
-                    Settings.Sort(Shows);
+                    Setting.Sort(Shows);
                 });
             }
         }

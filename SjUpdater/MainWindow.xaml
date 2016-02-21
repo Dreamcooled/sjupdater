@@ -227,7 +227,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type model:ShowCategory}">
                                 <StackPanel Orientation="Vertical">
-                                    <Label FontSize="20pt" Content="{Binding Settings.Description}" Margin="0,-5,0,0"/>
+                                    <Label FontSize="20pt" Content="{Binding Setting.Description}" Margin="0,-5,0,0"/>
                                     <ItemsControl ItemsSource="{Binding Shows}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>

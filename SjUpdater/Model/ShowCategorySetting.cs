@@ -23,7 +23,7 @@ namespace SjUpdater.Model
         DatePrevNext
     }
 
-    public class ShowCategorySettings : PropertyChangedImpl
+    public class ShowCategorySetting : PropertyChangedImpl
     {
 
         private static readonly Comparer<ShowTileViewModel> AlphabeticalShowComparer = Comparer<ShowTileViewModel>.Create((m1, m2) => String.CompareOrdinal(m1.Title.ToLower(), m2.Title.ToLower()));
@@ -121,14 +121,14 @@ namespace SjUpdater.Model
         };
 
 
-        public ShowCategorySettings(String title = null, CategoryOrderingType ordering=CategoryOrderingType.Alphabetical, bool enabled=true)
+        public ShowCategorySetting(String title = null, CategoryOrderingType ordering=CategoryOrderingType.Alphabetical, bool enabled=true)
         {
             Title = title;
             OrderingType = ordering;
             Enabled = enabled;
         }
 
-        public ShowCategorySettings()
+        public ShowCategorySetting()
         {
             Enabled = true;
         }

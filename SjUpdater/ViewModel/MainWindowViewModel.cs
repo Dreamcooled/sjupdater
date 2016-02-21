@@ -48,7 +48,7 @@ namespace SjUpdater.ViewModel
 
         private void CategorySetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var sett = sender as ShowCategorySettings;
+            var sett = sender as ShowCategorySetting;
             Debug.Assert(sett != null, "sett != null");
             foreach (FavShowData favShowData in _shows)
             {
@@ -66,8 +66,8 @@ namespace SjUpdater.ViewModel
          private static readonly Comparer<ShowCategory> CategoryComparer = Comparer<ShowCategory>.Create((c1, c2) =>
          {
              var settings = Settings.Instance.CategorySettings;
-             int cind1 = settings.IndexOf(c1.Settings);
-             int cind2 = settings.IndexOf(c2.Settings);
+             int cind1 = settings.IndexOf(c1.Setting);
+             int cind2 = settings.IndexOf(c2.Setting);
              if (cind1 > cind2) return 1;
              return -1;
          });
@@ -131,7 +131,7 @@ namespace SjUpdater.ViewModel
             //Check existing cats
             foreach (var cat in _categories)
             {
-                if(!cat.Settings.Enabled) continue;
+                if(!cat.Setting.Enabled) continue;
          
                 var vm = cat.Shows.FirstOrDefault(v => v.Show == show);
                 if (!categories.Contains(cat.Title) && vm!=null ) //should not be there, but is there
@@ -148,7 +148,7 @@ namespace SjUpdater.ViewModel
             }
 
             //Remove empty cats or disabled cats
-            _categories.Where(c => !c.Shows.Any() || !c.Settings.Enabled).ToList().ForEach(c=> _categories.Remove(c));
+            _categories.Where(c => !c.Shows.Any() || !c.Setting.Enabled).ToList().ForEach(c=> _categories.Remove(c));
 
 
             //Add non existing cats
@@ -159,7 +159,7 @@ namespace SjUpdater.ViewModel
                 if(!settings.Enabled) continue;
                 var newCat = new ShowCategory();
                 newCat.Title = cat;
-                newCat.Settings = settings;
+                newCat.Setting = settings;
                 newCat.AddShow(new ShowTileViewModel(show));
 
                 _categories.Add(newCat);
