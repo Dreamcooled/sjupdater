@@ -20,6 +20,19 @@ namespace SjUpdater.Utils
             return Native.memcmp(array, array2, array.Length) == 0;
         }
 
+        public static Comparer<T> CreateMultiple<T>(params Comparer<T>[] comparers  )
+        {
+            return Comparer<T>.Create(delegate(T x, T y)
+            {
+                foreach (var comparer in comparers)
+                {
+                    int i = comparer.Compare(x, y);
+                    if (i != 0) return i;
+                }
+                return 0;
+            });
+        }
+
         public static void Sort<TSource>(this ObservableCollection<TSource> source, Comparer<TSource> comparer, bool desc = false)
         {
             if (source == null) return;

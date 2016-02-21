@@ -81,6 +81,7 @@
     </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Resources>
         <utils:StringToFaviconConverter x:Key="StringToFaviconConverter" />
+        <utils:EnumTextValueConverter x:Key="EnumTextValueConverter" />
         <utils:GridViewWidthCalulationMultiConverter x:Key="lastColumnMaximizerConverter"/>
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.Flyouts>
@@ -903,7 +904,7 @@
                    
                             <GroupBox Header="Homescreen">
                                 <StackPanel Orientation="Horizontal">
-                                    <DataGrid x:Name="CategorySettingsDataGrid"  ItemsSource="{Binding CategorySettings}" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single"  Width="500" CanUserSortColumns="False" CanUserReorderColumns="False">
+                                    <DataGrid x:Name="CategorySettingsDataGrid"  ItemsSource="{Binding CategorySettings}" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single"  Width="600" CanUserSortColumns="False" CanUserReorderColumns="False">
                                         <DataGrid.Resources>
                                             <ObjectDataProvider x:Key="EnumDataProvider"  MethodName="GetValues" ObjectType="{x:Type System:Enum}">
                                                 <ObjectDataProvider.MethodParameters>
@@ -914,7 +915,25 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Category" IsReadOnly="True" Binding="{Binding Title}" />
                                             <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
-                                            <DataGridComboBoxColumn Header="Inner Ordering" SelectedItemBinding="{Binding OrderingType}" ItemsSource="{Binding Source={StaticResource EnumDataProvider}}"/>
+                                            <DataGridTemplateColumn Header="Inner Ordering">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding OrderingType, Converter={StaticResource EnumTextValueConverter}}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                                <DataGridTemplateColumn.CellEditingTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox ItemsSource="{Binding Source={StaticResource EnumDataProvider}}"
+                                                                    SelectedItem="{Binding OrderingType}" >
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding . ,Converter={StaticResource EnumTextValueConverter}}" />
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellEditingTemplate>
+                                            </DataGridTemplateColumn>
                                             <DataGridCheckBoxColumn Header="Visible" Binding="{Binding Enabled}" />
                                         </DataGrid.Columns>
                                     </DataGrid>

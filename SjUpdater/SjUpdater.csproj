@@ -157,6 +157,7 @@
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\Crc64.cs" />
+    <Compile Include="Utils\EnumText.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FavIcon.cs" />
     <Compile Include="Utils\GlobalMutex.cs" />

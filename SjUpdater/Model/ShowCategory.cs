@@ -21,10 +21,10 @@ namespace SjUpdater.Model
 
         public static readonly List<ShowCategorySettings> DefaultSettings  = new List<ShowCategorySettings>()
         {
-            new ShowCategorySettings("new",CategoryOrderingType.Date),
-            new ShowCategorySettings("update",CategoryOrderingType.Date),
-            new ShowCategorySettings("active",CategoryOrderingType.Date),
-            new ShowCategorySettings("ended",CategoryOrderingType.Date),
+            new ShowCategorySettings("new",CategoryOrderingType.DatePrev),
+            new ShowCategorySettings("update",CategoryOrderingType.DatePrev),
+            new ShowCategorySettings("active",CategoryOrderingType.DateNextPrev),
+            new ShowCategorySettings("ended",CategoryOrderingType.DatePrev),
             new ShowCategorySettings("unknown",CategoryOrderingType.Alphabetical),
             new ShowCategorySettings("all",CategoryOrderingType.Alphabetical)
         };
