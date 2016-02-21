@@ -86,23 +86,24 @@
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
             <controls:Flyout Header="Add TV Show" Position="Right" x:Name="AddShowFlyout" Theme="Adapt">
-                <Grid Margin="25" Width="250">
+                <Grid Margin="25" Width="260">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" MaxWidth="210" controls:TextBoxHelper.ClearTextButton="True"
                              controls:TextBoxHelper.Watermark="Type Showname" x:Name="TextBoxAutoComl"
                              TextChanged="SearchTextBox_TextChanged" PreviewKeyUp="TextBoxAutoComl_PreviewKeyUp" />
 
-                        <Button Grid.Column="1" Width="Auto" Height="Auto" Content="Add" VerticalAlignment="Center" Margin="10,0,10,0" Style="{DynamicResource MetroFlatButton}" Click="AddSelectedShowButton_Click" >
+                        <Button Grid.Column="1" Width="Auto" Height="Auto" Content="Add" VerticalAlignment="Center" Margin="3,0,3,0" Style="{DynamicResource MetroFlatButton}" Click="AddSelectedShowButton_Click" >
                             <Button.ToolTip>
                                 <TextBlock>
                                         Add selected show
@@ -111,6 +112,14 @@
                                         you can also doubleclick on a show
                                         <LineBreak/>
                                         or use Enter to add the first show
+                                </TextBlock>
+                            </Button.ToolTip>
+                        </Button>
+
+                        <Button Grid.Column="2" Width="Auto" Height="Auto" Content="M" VerticalAlignment="Center" Margin="5,0,3,0" Style="{DynamicResource MetroFlatButton}" Click="AddShowViaLinkButton_Click" >
+                            <Button.ToolTip>
+                                <TextBlock>
+                                        Enter link to add show
                                 </TextBlock>
                             </Button.ToolTip>
                         </Button>

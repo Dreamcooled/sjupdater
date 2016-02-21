@@ -416,6 +416,33 @@ namespace SjUpdater
             }
         }
 
+        private void AddShowViaLinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddShowViaLink();
+        }
+
+        private async void AddShowViaLink()
+        {
+            var url = await this.ShowInputAsync("Add show via link", "Enter the link", new MetroDialogSettings {AnimateHide = false});
+
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            var name = await this.ShowInputAsync("Add show via link", "Enter the name of the show", new MetroDialogSettings {AnimateShow = false});
+
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+
+            if (_setti.TvShows.Any(t => t.Show.Url == url))
+            {
+                return;
+            }
+
+            AddShowFlyout.IsOpen = false;
+            _setti.TvShows.Add(new FavShowData(new ShowData {Name = name, Url = url}, true));
+        }
+
         private bool _forceClose = false;
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
@@ -467,7 +494,7 @@ namespace SjUpdater
             }
         }
 
-        public static readonly Dictionary<string, int> DictUpdateTimes = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> DictUpdateTimes = new Dictionary<string, int>
         {
             {"Never", - 1},
             {"5 min", 1000 * 60 * 5},
@@ -481,7 +508,7 @@ namespace SjUpdater
             {"24 h", 1000 * 3600 * 24}
         };
 
-        public static readonly Dictionary<string, int> DictNotifyTimeouts = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> DictNotifyTimeouts = new Dictionary<string, int>
         {
             {"Never", - 1},
             {"2 sec", 1000 * 2},
@@ -582,7 +609,7 @@ namespace SjUpdater
             if (selCatSetting == null) return;
             if (CategorySettingsDataGrid.SelectedIndex > 0)
             {
-                catSettings.Move(CategorySettingsDataGrid.SelectedIndex, CategorySettingsDataGrid.SelectedIndex-1);
+                catSettings.Move(CategorySettingsDataGrid.SelectedIndex, CategorySettingsDataGrid.SelectedIndex - 1);
             }
         }
 
@@ -591,7 +618,7 @@ namespace SjUpdater
             var catSettings = _setti.CategorySettings;
             var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySettings;
             if (selCatSetting == null) return;
-            if (CategorySettingsDataGrid.SelectedIndex < catSettings.Count -1)
+            if (CategorySettingsDataGrid.SelectedIndex < catSettings.Count - 1)
             {
                 catSettings.Move(CategorySettingsDataGrid.SelectedIndex, CategorySettingsDataGrid.SelectedIndex + 1);
             }
