@@ -728,9 +728,9 @@ namespace SjUpdater.Model
             {
                 if (_status == value) return;
                 _status = value;
-                SetCategory("active", _status == "Returning Series");
+                SetCategory("active", _status == "Returning Series" || _status== "In Production");
                 SetCategory("ended", _status == "Ended" || _status == "Canceled");
-                SetCategory("unknown", _status != "Returning Series" && _status != "Ended" && _status != "Canceled");
+                SetCategory("unknown", _status != "Returning Series" && _status != "Ended" && _status != "Canceled" && _status!= "In Production");
                 OnPropertyChanged();
             }
         }
