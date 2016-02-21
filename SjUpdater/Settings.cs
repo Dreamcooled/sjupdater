@@ -248,9 +248,7 @@ namespace SjUpdater
         /// Whether we are allowed to send personal data to stats server
         /// </summary>
         public bool NoPersonalData { get; set; }
-
-
-
+        
         /// <summary>
         /// Whether or not Episodes can be favorized
         /// </summary>

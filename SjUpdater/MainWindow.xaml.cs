@@ -423,12 +423,29 @@ namespace SjUpdater
 
         private async void AddShowViaLink()
         {
-            var url = await this.ShowInputAsync("Add show via link", "Enter the link", new MetroDialogSettings {AnimateHide = false});
+            var success = false;
 
-            if (string.IsNullOrWhiteSpace(url))
-                return;
+            string url = null;
 
-            var name = await this.ShowInputAsync("Add show via link", "Enter the name of the show", new MetroDialogSettings {AnimateShow = false});
+            while (!success)
+            {
+                url = await this.ShowInputAsync("Add show via link", "Enter link of show", new MetroDialogSettings {AnimateShow = false, AnimateHide = false});
+
+                if (string.IsNullOrWhiteSpace(url))
+                    return;
+
+                if (url.Contains("http://serienjunkies.org/serie/"))
+                {
+                    success = true;
+                }
+                else
+                {
+                    await this.ShowMessageAsync("Add show via link", "Correct link:\nhttp://serienjunkies.org/serie/game-of-thrones/\n\nWrong link:\nhttp://serienjunkies.org/game-of-thrones/game-of-thrones-staffel-5-hdtv-sd720p1080p/\n\n\nYou can find the correct link at the bottom of the page of a season",
+                        MessageDialogStyle.Affirmative, new MetroDialogSettings {AnimateShow = false, AnimateHide = false});
+                }
+            }
+
+            var name = await this.ShowInputAsync("Add show via link", "Enter name of show", new MetroDialogSettings {AnimateShow = false, AnimateHide = false});
 
             if (string.IsNullOrWhiteSpace(name))
                 return;
@@ -525,7 +542,7 @@ namespace SjUpdater
 
         private void StatsInfoButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.ShowMessageAsync("Info about Stats", Stats.GetInfoForUser());
+            this.ShowMessageAsync("Info about Stats", Stats.GetInfoForUser(), MessageDialogStyle.Affirmative, new MetroDialogSettings {AnimateShow = false, AnimateHide = false});
         }
 
         private void ChangeLogButtonClicked(object sender, RoutedEventArgs e)
