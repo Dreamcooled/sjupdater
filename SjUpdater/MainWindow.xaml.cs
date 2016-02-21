@@ -590,7 +590,26 @@ namespace SjUpdater
         }
 
 
+        private void CategorySettingsButtonUp_OnClick(object sender, RoutedEventArgs e)
+        {
+            var catSettings = _setti.CategorySettings;
+            var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySettings;
+            if (selCatSetting == null) return;
+            if (CategorySettingsDataGrid.SelectedIndex > 0)
+            {
+                catSettings.Move(CategorySettingsDataGrid.SelectedIndex, CategorySettingsDataGrid.SelectedIndex-1);
+            }
+        }
 
-   
+        private void CategorySettingsButtonDown_OnClick(object sender, RoutedEventArgs e)
+        {
+            var catSettings = _setti.CategorySettings;
+            var selCatSetting = CategorySettingsDataGrid.SelectedItem as ShowCategorySettings;
+            if (selCatSetting == null) return;
+            if (CategorySettingsDataGrid.SelectedIndex < catSettings.Count -1)
+            {
+                catSettings.Move(CategorySettingsDataGrid.SelectedIndex, CategorySettingsDataGrid.SelectedIndex + 1);
+            }
+        }
     }
 }
