@@ -2,9 +2,6 @@
 [![Github All Releases](https://img.shields.io/github/downloads/dreamcooled/sjupdater/total.svg?style=flat)](https://github.com/Dreamcooled/sjupdater/releases)
 [![GitHub license](https://img.shields.io/github/license/dreamcooled/sjupdater.svg?style=flat)](https://github.com/Dreamcooled/sjupdater/blob/master/LICENSE.md)
 [![GitHub issues](https://img.shields.io/github/issues/dreamcooled/sjupdater.svg?style=flat)](https://github.com/Dreamcooled/sjupdater/issues)
-
-=========
-
 # SjUpdater
 
 An Updater and Linkaggregator for Serienjunkies.org written in C#/WPF.
