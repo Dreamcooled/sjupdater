@@ -1,17 +1,23 @@
 #filename:md5hash
 
-Hardcodet.Wpf.TaskbarNotification.dll:3fe79aa10b54b5ed58567918a6928166
-HtmlAgilityPack.dll:ca2b33482d2c53db9b249d21ee97a74b
+Hardcodet.Wpf.TaskbarNotification.dll:810105219d96749674c5bf31c82a3b09
+HtmlAgilityPack.dll:4a369728494826f61240b84ac835c283
 MahApps.Metro.dll:fb1e8eee84791cc015e043ab0ce32bba
-RestSharp.dll:54842df150e2cff6c457bc51522a7d00
-SjUpdater.exe:0a0f1f6261f96dc1b3e9a8a1f060584a
-SmartThreadPool.dll:6ef7779d2552efa5fb43984d4e731602
+RestSharp.dll:0f047c322cd66ade3ae9001d1e0497e9
+SjUpdater.exe:12fdde3d07443e86823588c63ddee3f7
+SmartThreadPool.dll:68dcc3d81a5f04a83d1d3407327d8b42
+System.ValueTuple.dll:d84582021784569243a528a2181fe03e
 System.Windows.Interactivity.dll:580244bc805220253a87196913eb3e5e
 TMDbLib.dll:d59c9b8937288d1bf35f28c75cb8bfb7
 
 
 
 [###CHANGELOG###]
+
+v0.50.1 (2018-02-14)
+- Updated some dependencies
+- Updated to .NET 4.7.1
+- Fixed SSL error
 
 v0.50 (2016-02-21)
 - Homescreen Categories can now be configured (Name, Order, Visibility)
