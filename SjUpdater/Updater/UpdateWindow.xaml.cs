@@ -1,11 +1,9 @@
-﻿using System;
-using System.Dynamic;
-using System.Threading.Tasks;
+﻿using MahApps.Metro;
+using MahApps.Metro.Controls;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using MahApps.Metro;
-using MahApps.Metro.Controls;
 
 namespace SjUpdater.Updater
 {
@@ -35,7 +33,7 @@ namespace SjUpdater.Updater
 
             ThemeManager.IsThemeChanged += ThemeManager_IsThemeChanged;
             var mainThemeSettings = ThemeManager.DetectAppStyle(Application.Current);
-            ThemeManager.ChangeAppStyle(this,mainThemeSettings.Item2,ThemeManager.GetInverseAppTheme(mainThemeSettings.Item1));
+            ThemeManager.ChangeAppStyle(this, mainThemeSettings.Item2, ThemeManager.GetInverseAppTheme(mainThemeSettings.Item1));
 
             InitializeComponent();
             _updater = new Updater(updateurl);
@@ -52,7 +50,7 @@ namespace SjUpdater.Updater
                 return;
             }
             _myThemeChangeEvent = true;
-            ThemeManager.ChangeAppStyle(this,e.Accent, ThemeManager.GetInverseAppTheme(e.AppTheme));
+            ThemeManager.ChangeAppStyle(this, e.Accent, ThemeManager.GetInverseAppTheme(e.AppTheme));
         }
 
         private bool _forceClose;
@@ -94,21 +92,21 @@ namespace SjUpdater.Updater
 
             if (silentCheck)
                 updaterTask.ContinueWith(t =>
-                                         {
-                                             if (!_updater.UpdateAvailable && !showIfNoUpdateAvailable)
-                                             {
-                                                 return;
-                                             }
+                {
+                    if (!_updater.UpdateAvailable && !showIfNoUpdateAvailable)
+                    {
+                        return;
+                    }
 
-                                             Dispatcher.Invoke(() =>
-                                                               {
-                                                                   if (!_error)
-                                                                   {
-                                                                       if (!_error)
-                                                                           Show();
-                                                                   }
-                                                               });
-                                         });
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (!_error)
+                        {
+                            if (!_error)
+                                Show();
+                        }
+                    });
+                });
         }
 
         public new void Show()
@@ -119,15 +117,15 @@ namespace SjUpdater.Updater
 
         private void UpdateWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            ((Grid) Content).Children.Remove(changelogGrid);
-            ((Grid) Content).Children.Remove(updateGrid);
+            ((Grid)Content).Children.Remove(changelogGrid);
+            ((Grid)Content).Children.Remove(updateGrid);
 
             TransitioningContentControl.Content = changelogGrid;
         }
 
         private void SwitchToUpdateGridButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ((Grid) Content).Children.Remove(changelogGrid);
+            ((Grid)Content).Children.Remove(changelogGrid);
             TransitioningContentControl.Content = updateGrid;
 
             var heightAnimation = new DoubleAnimation(Height, updateGrid.Height + 50, new Duration(TimeSpan.FromSeconds(1)));

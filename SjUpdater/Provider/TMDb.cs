@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Documents;
-using RestSharp.Extensions;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.TvShows;
@@ -21,7 +18,9 @@ namespace SjUpdater.Provider
                 client = new TMDbClient(API_KEY);
                 client.GetConfig();
                 //client.MaxRetryCount = 15;
-            } catch(Exception) { }
+            } catch(Exception ex) {
+                throw ex;
+            }
 
         }
 

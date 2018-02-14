@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Amib.Threading;
+using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using Amib.Threading;
-using RestSharp;
 
 namespace SjUpdater.Utils
 {
